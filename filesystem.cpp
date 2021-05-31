@@ -4,7 +4,7 @@
 #include <vector>
 #include <getopt.h>
 //#include <cstring>	// strcpy
-#include <algorithm>	// unique
+#include <algorithm>	// sort
 
 
 namespace fs = std::filesystem;
@@ -82,6 +82,8 @@ void vec_init(vector<int> &vec, vector<int> &repeat)
 			}
         }
     }
+	
+	if (!vec.empty()) sort(vec.begin(), vec.end());
 }
 
 // start, end
@@ -90,34 +92,28 @@ void vec_run(vector<int> &vec, vector<int> &missing)
 	using namespace std;
 	if (!vec.empty())
 	{
-		//auto result = unique(vec.begin(), vec.end());
-		//vec.erase(result, vec.end());
-		
 		int _start = vec.front();
 		int _end = vec.back();
 		auto iter = vec.begin();
 		std::vector<int>::iterator result;
-		int start_temp = _start;
 		
 		if (new_start != -1)
 		{
 			if (new_start >= _start && new_start <= _end)
 			{
-				start_temp = new_start;
-				while (new_start < _end)
+				result = find(vec.begin(), vec.end(), new_start);
+				if (result != vec.end())
 				{
-					result = find(vec.begin(), vec.end(), new_start);
-					if (result != vec.end())
+					iter = result;
+					_start = new_start;
+				}
+				else
+				{
+					auto r_result = find_if(vec.rbegin(), vec.rend(), [](const int &a){return a < new_start;});
+					if (r_result != vec.rend())
 					{
-						iter = result;
-						_start = new_start;
-						break;
-					}
-					else
-					{
-						missing.push_back(new_start);
-						++new_start;
-						//cout << "new_start = " << new_start << endl;
+						_start = *r_result;
+						cout << "Start " << new_start << " is not availible. New start is " << *r_result << endl;
 					}
 				}
 			}
@@ -133,21 +129,7 @@ void vec_run(vector<int> &vec, vector<int> &missing)
 			" and smaller than a maximum value(" << _end << ')' << endl;
 		}
 		
-		std::cout << "\nStart for a range " << start_temp << '-' << _end << std::endl;
-		
-		
-		
-		// if (argc == 4)
-		// {
-			// int temp_start = parse(argv[2]);
-			// int temp_end = parse(argv[3]);
-			// if (temp_start != -1 && temp_end != -1 && temp_start < temp_end)
-			// {
-				// start = temp_start;
-				// end = temp_end;
-			// }
-			// else cout << "Invalid range parameters\n";
-		// }
+		std::cout << "\nStart for a range " << _start << '-' << _end << std::endl;
 		
 		for (int i = _start; i <= _end; ++i)
 		{
@@ -165,14 +147,14 @@ void test_getopt(int argc, char* argv[])
 	//++optind; // 3
 
 	//opterr = 0;
-	while ((ch = getopt(argc, argv, "-qlhp:d")) != -1) {
+	while ((ch = getopt(argc, argv, "-:qlhp:e:d")) != -1) {
 		switch (ch) 
 		{
-		case 'p':
+		case 'p':	// path flag
 			cout << "p flag active" << endl;
 			if (optarg[0] == '-') 
 			{
-				cout << "Cannot use " << optarg << " as parameter for " << (char)ch << endl;
+				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
 				--optind;
 			}
 			else if (dir.empty())
@@ -182,24 +164,43 @@ void test_getopt(int argc, char* argv[])
 				else cout << "File path " << temp_path << " is not valid" << endl;
 			}
 			break;
-		case 'l':
+		case 'e':	// end flag
+			cout << "e flag active" << endl;
+			if (optarg[0] == '-') 
+			{
+				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
+				--optind;
+			}
+			else if (new_end == -1)
+			{
+				if (is_num(optarg))
+				{
+					new_end = parse(optarg);
+					
+					if (new_start > new_end)
+						swap(new_start, new_end);
+				}
+				else cout << '\"' << optarg << "\": Invalid -" << (char)ch << " argument" << endl;
+			}
+			break;
+		case 'l':	// oneline flag
 			l_flag = true;
 			cout << "l flag active" << endl;
 			break;
-		case 'd':
+		case 'd':	// duplicate files
 			d_flag = true;
 			cout << "d flag active" << endl;
 			break;
-		case 'h':
+		case 'h':	// help
 			cout << "h --help flag active" << endl;
 			break;
-		case 'q':
+		case 'q':	// question flag
 			cout << "q flag active" << endl;
 			if (dir.empty()) dir = fs::current_path();
 			break;
-		// case '?':
-			// cout << "Invalid option " << (char)optopt << endl;	// never goes here, because - 
-			// break;
+		case '?':
+			cout << "\"-" << (char)optopt << "\": Invalid option" << endl;
+			break;
 		case 1:
 			if (dir.empty())
 			{
@@ -268,7 +269,7 @@ void check_path(int argc, char* argv[])
 		cout << "File path " << dir << " is not valid" << endl;
 		exit(1);
 	}
-	else cout << "Current path " << dir << endl;
+	//else cout << "Current path " << dir << endl;
 }
 
 int main(int argc, char* argv[])
@@ -276,15 +277,11 @@ int main(int argc, char* argv[])
     namespace fs = std::filesystem;
 	using namespace std;
 	typedef vector<int>::iterator it;
- 
-	//std::cout << setw(25) << std::left << entry.path().filename() << std::right << entry.file_size()/1024 << "\tKb\n";
 	
 	vector<int> vec;
 	vector<int> missing;
 	vector<int> repeat;
-	//fs::path dir;
-	//int start = -1, end = -1;
-	//cout << "argc " << argc << endl;
+
 	if (argc > 1) test_getopt(argc, argv);
 	
 	check_path(argc, argv);
@@ -307,7 +304,7 @@ int main(int argc, char* argv[])
 		}
 		cout << *el << endl;	// last
 	}
-	else cout << "No missing files\n";
+	else cout << "\nNo missing files\n";
 
 	if (!d_flag)
 	if (!repeat.empty())
