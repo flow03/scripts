@@ -4,7 +4,7 @@
 #include <vector>
 #include <getopt.h>
 //#include <cstring>	// strcpy
-#include <algorithm>	// sort
+#include <algorithm>	// sort, find, find_if
 
 
 namespace fs = std::filesystem;
@@ -13,10 +13,11 @@ using namespace std;
 // globals
 bool l_flag = false;
 bool d_flag = false;
-// bool q_flag = false;
+bool w_flag = false;
 int new_start = -1;
 int new_end = -1;
 fs::path dir;
+std::string new_ext = ".jpg";	// extension, e flag
 
 
 bool is_num(const char ch)
@@ -68,9 +69,9 @@ void vec_init(vector<int> &vec, vector<int> &repeat)
  
     for (fs::directory_entry const& entry : fs::directory_iterator(dir)) 
 	{
-        if (entry.is_regular_file()) 
+        if (entry.is_regular_file())	//	|| entry.path().extension() == ".png"
 		{
-			if (entry.path().extension() == ".jpg" || entry.path().extension() == ".png")
+			if (entry.path().extension() == ".jpg" || entry.path().extension() == ".png" || entry.path().extension() == new_ext) 
 			{
 				val = parse(entry.path().stem().string());
 				if (!vec.empty())
@@ -137,6 +138,7 @@ void vec_run(vector<int> &vec, vector<int> &missing)
 			else missing.push_back(i);
 		}
 	}
+	else cout << "\nNo numbered files in the current directory\n" << dir << endl;
 }
 
 void test_getopt(int argc, char* argv[])
@@ -147,8 +149,8 @@ void test_getopt(int argc, char* argv[])
 	//++optind; // 3
 
 	//opterr = 0;
-	while ((ch = getopt(argc, argv, "-:qlhp:e:d")) != -1) {
-		switch (ch) 
+	while ((ch = getopt(argc, argv, "-:qlhp:b:dwe:")) != -1) {
+		switch (ch)
 		{
 		case 'p':	// path flag
 			cout << "p flag active" << endl;
@@ -164,8 +166,8 @@ void test_getopt(int argc, char* argv[])
 				else cout << "File path " << temp_path << " is not valid" << endl;
 			}
 			break;
-		case 'e':	// end flag
-			cout << "e flag active" << endl;
+		case 'b':	// back flag
+			cout << "b flag active" << endl;
 			if (optarg[0] == '-') 
 			{
 				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
@@ -183,6 +185,22 @@ void test_getopt(int argc, char* argv[])
 				else cout << '\"' << optarg << "\": Invalid -" << (char)ch << " argument" << endl;
 			}
 			break;
+		case 'e':	// extension flag
+			cout << "e flag active" << endl;
+			if (optarg[0] == '-') 
+			{
+				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
+				--optind;
+			}
+			else
+			{
+				new_ext = optarg;
+				if (new_ext[0] != '.') new_ext = "." + new_ext; 
+					//new_ext.insert(0, ".");
+					//new_ext.push_front('.');
+				cout << '\"' << new_ext << "\": is a new extension now" << endl;
+			}
+			break;
 		case 'l':	// oneline flag
 			l_flag = true;
 			cout << "l flag active" << endl;
@@ -190,6 +208,10 @@ void test_getopt(int argc, char* argv[])
 		case 'd':	// duplicate files
 			d_flag = true;
 			cout << "d flag active" << endl;
+			break;
+		case 'w':	// window flag
+			w_flag = true;
+			cout << "w flag active" << endl;
 			break;
 		case 'h':	// help
 			cout << "h --help flag active" << endl;
@@ -319,7 +341,7 @@ int main(int argc, char* argv[])
 		cout << *el_r << endl;	// last
 	}
 	
-	// std::cin.get(); asdas
+	if (w_flag) std::cin.get();
 	
 	return 0;
 }
