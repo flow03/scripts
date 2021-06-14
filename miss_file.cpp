@@ -59,7 +59,7 @@ int parse(std::string str)
 
 int parse (const char * c_str)
 {
-	return parse(std::string(c_str));
+	return parse(std::string(c_str));	// ???
 }
 
 // -p --path
@@ -145,7 +145,7 @@ void test_getopt(int argc, char* argv[])
 {
 	using namespace std;
 	
-	int ch, value = 0;
+	int ch;
 	//++optind; // 3
 
 	//opterr = 0;
@@ -232,6 +232,7 @@ void test_getopt(int argc, char* argv[])
 			}
 			else if (is_num(optarg))
 			{
+				int value = 0;
 				if (new_start == -1)
 				{
 					value = parse(optarg);
