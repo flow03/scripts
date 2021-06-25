@@ -91,7 +91,7 @@ void vec_init(vector<int> &vec, vector<int> &repeat)
 void vec_run(vector<int> &vec, vector<int> &missing)
 {
 	using namespace std;
-	if (!vec.empty())
+	if (vec.size() > 2)
 	{
 		int _start = vec.front();
 		int _end = vec.back();
@@ -138,7 +138,8 @@ void vec_run(vector<int> &vec, vector<int> &missing)
 			else missing.push_back(i);
 		}
 	}
-	else cout << "\nNo numbered files in the current directory\n" << dir << endl;
+	else if (vec.empty()) cout << "\nNo numbered files in the current directory\n" << dir << endl;
+	else if (vec.size() <= 2) cout << "\nNot enought arguments. " << vec.size() << " files are in the directory\n" << dir << endl;
 }
 
 void test_getopt(int argc, char* argv[])
