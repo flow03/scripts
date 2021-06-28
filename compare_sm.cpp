@@ -14,6 +14,7 @@ fs::path dir_2;
 fs::path dir_result;
 
 bool e_flag = false;
+// std::string compare_str;
 
 #include "Compare.h"
 
@@ -49,28 +50,28 @@ void test_getopt(int argc, char* argv[])
 			else check_dir(optarg);
 			break;
 		case 'c':	// copy flag
-			if (!comparator) 
+			if (!comparator)
 			{
 				comparator = new cmp::copy_compare();
 				cout << "c flag active" << endl;
 			}
-			else cout << "\"-" << (char)ch << "\": Option already enabled" << endl;
+			else cout << "\"-" << (char)ch << "\": Option " << comparator->name() << " compare already enabled" << endl;
 			break;
 		case 'r':	// replace flag
-			if (!comparator) 
+			if (!comparator)
 			{
 				comparator = new cmp::repl_compare();
 				cout << "r flag active" << endl;
 			}
-			else cout << "\"-" << (char)ch << "\": Option already enabled" << endl;
+			else cout << "\"-" << (char)ch << "\": Option " << comparator->name() << " compare already enabled" << endl;
 			break;
 		case 't':	// text flag
-			if (!comparator) 
+			if (!comparator)
 			{
 				comparator = new cmp::text_compare();
 				cout << "t flag active" << endl;
 			}
-			else cout << "\"-" << (char)ch << "\": Option already enabled" << endl;
+			else cout << "\"-" << (char)ch << "\": Option " << comparator->name() << " compare already enabled" << endl;
 			break;
 		case 'e':	// exterminate flag
 			e_flag = true;
@@ -112,88 +113,110 @@ std::vector<couple_t> vec_init(fs::path dir)
 	return folder;
 }
 
-void vec_out(const std::vector<couple_t> &vec)
-{
-	for (const couple_t &el : vec)
-		std::cout << el.first.filename().string() << '\t' << el.second/1024 << " Kb" << std::endl;
-}
+// void vec_out(const std::vector<couple_t> &vec)
+// {
+	// for (const couple_t &el : vec)
+		// std::cout << el.first.filename().string() << '\t' << el.second/1024 << " Kb" << std::endl;
+// }
 
 void compare(const std::vector<couple_t> &folder_1, const std::vector<couple_t> &folder_2)
 {
-	// auto lambda = [const &el](couple_t file){
-		// return file.first == el.first;
-	// };
+	if (!comparator) comparator = new cmp::text_compare();	// as default
 	
-	for (const couple_t &file_1 : folder_1)
-		for (const couple_t &file_2 : folder_2)
+	if (comparator && comparator->name() != "text")
+	{
+		if (dir_result.empty())
 		{
-			if (file_1.first.stem() == file_2.first.stem())	// filename or stem
+			fs::path temp_dir = dir_1/dir_1.filename() += "_result";
+			std::string answer;
+			std::string create_assign = "create";
+			
+			if (fs::exists(temp_dir)) create_assign = "assign";
+			
+			std::cout << "Would you like to " << create_assign << " a subdirectory " << temp_dir.string() << " as a result directory? (y/n) ";
+				
+			std::cin >> answer;
+			if (answer == "y" || answer == "yes") 
 			{
-				// if (c_flag) copy_compare(file_1, file_2);
-				// else if (r_flag) replace_compare(file_1, file_2);
-				// else text_compare(file_1, file_2);
-				comparator->compare(file_1, file_2);
-				break;
+				if (!fs::exists(temp_dir)) 
+				{
+					if (!fs::create_directory(temp_dir)) 
+						std::cout << "Directory " << temp_dir.string() << " creation is failed" << std::endl;
+				}
+				else create_assign += "e";	// assign + e + d
+				
+				dir_result.assign(temp_dir);
+				
+				std::cout << "Directory " << temp_dir.string() << " is succefully " << create_assign << 'd' << std::endl;
 			}
 		}
+	}
+	
+	if (!dir_result.empty() || comparator->name() == "text")
+	{
+		for (const couple_t &file_1 : folder_1)
+		{
+			for (const couple_t &file_2 : folder_2)
+			{
+				if (file_1.first.stem() == file_2.first.stem())	// filename or stem
+				{
+					comparator->compare(file_1, file_2);
+					break;
+				}
+			}
+		}
+		
+		delete comparator;
+		std::cout << "Done!" << std::endl;
+	}
+	else std::cout << "Result directory is not specified" << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
 	if (argc > 1) test_getopt(argc, argv);
-	if (!comparator) comparator = new cmp::text_compare();	// as default
 	
 	std::cout << "dir_1 : " << dir_1 << std::endl;
 	std::cout << "dir_2 : " << dir_2 << std::endl;
 	std::cout << "dir_result : " << dir_result << std::endl << std::endl;
 	
-	
-	std::vector<couple_t> folder_1 = vec_init(dir_1);
-	std::vector<couple_t> folder_2 = vec_init(dir_2);
-	
-	// comparison
-	compare(folder_1, folder_2);
-	delete comparator;
-	
-	// cmp::text_compare obj1;
-	// cmp::copy_compare obj2;
-	// cmp::repl_compare obj3;
-	
-	// std::cout << "sizeof(comparator) " << sizeof(comparator) << std::endl;
-	// std::cout << "sizeof(*comparator) " << sizeof(*comparator) << std::endl;
-
-		
-	// fs::path test("root/111/10/folder");
-	// std::cout << "test.filename() : " << test.filename() << std::endl;
-	
-	std::cout << "Done!" << std::endl;
-	
-	if (e_flag)
+	if (!dir_1.empty() && !dir_2.empty())
 	{
-		std::string answer;
-		std::cout << "Are you sure you want to delete the rest of contents of both folders? (y/n) ";
-		std::cin >> answer;
-		if (answer == "y" || answer == "yes") 
+		std::vector<couple_t> folder_1 = vec_init(dir_1);
+		std::vector<couple_t> folder_2 = vec_init(dir_2);
+		
+		// comparison
+		compare(folder_1, folder_2);
+		
+		if (e_flag)
 		{
-			unsigned int count = 0;
-			
-			for (const couple_t &file : folder_1)
-			if (exists(file.first)) 
+			std::string answer;
+			std::cout << "Are you sure you want to delete the rest of contents of both folders? (y/n) ";
+			std::cin >> answer;
+			if (answer == "y" || answer == "yes") 
 			{
-				fs::remove(file.first);
-				++count;
-			}
+				unsigned int count = 0;
 				
-			for (const couple_t &file : folder_2)
-			if (exists(file.first)) 
-			{
-				fs::remove(file.first);
-				++count;
+				for (const couple_t &file : folder_1)
+				if (exists(file.first)) 
+				{
+					fs::remove(file.first);
+					++count;
+				}
+					
+				for (const couple_t &file : folder_2)
+				if (exists(file.first)) 
+				{
+					fs::remove(file.first);
+					++count;
+				}
+				
+				std::cout << count << " files was deleted" << std::endl;
 			}
-			
-			std::cout << count << " files was deleted" << std::endl;
 		}
+	
 	}
+	else std::cout << "Not enough arguments to compare" << std::endl;
 	
 	return 0;
 }
