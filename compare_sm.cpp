@@ -160,6 +160,7 @@ void compare(const std::vector<couple_t> &folder_1, const std::vector<couple_t> 
 			{
 				if (file_1.first.stem() == file_2.first.stem())	// filename or stem
 				{
+					// pattern strategy
 					comparator->compare(file_1, file_2);
 					break;
 				}
@@ -178,7 +179,9 @@ int main(int argc, char* argv[])
 	
 	std::cout << "dir_1 : " << dir_1 << std::endl;
 	std::cout << "dir_2 : " << dir_2 << std::endl;
-	std::cout << "dir_result : " << dir_result << std::endl << std::endl;
+	std::cout << "dir_result : " << dir_result << std::endl;
+	std::cout << "sizeof(comparator) " << sizeof(comparator) << std::endl;
+	std::cout << "sizeof(*comparator) " << sizeof(*comparator) << std::endl << std::endl;
 	
 	if (!dir_1.empty() && !dir_2.empty())
 	{
@@ -187,6 +190,9 @@ int main(int argc, char* argv[])
 		
 		// comparison
 		compare(folder_1, folder_2);
+		
+		// if (comparator->name() == "text")
+			// comparator->_priv();
 		
 		if (e_flag)
 		{

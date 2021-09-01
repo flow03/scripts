@@ -8,6 +8,9 @@ struct ICompare
 	virtual void compare(const couple_t &file_1, const couple_t &file_2) = 0;
 	virtual ~ICompare() = default;
 	virtual std::string name() = 0;
+	
+	// private:
+	// void _priv(){std::cout << "Private basic function" << std::endl;}
 };
 
 struct text_compare : ICompare
@@ -30,6 +33,8 @@ struct text_compare : ICompare
 	}
 	
 	std::string name(){return "text";}
+	
+	// void call_private(){ICompare::_priv();}
 };
 
 struct copy_compare : ICompare
@@ -89,14 +94,14 @@ struct repl_compare : ICompare	// replace
 			if (file_2.second < file_1.second) //  + (100 * 1024)
 			{
 				difference = ((intmax_t)file_1.second - file_2.second)/1024;
-				out_str = "Renamed " + file_2.first.string() + " " + to_string(difference) + " Kb diff";
+				out_str = "Renamed " + file_2.first.string() + " " + to_string(difference) + " Kb";
 				rename_path = file_2.first;
 				result_path = dir_result/file_2.first.filename();	// operator/ preferred separator
 			}
 			else
 			{
 				difference = ((intmax_t)file_2.second - file_1.second)/1024;
-				out_str = "Renamed " + file_1.first.string() + " " + to_string(difference) + " Kb diff";
+				out_str = "Renamed " + file_1.first.string() + " " + to_string(difference) + " Kb";
 				rename_path = file_1.first;
 				result_path = dir_result/file_1.first.filename();
 			}
