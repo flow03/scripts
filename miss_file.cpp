@@ -8,12 +8,14 @@
 
 
 namespace fs = std::filesystem;
-using namespace std;
+//using namespace std;
 
 // globals
 bool l_flag = false;
 bool d_flag = false;
 bool w_flag = false;
+bool q_flag = false;
+bool h_flag = false;
 int new_start = -1;
 int new_end = -1;
 fs::path dir;
@@ -63,7 +65,7 @@ int parse (const char * c_str)
 }
 
 // -p --path
-void vec_init(vector<int> &vec, vector<int> &repeat)
+void vec_init(std::vector<int> &vec, std::vector<int> &repeat)
 {
 	int val = 0;	// value
  
@@ -71,16 +73,20 @@ void vec_init(vector<int> &vec, vector<int> &repeat)
 	{
         if (entry.is_regular_file())	//	|| entry.path().extension() == ".png"
 		{
-			if (entry.path().extension() == ".jpg" || entry.path().extension() == ".png" || entry.path().extension() == new_ext) 
-			{
+			std::cout << entry.path().filename().string();		// debug
+			
+			if (entry.path().extension() == ".jpg" || entry.path().extension() == ".png" || entry.path().extension() == new_ext)
+			{	
 				val = parse(entry.path().stem().string());
+				
 				if (!vec.empty())
 				{
 					if (val != vec.back()) vec.push_back(val);
-					else if (!d_flag) repeat.push_back(val);
+					else if (d_flag) repeat.push_back(val);
 				}
 				else vec.push_back(val);
-			}
+				std::cout << '*' << std::endl;		// debug
+			} else std::cout << std::endl;			// debug
         }
     }
 	
@@ -88,7 +94,7 @@ void vec_init(vector<int> &vec, vector<int> &repeat)
 }
 
 // start, end
-void vec_run(vector<int> &vec, vector<int> &missing)
+void vec_run(std::vector<int> &vec, std::vector<int> &missing)
 {
 	using namespace std;
 	if (vec.size() > 2)
@@ -139,7 +145,7 @@ void vec_run(vector<int> &vec, vector<int> &missing)
 		}
 	}
 	else if (vec.empty()) cout << "\nNo numbered files in the current directory\n" << dir << endl;
-	else if (vec.size() <= 2) cout << "\nNot enought arguments. " << vec.size() << " files are in the directory\n" << dir << endl;
+	else if (vec.size() <= 2) cout << "\nNot enought arguments. " << vec.size() << " numbered files are in the directory\n" << dir << endl;
 }
 
 void test_getopt(int argc, char* argv[])
@@ -202,7 +208,7 @@ void test_getopt(int argc, char* argv[])
 				cout << '\"' << new_ext << "\": is a new extension now" << endl;
 			}
 			break;
-		case 'l':	// oneline flag
+		case 'l':	// newline flag
 			l_flag = true;
 			cout << "l flag active" << endl;
 			break;
@@ -215,11 +221,13 @@ void test_getopt(int argc, char* argv[])
 			cout << "w flag active" << endl;
 			break;
 		case 'h':	// help
+			h_flag = true;
 			cout << "h --help flag active" << endl;
 			break;
 		case 'q':	// question flag
+			q_flag = true;
 			cout << "q flag active" << endl;
-			if (dir.empty()) dir = fs::current_path();
+			//if (dir.empty()) dir = fs::current_path();
 			break;
 		case '?':
 			cout << "\"-" << (char)optopt << "\": Invalid option" << endl;
@@ -271,51 +279,45 @@ void test_getopt(int argc, char* argv[])
 	}
 }
 
-void check_path(int argc, char* argv[])
+bool check_path()
 {
 	using namespace std;
+	bool result = true;
 	
 	if (dir.empty())
 	{
 		string answer;
-		cout << "Do you want to use a current folder as a path? (y/n)" << endl;
-		cout << "Use flag -q to avoid this question" << endl << ": ";
-		cin >> answer;
-		if (answer == "y" || answer == "yes") 
+		if (!q_flag)
+		{
+			cout << "Do you want to use a current folder as a path? (y/n)" << endl;
+			cout << "Use flag -q to avoid this question" << endl << ": ";
+			cin >> answer;
+		}
+		else answer = "y";
+		
+		if (answer == "y" || answer == "yes" || answer == "Y" || answer == "YES")
 		{
 			dir = fs::current_path();
 		}
-		else exit(0);
+		else result = false;
 	}
 	
 	if (!exists(dir))
 	{
 		cout << "File path " << dir << " is not valid" << endl;
-		exit(1);
+		result = false;
 	}
 	//else cout << "Current path " << dir << endl;
+	return result;
 }
 
-int main(int argc, char* argv[])
+void vec_out(std::vector<int> &missing, std::vector<int> &repeat)
 {
-    namespace fs = std::filesystem;
 	using namespace std;
 	typedef vector<int>::iterator it;
 	
-	vector<int> vec;
-	vector<int> missing;
-	vector<int> repeat;
-
-	if (argc > 1) test_getopt(argc, argv);
-	
-	check_path(argc, argv);
-	
-	vec_init(vec, repeat);
-	
-	vec_run(vec, missing);
-	
-	string separator = "\n";
-	if (l_flag) separator = ", ";
+	string separator = ", ";
+	if (l_flag) separator = "\n";
 		
 	if (!missing.empty())
 	{
@@ -330,7 +332,7 @@ int main(int argc, char* argv[])
 	}
 	else cout << "\nNo missing files\n";
 
-	if (!d_flag)
+	if (d_flag)
 	if (!repeat.empty())
 	{
 		it el_r;
@@ -341,6 +343,46 @@ int main(int argc, char* argv[])
 			cout << *el_r << separator;
 		}
 		cout << *el_r << endl;	// last
+	}
+}
+
+void show_help()
+{
+	using std::cout;
+	
+	cout << "Create list of numbered files in directory and find missing numbers\n\n";
+	cout << "miss_file [directory_path] [flags]\nmiss_file [flags] [directory_path]\n\n";
+	cout << " -p\tmanually specify directory\n";
+	cout << " -b\tmanually specify the last file\n";
+	cout << " -e\tmanually specify extension, default work with jpg and png\n";
+	cout << " -l\tcolumn output\n";
+	cout << " -d\talso count duplicate numbers, may use with -l\n";
+	cout << " -q\tdisable questions\n";
+	cout << " -w\tdon't close console after(for Windows)\n";
+	cout << " -h\tshow this help, discard other flags\n";
+}
+
+int main(int argc, char* argv[])
+{
+	using namespace std;
+    namespace fs = std::filesystem;
+	
+
+	if (argc > 1) test_getopt(argc, argv);
+	
+	if (h_flag) show_help();
+	else
+	if (check_path())
+	{
+		vector<int> vec;
+		vector<int> missing;
+		vector<int> repeat;
+	
+		vec_init(vec, repeat);
+		
+		vec_run(vec, missing);
+		
+		vec_out(missing, repeat);
 	}
 	
 	if (w_flag) std::cin.get();
