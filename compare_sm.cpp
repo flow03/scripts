@@ -42,7 +42,7 @@ void test_getopt(int argc, char* argv[])
 		{
 		case 'p':	// path flag
 			cout << "p flag active" << endl;
-			if (optarg[0] == '-') 
+			if (optarg[0] == '-')
 			{
 				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
 				--optind;
@@ -85,6 +85,7 @@ void test_getopt(int argc, char* argv[])
 				--optind;
 			}
 			else if (fs::exists(optarg)) dir_result.assign(optarg);
+			// try to create a new directory
 			else if (fs::create_directory(optarg)) dir_result.assign(optarg);			// throw exception
 			else std::cout << "File path " << optarg << " is not valid" << std::endl;	// never go here
 			break;
@@ -136,7 +137,7 @@ void compare(const std::vector<couple_t> &folder_1, const std::vector<couple_t> 
 			std::cout << "Would you like to " << create_assign << " a subdirectory " << temp_dir.string() << " as a result directory? (y/n) ";
 				
 			std::cin >> answer;
-			if (answer == "y" || answer == "yes") 
+			if (answer == "y" || answer == "yes")
 			{
 				if (!fs::exists(temp_dir)) 
 				{
@@ -158,7 +159,7 @@ void compare(const std::vector<couple_t> &folder_1, const std::vector<couple_t> 
 		{
 			for (const couple_t &file_2 : folder_2)
 			{
-				if (file_1.first.stem() == file_2.first.stem())	// filename or stem
+				if (file_1.first.stem() == file_2.first.stem())	// filename without extension or stem
 				{
 					// pattern strategy
 					comparator->compare(file_1, file_2);

@@ -1,5 +1,11 @@
 // #pragma once
 
+#include <string>
+//#include <filesystem>
+
+//namespace fs = std::filesystem;
+//typedef std::pair<fs::path, std::uintmax_t> couple_t;
+
 namespace cmp
 {
 	
@@ -9,27 +15,61 @@ struct ICompare
 	virtual ~ICompare() = default;
 	virtual std::string name() = 0;
 	
-	// private:
-	// void _priv(){std::cout << "Private basic function" << std::endl;}
+	// 0 - equal, 1 - bigger, 2 - smaller
+	int compare_and_out(const couple_t &file_1, const couple_t &file_2)
+	{
+		int result = 0;
+		
+		if (file_1.second != file_2.second)
+		{
+			if (file_1.second > file_2.second)
+			{
+				diff = (file_1.second - file_2.second)/1024;
+				p_color1 = green;
+				p_color2 = red;
+				result = 1;
+			}
+			else
+			{
+				diff = (file_2.second - file_1.second)/1024;
+				p_color1 = red;
+				p_color2 = green;
+				result = 2;
+			}
+		}
+		else
+		{
+			diff = 0;
+			p_color1 = white;
+			p_color2 = white;
+			// result = 0;
+		}
+		
+		std::cout 
+		<< file_1.first.filename().string() 
+		<< '\t' << p_color1 << file_1.first.parent_path().filename().string() << reset
+		<< '\t' << p_color2 << file_2.first.parent_path().filename().string() << reset 
+		<< '\t' << diff << " Kb" << std::endl;
+		
+		return result;
+	}
+	
+	private:
+	const std::string red = "\033[0;31m";
+	const std::string green = "\033[0;32m";
+	const std::string white = "\033[0;37m";
+	const std::string reset = "\033[0m";
+	std::string p_color1;
+	std::string p_color2;
+	std::uintmax_t diff;
 };
 
-struct text_compare : ICompare
+struct text_compare : public ICompare
 {
 	// text_compare() = default;
 	void compare(const couple_t &file_1, const couple_t &file_2) override
 	{
-		if (file_1.second != file_2.second)
-		{
-			if (file_1.second < file_2.second)
-			{
-				std::cout << file_1.first.filename().string() << " from " << dir_1.filename() << " less than " << file_2.first.filename().string() << " from " << dir_2.filename() << " for " << (file_2.second - file_1.second)/1024 << " Kb" << std::endl;
-			}
-			else
-			{
-				std::cout << file_2.first.filename().string() << " from " << dir_2.filename() << " less than " << file_1.first.filename().string() << " from " << dir_1.filename() << " for " << (file_1.second - file_2.second)/1024 << " Kb" << std::endl;
-			}
-		}
-		else std::cout << "files " << file_1.first.filename().string() << " and " << file_2.first.filename().string() << " has equivalent size " << file_1.second/1024 << " Kb" << std::endl;
+		compare_and_out(file_1, file_2);
 	}
 	
 	std::string name(){return "text";}
@@ -37,7 +77,7 @@ struct text_compare : ICompare
 	// void call_private(){ICompare::_priv();}
 };
 
-struct copy_compare : ICompare
+struct copy_compare : public ICompare
 {
 	void compare(const couple_t &file_1, const couple_t &file_2) override
 	{
@@ -77,7 +117,7 @@ struct copy_compare : ICompare
 	std::string name(){return "copy";}
 };
 
-struct repl_compare : ICompare	// replace
+struct repl_compare : public ICompare	// replace
 {
 	void compare(const couple_t &file_1, const couple_t &file_2) override
 	{
