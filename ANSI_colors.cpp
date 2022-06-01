@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-int main(int argc, char ** argv){
+int main(int argc, char ** argv){	// char * argv[]
     
     printf("\n");
     printf("\x1B[31mTexting\033[0m\t\t");

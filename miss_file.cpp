@@ -164,7 +164,7 @@ void test_getopt(int argc, char* argv[])
 			if (optarg[0] == '-') 
 			{
 				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
-				--optind;
+				// --optind;
 			}
 			else if (dir.empty())
 			{
@@ -178,7 +178,7 @@ void test_getopt(int argc, char* argv[])
 			if (optarg[0] == '-') 
 			{
 				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
-				--optind;
+				// --optind;
 			}
 			else if (new_end == -1)
 			{
@@ -197,7 +197,7 @@ void test_getopt(int argc, char* argv[])
 			if (optarg[0] == '-') 
 			{
 				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
-				--optind;
+				// --optind;
 			}
 			else
 			{

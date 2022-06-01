@@ -45,7 +45,7 @@ void test_getopt(int argc, char* argv[])
 			if (optarg[0] == '-')
 			{
 				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
-				--optind;
+				// --optind;
 			}
 			else check_dir(optarg);
 			break;
@@ -82,7 +82,7 @@ void test_getopt(int argc, char* argv[])
 			if (optarg[0] == '-') 
 			{
 				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
-				--optind;
+				// --optind;
 			}
 			else if (fs::exists(optarg)) dir_result.assign(optarg);
 			// try to create a new directory
