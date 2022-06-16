@@ -13,12 +13,12 @@ namespace fs = std::filesystem;
 
 void check_path(fs::path temp_path, fs::path &dir)
 {
-	if (exists(temp_path))
+	if (dir.empty())
 	{
-		if (dir.empty()) dir = temp_path;
-		else std::cout << "Dir already assigned " << dir << std::endl;
+		if (exists(temp_path)) dir = temp_path;
+		else std::cout << "File path " << temp_path << " is not valid" << std::endl;
 	}
-	else std::cout << "File path " << temp_path << " is not valid" << std::endl;
+	else std::cout << "Dir already assigned " << dir << std::endl;
 }
 
 void test_getopt(int argc, char* argv[], fs::path &dir)
@@ -54,7 +54,21 @@ void test_getopt(int argc, char* argv[], fs::path &dir)
 	}
 }
 
-std::vector<fs::path> vec_init(fs::path directory)
+// recursive vector initialization
+void rec_vec_init(const fs::path directory, std::vector<fs::path> &folder)
+{
+	for (fs::directory_entry const& entry : fs::directory_iterator(directory)) 
+	{
+        if (entry.is_directory()) 
+		{
+			folder.push_back(entry.path());
+			// recursive!
+			rec_vec_init(entry.path(), folder);
+		}
+    }
+}
+
+std::vector<fs::path> vec_init(const fs::path directory)
 {
 	std::vector<fs::path> folder;
 	for (fs::directory_entry const& entry : fs::directory_iterator(directory)) 
@@ -65,7 +79,6 @@ std::vector<fs::path> vec_init(fs::path directory)
 	return folder;
 }
 
-
 int main(int argc, char* argv[])
 {
 	fs::path dir;
@@ -74,16 +87,21 @@ int main(int argc, char* argv[])
 	
 	if (!dir.empty())
 	{
-		std::vector<fs::path> folder = vec_init(dir);
+		// std::vector<fs::path> folder = vec_init(dir);
+		
+		std::vector<fs::path> folder;
+		rec_vec_init(dir, folder);
 		
 #ifdef _DEBUG
 
+		// get folder name
 		std::string folder_name = dir.filename().string();
 		if (folder_name.empty()) folder_name = dir.parent_path().filename().string();
 		std::cout << "\nFolder " << folder_name << " content:" << std::endl;
 		
+		// folder output
 		for (fs::path p : folder)
-		std::cout << p << std::endl;
+		std::cout << p.string() << std::endl;
 #endif
 	}
 	else std::cout << "File path is empty" << std::endl;

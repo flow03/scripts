@@ -21,13 +21,13 @@ struct position
 		pos2 = pos_2;
 	}
 	
-	// position(int pos_1, int pos_2) : position(pos_1, pos_2){}
+	// position(int pos_1, int pos_2) : position(static_cast<st>(pos_1), static_cast<st>(pos_2)){}
 	position(char ch_1, char ch_2, const std::string &str) : position(str.find(ch_1), str.find(ch_2)){}
-	position(int pos_1, char ch_2, const std::string &str) : position(pos_1, str.find(ch_2)){}
-	position(char ch_1, int pos_2, const std::string &str) : position(str.find(ch_1), pos_2){}
+	position(int pos_1, char ch_2, const std::string &str) : position(static_cast<st>(pos_1), str.find(ch_2)){}
+	position(char ch_1, int pos_2, const std::string &str) : position(str.find(ch_1), static_cast<st>(pos_2)){}
 	
-	st get_pos1() { return pos1;}
-	st get_pos2() { return pos2;}
+	st get_pos1() const { return pos1;}
+	st get_pos2() const { return pos2;}
 	
 private:
 

@@ -7,6 +7,7 @@
 
 
 // #define C_STYLE
+typedef std::string::size_type st;
 
 #ifdef C_STYLE
 #include <cstring>	// C-style - strstr
@@ -26,14 +27,14 @@ void find_str(char const* str, char const* substr)
 #endif
 
 // pos - position
-void print(std::string::size_type pos, std::string const &s, std::string::size_type count = npos)
+void print(st pos, std::string const &s, st count = npos)
 {
     if (pos == npos) 
 		std::cout << "The string was not found\n";
 	
 	else 
-		// std::cout << "found: " << s.substr(n, count) << '\n';
-		std::cout << "Found the string \"" << s.substr(pos, count) << "\" in \"" << s << "\" at position: " << pos << std::endl;
+		std::cout << "Found the string \"" << s.substr(pos, count) << "\" in \"" << s 
+		<< "\" at position: " << pos << std::endl;
 }
 
 void print_str(std::string const &str)
@@ -46,60 +47,50 @@ void print_str(std::string const &str)
 std::string replace_with(std::string str, const std::string &word, const std::string &new_word)
 {
 	std::string result_str;
-	std::string::size_type pos;	// position
+	st pos;	// position
 	
 	pos = str.find(word);
 	if (pos != npos) 
 		result_str = str.replace(pos, word.size(), new_word);
 	
-	return result_str;	// returns empty string if failed
+	return result_str;	// return empty string if failed
 }
 
 // replace text start with pos_1 to pos_2 inclusive
-std::string replace_from(std::string str, const std::string &new_word, 
-std::string::size_type pos_1 = npos, 
-std::string::size_type pos_2 = npos)
+std::string replace_from(std::string str, const std::string &new_word, position pos)
 {
-	std::string result_str;
+	// std::string result_str;
 	
-	if (pos_1 != npos || pos_2 != npos)
-	{
-		if (pos_1 == npos) pos_1 = pos_2;
-		else if (pos_2 == npos) pos_2 = pos_1;
-		
-		if (pos_1 > pos_2) std::swap(pos_1, pos_2);
-		
-		result_str = str.replace(pos_1, (pos_2 - pos_1 + 1), new_word);
-	}
+	// result_str = str.replace(pos.get_pos1(), (pos.get_pos2() - pos.get_pos1() + 1), new_word);
 	
-	// std::cout << "pos_1:\t" << pos_1 << std::endl;
-	// std::cout << "pos_2:\t" << pos_2 << std::endl;
+	
+	std::cout << pos << std::endl;
 	
 	// std::string::const_iterator ipos_1 = str.begin() + pos_1;
 	// std::string::const_iterator ipos_2 = str.begin() + pos_2 + 1;
 	// result_str = str.replace(ipos_1, ipos_2, new_word);
 	
-	return result_str;
+	return str.replace(pos.get_pos1(), (pos.get_pos2() - pos.get_pos1() + 1), new_word);
 }
 
 // replace text between str_begin and str_end
-std::string replace_from(std::string str, const std::string &new_word, std::string str_begin, std::string str_end)
-{
-	std::string::size_type pos_1 = str.find(str_begin);
-	std::string::size_type pos_2 = str.find(str_end);
+// std::string replace_from(std::string str, const std::string &new_word, std::string str_begin, std::string str_end)
+// {
+	// st pos_1 = str.find(str_begin);
+	// st pos_2 = str.find(str_end);
 	
-	if (pos_1 != npos && pos_2 != npos)
-		if (pos_1 > pos_2) 
-		{
-			std::swap(pos_1, pos_2);
-			str_begin.swap(str_end);
-		}
+	// if (pos_1 != npos && pos_2 != npos)
+		// if (pos_1 > pos_2) 
+		// {
+			// std::swap(pos_1, pos_2);
+			// str_begin.swap(str_end);
+		// }
 	
-	if (pos_1 != npos) pos_1 += str_begin.size();	// -1 +1
-	if (pos_2 != npos) pos_2 -= 1;					// 0 - 1 = npos
+	// if (pos_1 != npos) pos_1 += str_begin.size();	// -1 +1
+	// if (pos_2 != npos) pos_2 -= 1;					// 0 - 1 = npos
 			
-	return replace_from(str, new_word, pos_1, pos_2);
-}
+	// return replace_from(str, new_word, pos_1, pos_2);
+// }
 
 
 // std::string erase_d(std::string str, const std::string &new_word, std::string str_begin, std::string str_end)
@@ -111,34 +102,44 @@ std::string replace_from(std::string str, const std::string &new_word, std::stri
 
 int main()
 {
-	// std::string::size_type pos;
-	// std::string str("Some string 1 (Eng)");
-	// std::string str_repl("_TEXT_");
-	// std::string new_str;
+	const std::string str("Some text 1 (Eng)"); 
+	const std::string new_word("Tits");
 	
-	// std::cout << str << std::endl << std::endl;
-
-	// new_str = replace_from(str, str_repl, "(Eng)", "Some ");
-	// print_str(new_str);
-	// new_str = replace_from(str, "", "(Eng)", "Some ");
-	// print_str(new_str);
-	// new_str = replace_from(str, "", "S", "1");
-	// print_str(new_str);
+	std::string result = replace_from(str, new_word, position(0, 3));
+	print_str(result);
+	result = replace_from(str, new_word, position('t', 'E', str));
+	print_str(result);
+	result = replace_from(str, new_word, position(0, '1', str));
+	print_str(result);
+	result = replace_from(str, new_word, position(3, 'd', str));
+	print_str(result);
 	
-	position pos(0, 10);
-	std::cout << pos << std::endl;
-	position pos1('s', 'n', "string");
-	std::cout << pos1 << std::endl;
-	position pos2(3, 't', "string");
-	std::cout << pos2 << std::endl;
-	position pos3('g', 2, "string");
-	std::cout << pos3 << std::endl;
 	
-	position pos4('b', 4, "string");
-	std::cout << pos4 << std::endl;
-	position pos5(1, 'd', "string");
-	std::cout << pos5 << std::endl;
-
+	// void (*out_pos)(const position)
+	// auto out_pos = [](const position pos)
+	// {
+		// static int count = 0;
+		// std::cout << "pos" << count << ' ' << pos << std::endl;
+		// ++count;
+	// };
+	
+	// position pos0(0, 10);
+	// out_pos(pos0);
+	// position pos1('s', 'n', "string");
+	// out_pos(pos1);
+	// position pos2(3, 't', "string");
+	// out_pos(pos2);
+	// position pos3('g', 2, "string");
+	// out_pos(pos3);
+	
+	// position pos4('b', 4, "string");
+	// out_pos(pos4);
+	// position pos5(1, 'd', "string");
+	// out_pos(pos5);
+	
+	// position pos6(static_cast<st>(90), static_cast<st>(100));
+	// out_pos(pos6);
+	
 	
 #ifdef C_STYLE
 	std::cout << std::endl;
