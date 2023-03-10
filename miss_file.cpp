@@ -354,7 +354,7 @@ void show_help()
 	cout << "miss_file [directory_path] [flags]\nmiss_file [flags] [directory_path]\n\n";
 	cout << " -p\tmanually specify directory\n";
 	cout << " -b\tmanually specify the last file\n";
-	cout << " -e\tmanually specify extension, default work with jpg and png\n";
+	cout << " -e\tmanually specify extension, jpg and png as default\n";
 	cout << " -l\tcolumn output\n";
 	cout << " -d\talso count duplicate numbers, may use with -l\n";
 	cout << " -q\tdisable questions\n";
