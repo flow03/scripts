@@ -3,11 +3,13 @@
 #include <string>
 #include <vector>
 #include <getopt.h>
-//#include <cstring>	// strcpy
+// #include <cstring>	// strcpy
 // #include <algorithm>	// sort, find, find_if
 
+#define _DEBUG
+#define sep fs::path::preferred_separator
+
 namespace fs = std::filesystem;
-//typedef std::pair<fs::path, std::uintmax_t> couple_t;
 
 fs::path dir_1;
 // fs::path dir_2;
@@ -38,7 +40,9 @@ void test_getopt(int argc, char* argv[])
 		switch (ch)
 		{
 		case 'p':	// path flag
+			#ifdef _DEBUG
 			cout << "p flag active" << endl;
+			#endif
 			if (optarg[0] == '-')
 			{
 				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
@@ -74,18 +78,21 @@ void test_getopt(int argc, char* argv[])
 			// e_flag = true;
 			// cout << "e flag active" << endl;
 			// break;
-		/*case 'o':	// out path flag
+		case 'o':	// out path flag
+			#ifdef _DEBUG
 			cout << "o flag active" << endl;
+			#endif
 			if (optarg[0] == '-') 
 			{
-				cout << "Cannot use " << optarg << " as parameter for -" << (char)ch << endl;
+				cout << "Cannot use the " << optarg << " as parameter for -" << (char)ch << endl;
 				// --optind;
 			}
 			else if (fs::exists(optarg)) dir_result.assign(optarg);
 			// try to create a new directory
-			else if (fs::create_directory(optarg)) dir_result.assign(optarg);			// throw exception
-			else std::cout << "File path " << optarg << " is not valid" << std::endl;	// never go here
-			break;*/
+			else cout << "Cannot use the " << optarg << " as result directory. It does not exist" << endl;
+			//else if (fs::create_directory(optarg)) dir_result.assign(optarg);			// throw exception
+			//else std::cout << "File path " << optarg << " is not valid" << std::endl;	// never go here
+			break;
 		case '?':
 			cout << "\"-" << (char)optopt << "\": Invalid option" << endl;
 			break;
@@ -122,7 +129,7 @@ void vec_out(const std::vector<fs::path> &vec)
 	//std::cout << std::endl << vec.size() << " elements in container" << std::endl;
 }
 
-void vec_out(std::vector<std::vector<fs::path>> &dup)
+void vec_out(const std::vector<std::vector<fs::path>> &dup)
 {
 	for (const std::vector<fs::path> &vec : dup)
 	{
@@ -146,7 +153,11 @@ bool comp_size(const fs::path &path_1, const fs::path &path_2)
 	return (file_size(path_1) == file_size(path_2));
 }
 
-std::vector<std::vector<fs::path>> vec_duplicate(std::vector<fs::path> vec)
+// bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name;
+// auto comp_method = &comp_name;
+
+std::vector<std::vector<fs::path>> vec_duplicate(std::vector<fs::path> vec, 
+bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name)
 {
 	std::vector<std::vector<fs::path> > dup;
 	std::vector<fs::path> res;
@@ -158,7 +169,7 @@ std::vector<std::vector<fs::path>> vec_duplicate(std::vector<fs::path> vec)
 			if (el != it)
 			{
 				// change compare method
-				if (comp_name(*el, *it))
+				if (comp_method(*el, *it))
 				{
 					if (res.empty()) res.push_back(*it);
 					res.push_back(*el);
@@ -179,22 +190,76 @@ std::vector<std::vector<fs::path>> vec_duplicate(std::vector<fs::path> vec)
 	return dup;
 }
 
+// create new pathes with dir_result and rename the same filenames
+std::vector<fs::path> _rename(const std::vector<fs::path> &vec)
+{
+	std::vector<fs::path> new_vec;
+	fs::path new_path;
+	std::string str_name;
+	if (vec.size() > 1)
+	{
+		new_path = dir_result/vec.at(0).filename();
+		new_vec.push_back(new_path);
+		for (size_t i = 1; i < vec.size(); ++i)
+		{
+			new_path.clear();
+			if (vec[i].filename() == vec[0].filename())
+			{
+				// str = "_"+std::to_string(i);
+				// new_path = (((dir_result/="replaced")/=vec[i].stem())+=str)+=vec[i].extension();
+				str_name = vec[i].stem().string()+"_"+std::to_string(i)+vec[i].extension().string();
+				new_path = dir_result/str_name;
+				str_name.clear();
+			}
+			else new_path = dir_result/vec[i].filename();
+			
+			// std::cout << new_path.string() << std::endl;
+			new_vec.push_back(new_path);
+			new_path.clear();
+		}
+	}
+	
+	#ifdef _DEBUG
+	vec_out(new_vec);
+	std::cout << std::endl;
+	#endif
+	
+	return new_vec;
+}
+
+void vec_replace(const std::vector<std::vector<fs::path>> &dup)
+{
+	for (auto vec = dup.begin(); vec!= dup.end(); ++vec)
+	{
+		_rename(*vec);
+	}
+}
 
 int main(int argc, char* argv[])
 {
 	if (argc > 1) test_getopt(argc, argv);
 	
+	#ifdef _DEBUG
 	std::cout << "dir_1 : " << dir_1 << std::endl;
-	//std::cout << "dir_result : " << dir_result << std::endl;
+	std::cout << "dir_result : " << dir_result << std::endl;
+	#endif
 	
 	if (!dir_1.empty())
 	{
 		std::vector<fs::path> folder;
 		vec_init(dir_1, folder);
 		
-		std::vector<std::vector<fs::path>> dup = vec_duplicate(folder);
+		bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name;
+		
+		
+		std::vector<std::vector<fs::path>> dup = vec_duplicate(folder, comp_method);
 		
 		vec_out(dup);
+		
+		#ifdef _DEBUG
+		std::cout<<"vec_replace and _rename:"<<std::endl;
+		#endif
+		vec_replace(dup);
 		
 		//vec_out(folder);
 	}
@@ -204,3 +269,4 @@ int main(int argc, char* argv[])
 }
 
 // ./duplicate_bash.exe -p ./test/pic1
+// ./duplicate_bash.exe -p ./test/dup -o ./test/dup_result
