@@ -120,8 +120,6 @@ void vec_init(fs::path dir, std::vector<fs::path> &folder)
 
 void vec_out(const std::vector<fs::path> &vec)
 {
-	//fs::path::preferred_separator = '/';
-	
 	for (const fs::path &el : vec)
 		// std::cout << el.make_preferred().string() << std::endl; // non-const
 		std::cout << el.generic_string() << std::endl; // separator '/' as default
@@ -191,7 +189,8 @@ bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name)
 }
 
 // create new pathes with dir_result and rename the same filenames
-std::vector<fs::path> _rename(const std::vector<fs::path> &vec)
+// (need to rework)
+std::vector<fs::path> vec_rename(const std::vector<fs::path> &vec)
 {
 	std::vector<fs::path> new_vec;
 	fs::path new_path;
@@ -200,9 +199,10 @@ std::vector<fs::path> _rename(const std::vector<fs::path> &vec)
 	{
 		new_path = dir_result/vec.at(0).filename();
 		new_vec.push_back(new_path);
+		new_path.clear();
+		// start on second element
 		for (size_t i = 1; i < vec.size(); ++i)
 		{
-			new_path.clear();
 			if (vec[i].filename() == vec[0].filename())
 			{
 				// str = "_"+std::to_string(i);
@@ -220,18 +220,86 @@ std::vector<fs::path> _rename(const std::vector<fs::path> &vec)
 	}
 	
 	#ifdef _DEBUG
-	vec_out(new_vec);
-	std::cout << std::endl;
+	// vec_out(new_vec);
+	// std::cout << std::endl;
 	#endif
 	
 	return new_vec;
 }
 
-void vec_replace(const std::vector<std::vector<fs::path>> &dup)
+// reworking
+std::vector<fs::path> new_vec_rename(const std::vector<fs::path> &vec)
 {
-	for (auto vec = dup.begin(); vec!= dup.end(); ++vec)
+	std::vector<fs::path> new_vec;
+	
+	if (vec.size() > 1)
 	{
-		_rename(*vec);
+		for (const fs::path &path : vec)
+		{
+			new_vec.push_back(dir_result/path.filename());
+		}
+		
+		std::string str_name;
+		
+		// for (size_t cur = 0; cur < new_vec.size(); ++cur) // current
+		// for (size_t i = 0; i < new_vec.size(); ++i)
+		// {
+			// if (cur!=i)
+			// {
+				// if (new_vec[cur].filename() == new_vec[i].filename())
+				// {
+					// str_name = new_vec[i].stem().string()+"_"+std::to_string(i)+new_vec[i].extension().string();
+					// new_vec[i].replace_filename(str_name);	// replace_filename
+					// str_name.clear();
+				// }
+			// }
+		// }
+		
+		// pointer realization
+		size_t i = 0;	// counter
+		for (auto cur = new_vec.begin(); cur != new_vec.end(); ++cur)	// current
+		{
+			i=0;
+			for (auto sec = new_vec.begin(); sec != new_vec.end(); ++sec)	// second
+			{
+				if (cur!=sec)
+				{
+					if (cur->filename() == sec->filename())
+					{
+						str_name = sec->stem().string()+"_"+std::to_string(i)+sec->extension().string();	// counter using
+						sec->replace_filename(str_name);	// replace_filename
+						str_name.clear();
+					}
+				}
+				++i;
+			}
+		}
+	}
+	else std::cout << "Invalid vector. Need two or more elements" << std::endl;
+	
+	#ifdef _DEBUG
+	// vec_out(new_vec);
+	// std::cout << std::endl;
+	#endif
+	
+	return new_vec;
+}
+
+// copy files in one folder
+void vec_copy(const std::vector<std::vector<fs::path>> &dup)
+{
+	std::vector<fs::path> new_names;
+	// const auto copyOptions = fs::copy_options::skip_existing;
+	for (const std::vector<fs::path> &vec : dup)
+	{
+		new_names = new_vec_rename(vec);
+		for (size_t i = 0; i < vec.size(); ++i)
+		{
+			fs::copy_file(vec[i], new_names[i], fs::copy_options::skip_existing);
+		}
+		#ifdef _DEBUG
+		std::cout << vec.size() << " elements copied" << std::endl;
+		#endif
 	}
 }
 
@@ -257,9 +325,9 @@ int main(int argc, char* argv[])
 		vec_out(dup);
 		
 		#ifdef _DEBUG
-		std::cout<<"vec_replace and _rename:"<<std::endl;
+		std::cout<<"Vec_replace and _rename:"<<std::endl;
 		#endif
-		vec_replace(dup);
+		vec_copy(dup);
 		
 		//vec_out(folder);
 	}
