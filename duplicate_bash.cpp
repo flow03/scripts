@@ -7,7 +7,7 @@
 // #include <algorithm>	// sort, find, find_if
 
 #define _DEBUG
-#define sep fs::path::preferred_separator
+// #define sep fs::path::preferred_separator
 
 namespace fs = std::filesystem;
 
@@ -17,7 +17,19 @@ fs::path dir_result;
 
 // bool e_flag = false;
 // std::string compare_str;
-
+struct flags
+{
+	flags()
+	{
+		c = false;
+		r = false;
+		t = false;
+		n = false;
+		s = false;
+	}
+	
+	bool c, r, t, n, s;
+};
 
 void check_dir(fs::path temp_path)
 {
@@ -25,18 +37,19 @@ void check_dir(fs::path temp_path)
 	{
 		if (dir_1.empty()) dir_1 = temp_path;
 		// else if (dir_2.empty()) dir_2 = temp_path;
-		//else if (dir_result.empty()) dir_result = temp_path;
+		// else if (dir_result.empty()) dir_result = temp_path;
 	}
 	else std::cout << "File path " << temp_path << " is not valid" << std::endl;
 }
 
-void test_getopt(int argc, char* argv[])
+flags test_getopt(int argc, char* argv[])
 {
 	using namespace std;
 	
 	int ch;
+	flags f;
 	
-	while ((ch = getopt(argc, argv, "-:p:o:crte")) != -1) {
+	while ((ch = getopt(argc, argv, "-:p:o:crtns")) != -1) {
 		switch (ch)
 		{
 		case 'p':	// path flag
@@ -50,34 +63,26 @@ void test_getopt(int argc, char* argv[])
 			}
 			else check_dir(optarg);
 			break;
-		// case 'c':	// copy flag
-			// if (!comparator)
-			// {
-				// comparator = new cmp::copy_compare();
-				// cout << "c flag active" << endl;
-			// }
-			// else cout << "\"-" << (char)ch << "\": Option " << comparator->name() << " compare already enabled" << endl;
-			// break;
-		// case 'r':	// replace flag
-			// if (!comparator)
-			// {
-				// comparator = new cmp::repl_compare();
-				// cout << "r flag active" << endl;
-			// }
-			// else cout << "\"-" << (char)ch << "\": Option " << comparator->name() << " compare already enabled" << endl;
-			// break;
-		// case 't':	// text flag
-			// if (!comparator)
-			// {
-				// comparator = new cmp::text_compare();
-				// cout << "t flag active" << endl;
-			// }
-			// else cout << "\"-" << (char)ch << "\": Option " << comparator->name() << " compare already enabled" << endl;
-			// break;
-		// case 'e':	// exterminate flag
-			// e_flag = true;
-			// cout << "e flag active" << endl;
-			// break;
+		case 'c':	// copy flag
+			f.c = true;
+			cout << "c flag active" << endl;
+			break;
+		case 'r':	// replace flag
+			f.r = true;
+			cout << "r flag active" << endl;
+			break;
+		case 't':	// text flag
+			f.t = true;
+			cout << "t flag active" << endl;
+			break;
+		case 'n':	// name flag
+			f.n = true;
+			cout << (char)ch << " flag active" << endl;
+			break;
+		case 's':	// size flag
+			f.s = true;
+			cout << (char)ch << " flag active" << endl;
+			break;
 		case 'o':	// out path flag
 			#ifdef _DEBUG
 			cout << "o flag active" << endl;
@@ -93,7 +98,7 @@ void test_getopt(int argc, char* argv[])
 			//else if (fs::create_directory(optarg)) dir_result.assign(optarg);			// throw exception
 			//else std::cout << "File path " << optarg << " is not valid" << std::endl;	// never go here
 			break;
-		case '?':
+		case '?':	// unknown flag
 			cout << "\"-" << (char)optopt << "\": Invalid option" << endl;
 			break;
 		case 1:
@@ -104,6 +109,8 @@ void test_getopt(int argc, char* argv[])
 			break;
 		}
 	}
+	
+	return f;
 }
 
 // recursive
@@ -171,12 +178,12 @@ bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name)
 				{
 					if (res.empty()) res.push_back(*it);
 					res.push_back(*el);
-					vec.erase(el);
+					el = vec.erase(el);
 					--el;
 				}
 			}
 		}
-		vec.erase(it);
+		it = vec.erase(it);
 		--it;
 		if (!res.empty())
 		{
@@ -187,6 +194,36 @@ bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name)
 	
 	return dup;
 }
+
+std::vector<fs::path> unique_duplicate(std::vector<fs::path> vec, // by value
+bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name)
+{
+	std::vector<fs::path> u_res;
+	#ifdef _DEBUG
+	std::cout << "vec:\n";
+	vec_out(vec);
+	#endif
+	
+	auto u_it = std::unique(vec.begin(), vec.end(), comp_method);
+	// auto u_it = std::unique(vec.begin(), vec.end());
+	#ifdef _DEBUG
+	std::cout << "\nvec after unique:\n";
+	vec_out(vec);
+	std::cout << "*u_it: "<<u_it->string() << std::endl;
+	std::cout << "u_it == vec.end(): "<< (u_it == vec.end()) << std::endl;
+	#endif
+	
+	// std::copy(u_it, vec.end(), std::back_inserter(u_res));
+	// vec.erase(u_it, vec.end());
+	vec.erase(vec.begin(), u_it);
+	#ifdef _DEBUG
+	std::cout << "\nu_res after erase:\n";
+	vec_out(u_res);
+	#endif
+	
+	return u_res;
+}
+
 
 // create new pathes with dir_result and rename the same filenames
 // (need to rework)
@@ -241,20 +278,6 @@ std::vector<fs::path> new_vec_rename(const std::vector<fs::path> &vec)
 		
 		std::string str_name;
 		
-		// for (size_t cur = 0; cur < new_vec.size(); ++cur) // current
-		// for (size_t i = 0; i < new_vec.size(); ++i)
-		// {
-			// if (cur!=i)
-			// {
-				// if (new_vec[cur].filename() == new_vec[i].filename())
-				// {
-					// str_name = new_vec[i].stem().string()+"_"+std::to_string(i)+new_vec[i].extension().string();
-					// new_vec[i].replace_filename(str_name);	// replace_filename
-					// str_name.clear();
-				// }
-			// }
-		// }
-		
 		// pointer realization
 		size_t i = 0;	// counter
 		for (auto cur = new_vec.begin(); cur != new_vec.end(); ++cur)	// current
@@ -290,26 +313,44 @@ void vec_copy(const std::vector<std::vector<fs::path>> &dup)
 {
 	std::vector<fs::path> new_names;
 	// const auto copyOptions = fs::copy_options::skip_existing;
+	#ifdef _DEBUG
+	size_t count = 0;
+	#endif
 	for (const std::vector<fs::path> &vec : dup)
 	{
 		new_names = new_vec_rename(vec);
-		for (size_t i = 0; i < vec.size(); ++i)
+		if (vec.size() == new_names.size())
 		{
-			fs::copy_file(vec[i], new_names[i], fs::copy_options::skip_existing);
-		}
+			for (size_t i = 0; i < vec.size(); ++i)
+			{
+				if (!exists(new_names[i]))
+				{
+					fs::copy_file(vec[i], new_names[i], fs::copy_options::skip_existing);
+					#ifdef _DEBUG
+					++count;
+					#endif
+				}
+				#ifdef _DEBUG
+				else std::cout << new_names[i].string() << " already exists" << std::endl;
+				#endif
+			}
+		} 
+		else std::cout << "Invalid renamed vector size" << std::endl;
 		#ifdef _DEBUG
-		std::cout << vec.size() << " elements copied" << std::endl;
+		std::cout << count << " elements copied" << std::endl;
+		count = 0;
 		#endif
 	}
 }
 
 int main(int argc, char* argv[])
 {
-	if (argc > 1) test_getopt(argc, argv);
+	flags _flags;
+	if (argc > 1) _flags = test_getopt(argc, argv);
 	
 	#ifdef _DEBUG
-	std::cout << "dir_1 : " << dir_1 << std::endl;
-	std::cout << "dir_result : " << dir_result << std::endl;
+	// std::cout << "dir_1 : " << dir_1 << std::endl;
+	// std::cout << "dir_result : " << dir_result << std::endl;
 	#endif
 	
 	if (!dir_1.empty())
@@ -318,16 +359,26 @@ int main(int argc, char* argv[])
 		vec_init(dir_1, folder);
 		
 		bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name;
+		if (_flags.s) 
+		{
+			comp_method = &comp_size;
+			#ifdef _DEBUG
+			std::cout<<"comp_method comp_size"<<std::endl;
+			#endif
+		}
 		
+		// std::cout<<"vec_duplicate:"<<std::endl;
+		// std::vector<std::vector<fs::path>> dup = vec_duplicate(folder, comp_method);
+		// vec_out(dup);
 		
-		std::vector<std::vector<fs::path>> dup = vec_duplicate(folder, comp_method);
-		
-		vec_out(dup);
+		std::vector<fs::path> u_dup = unique_duplicate(folder, comp_method);
+		// std::cout<<"unique_duplicate:"<<std::endl;
+		// vec_out(u_dup);
 		
 		#ifdef _DEBUG
-		std::cout<<"Vec_replace and _rename:"<<std::endl;
+		// std::cout<<"Vec_replace and _rename:"<<std::endl;
 		#endif
-		vec_copy(dup);
+		// vec_copy(dup);
 		
 		//vec_out(folder);
 	}

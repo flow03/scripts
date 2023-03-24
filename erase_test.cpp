@@ -12,7 +12,7 @@ int main()
 		std::cout << *it << std::endl;
 		if (*it == 21 || *it == 4 || *it == 8 || *it == 1)
 		{
-			vec.erase(it);
+			it = vec.erase(it);
 			std::cout << "it after erase: " << *it << std::endl;
 			--it;
 		}
