@@ -22,9 +22,10 @@ struct flags
 		n = false;
 		s = false;
 		g = false;
+		d = false;
 	}
 	
-	bool c, r, t, n, s, g;
+	bool c, r, t, n, s, g, d;
 };
 
 class Duplicate
@@ -36,7 +37,7 @@ public:
 	void vec_init(std::vector<fs::path> &folder, fs::path _dir);
 	auto get_comp_method() const;
 	char get_result_method() const;
-	// std::vector<std::vector<fs::path>> vec_duplicate(std::vector<fs::path> vec, bool (*comp_method)(const fs::path&, const fs::path&));
+	std::vector<std::vector<fs::path>> vec_duplicate(std::vector<fs::path> vec, bool (*comp_method)(const fs::path&, const fs::path&));
 	std::vector<fs::path> vec_new_names(const std::vector<fs::path> &vec) const;
 	void vec_copy(const std::vector<std::vector<fs::path>> &dup) const;
 	
@@ -79,7 +80,7 @@ void Duplicate::init_flags(int argc, char* argv[])
 	int ch;
 	// flags f;
 	
-	while ((ch = getopt(argc, argv, "-:p:o:crtnsg")) != -1) {
+	while ((ch = getopt(argc, argv, "-:p:o:crtnsgd")) != -1) {
 		switch (ch)
 		{
 		case 'p':	// path flag
@@ -113,8 +114,12 @@ void Duplicate::init_flags(int argc, char* argv[])
 			_flags.s = true;
 			cout << (char)ch << " flag active" << endl;
 			break;
-		case 'g':	// size flag
+		case 'g':	// add original file to results flag
 			_flags.g = true;
+			cout << (char)ch << " flag active" << endl;
+			break;
+		case 'd':	// create directory for each duplicates flag
+			_flags.d = true;
 			cout << (char)ch << " flag active" << endl;
 			break;
 		case 'o':	// out path flag
@@ -228,7 +233,7 @@ char Duplicate::get_result_method() const
 // bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name;
 // auto comp_method = &comp_name;
 
-std::vector<std::vector<fs::path>> vec_duplicate(std::vector<fs::path> vec, 
+std::vector<std::vector<fs::path>> Duplicate::vec_duplicate(std::vector<fs::path> vec, 
 bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name)
 {
 	std::vector<std::vector<fs::path> > dup;
@@ -244,7 +249,7 @@ bool (*comp_method)(const fs::path&, const fs::path&) = &comp_name)
 				if (comp_method(*el, *it))
 				{
 					// _flags.g
-					if (res.empty()) res.push_back(*it);
+					if (_flags.g && res.empty()) res.push_back(*it);
 					res.push_back(*el);
 					el = vec.erase(el);
 					--el;
@@ -296,10 +301,20 @@ void vec_rename(std::vector<fs::path> &vec)
 std::vector<fs::path> Duplicate::vec_new_names(const std::vector<fs::path> &vec) const
 {
 	std::vector<fs::path> new_vec;
+	fs::path prefix_name = dir_result;
+	
+	if (_flags.d) 
+	{
+		static size_t folder_count = 0;
+		prefix_name /= std::to_string(folder_count);
+		++folder_count;
+		if (!fs::create_directory(prefix_name)) 
+			std::cout << "Directory " << prefix_name.generic_string() << " already exists" << std::endl;
+	}
 	
 	for (const fs::path &p : vec)
 	{
-		new_vec.push_back(dir_result/p.filename());
+		new_vec.push_back(prefix_name/p.filename());
 	}
 	
 	vec_rename(new_vec);
@@ -320,7 +335,9 @@ void Duplicate::vec_copy(const std::vector<std::vector<fs::path>> &dup) const
 	size_t count = 0;
 	for (const std::vector<fs::path> &vec : dup)
 	{
-		// створює нові шляхи з вихідною текою і перейменовує однакові імена файлів, якщо такі є
+		// створює нові шляхи з вихідною текою; 
+		// перейменовує однакові імена файлів; 
+		// створює нові теки, якщо активний прапорець d
 		new_names = vec_new_names(vec);
 		if (vec.size() == new_names.size())
 		{
@@ -362,7 +379,7 @@ int main(int argc, char* argv[])
 		bool (*comp_method)(const fs::path&, const fs::path&) = data.get_comp_method();
 		
 		// Створюємо двомірний масив з однакових елементів
-		std::vector<std::vector<fs::path>> dup = vec_duplicate(folder, comp_method);
+		std::vector<std::vector<fs::path>> dup = data.vec_duplicate(folder, comp_method);
 		
 		if (!dup.empty())
 		{
@@ -389,4 +406,4 @@ int main(int argc, char* argv[])
 }
 
 // ./duplicate_bash.exe -p ./test/pic1
-// ./duplicate_bash.exe -p ./test/dup -o ./test/dup_result
+// ./duplicate_bash.exe ./test/dup -o ./test/dup_result -gdc
