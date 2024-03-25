@@ -5,5 +5,5 @@
 *.jpeg
 *.png
 *.gif
-*.tmx
-*.json
+#*.tmx
+#*.json

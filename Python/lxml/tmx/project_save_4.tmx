@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tmx SYSTEM "tmx11.dtd">
+<tmx version="1.1">
+  <header creationtool="OmegaT" o-tmf="OmegaT TMX" adminlang="EN-US" datatype="plaintext" creationtoolversion="6.0.0_0_1bf1729c" segtype="paragraph" srclang="pl"/>
+  <body>
+<!-- Default translations -->
+    <tu>
+      <tuv lang="pl">
+        <seg>A i jeszcze jedno, gdyby Gaur nie żył... to rozpoznasz go po sygnecie z fioletowym kamieniem. Był w jego rodzie od wielu wieków.</seg>
+      </tuv>
+      <tuv lang="uk" changeid="Aedan" changedate="20240312T180505Z" creationid="Aedan" creationdate="20240126T201539Z">
+        <seg>І ще одне, якщо Гаур помер... ти впізнаєш його за перснем з фіолетовим каменем. Він передавався в його роду протягом багатьох століть.</seg>
+      </tuv>
+    </tu>
+	<tu>
+      <tuv lang="pl">
+        <seg>A i jeszcze jedno, gdyby Gaur nie żył... to rozpoznasz go po sygnecie z fioletowym kamieniem. Był w jego rodzie od wielu wieków.</seg>
+      </tuv>
+      <tuv lang="uk" changeid="Aedan" changedate="20240126T201539Z" creationid="Aedan" creationdate="20240126T201539Z">
+        <seg>І ще одне, якщо Гаур помер .... ти впізнаєш його за перснем з фіолетовим каменем. Він передавався в його роду протягом багатьох століть.</seg>
+      </tuv>
+    </tu>
+	<tu>
+      <tuv lang="pl">
+        <seg>Bezpośrednio do Lorenzo. On przekaże ci informacje na temat stanowiska Araxos.</seg>
+      </tuv>
+      <tuv lang="uk" changeid="Glіban" changedate="20240312T181511Z" creationid="AlexTorn" creationdate="20240222T203038Z">
+        <seg>Безпосередньо до Лоренцо. Він надасть тобі інформацію про позицію Гільдії Араксос.</seg>
+      </tuv>
+    </tu>
+	<tu>
+      <tuv lang="pl">
+        <seg>Bezpośrednio do Lorenzo. On przekaże ci informacje na temat stanowiska Araxos.</seg>
+      </tuv>
+      <tuv lang="uk" changeid="AlexTorn" changedate="20240222T203038Z" creationid="AlexTorn" creationdate="20240222T203038Z">
+        <seg>Безпосередньо до Лоренцо. Він надасть тобі інформацію про позицію Араксоса.</seg>
+      </tuv>
+    </tu>
+<!-- Alternative translations -->
+  </body>
+</tmx>
