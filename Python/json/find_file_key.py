@@ -12,13 +12,13 @@ def find_file_os(start_dir, filename):
         if filename in files:
             file_path = os.path.join(root, filename)
             # print(f"Циклів {cycles}")
-            print(f"Файл '{file_path}' знайдено")
+            # print(f"Файл '{file_path}' знайдено")
             return file_path
     
     # print(f"Циклів {cycles}")
-    print(f"Файл '{filename}' не знайдено.")
-    sys.exit(1)
-    # return None
+    # print(f"Файл '{filename}' не знайдено.")
+    # sys.exit(1)
+    return None
 
 # Path    
 def find_file_Path(start_dir, filename):
@@ -49,24 +49,27 @@ def find_value_by_key(json_file, key):
             data = json.load(f) # конвертує бінарні дані в текстовий рядок
         except json.JSONDecodeError:
             print(f"Неможливо прочитати JSON з файлу '{json_file}'.")
-            sys.exit(1)
+            # sys.exit(1)
+            return None
     
     value = data.get(key)
     if value is not None:
-        print(f"Значення для ключа '{key}': {value}")
+        # print(f"Значення для ключа '{key}': {value}")
         return value
     else:
         # print(f"Ключ '{key}' не знайдено у файлі '{json_file}'.")
-        print(f"Ключ '{key}' не знайдено у вказаному файлі.")
-        sys.exit(1)
+        # print(f"Ключ '{key}' не знайдено у вказаному файлі.")
+        # sys.exit(1)
+        return None
 
 def get_path_os(path):
     directory_path = os.path.normpath(path)
     if not os.path.exists(directory_path):
         print(f"Шлях '{directory_path}' не знайдено.")
-        sys.exit(1)
+        # sys.exit(1)
+        return None
     else:
-        print(f"Шлях '{directory_path}'") 
+        # print(f"Шлях '{directory_path}'") 
         return directory_path
     
 def get_path_Path(path):
@@ -79,6 +82,28 @@ def get_path_Path(path):
         print(f"Шлях '{directory_path}'") 
         return directory_path
 
+# Використовує усі три фукнції - get_path_os, find_file_os, find_value_by_key
+def localization(path):
+    # "cs", "de", "en", "es", "es_al", "it", "pl", "ru"
+    localizations = ["pl", "en", "de", "ru"]
+    
+    filename = sys.argv[1]
+    key = sys.argv[2]
+        
+    for loc in localizations:
+        current_path = os.path.join(path, loc)
+        directory_path = get_path_os(current_path)
+        if directory_path:
+            file_path = find_file_os(directory_path, filename)
+            if file_path:
+                value = find_value_by_key(file_path, key)
+                if value:
+                    print(f"{loc}: '{key}': {value}")
+                else:
+                    print(f"{loc}: Ключ '{key}' не знайдено у файлі '{filename}'.")
+            else:
+                print(f"{loc}: Файл '{filename}' не знайдено.")
+
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Using: python script.py <filename> <key>")
@@ -87,14 +112,13 @@ if __name__ == "__main__":
         sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
         
         # unix_path = "/d/Dropbox/Archolos/CoM_localization_repository/pl"
-        windows_path = "D:\Dropbox\Archolos\CoM_localization_repository\pl"
-        directory_path = get_path_os(windows_path)
-            
-        filename = sys.argv[1]
-        key = sys.argv[2]
-
-        file_path = find_file_os(directory_path, filename)
+        windows_path = "D:\Dropbox\Archolos\CoM_localization_repository"
+        # directory_path = get_path_os(windows_path)
+        
+        localization(windows_path)
+                    
+        # file_path = find_file_os(directory_path, filename)
         # file_path = find_file_Path(directory_path, filename)
-        value = find_value_by_key(file_path, key)
+        # value = find_value_by_key(file_path, key)
 
 #python find_file_key.py Mod_Text.d.json NAME_Bloodfly
