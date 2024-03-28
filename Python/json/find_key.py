@@ -38,3 +38,5 @@ if __name__ == "__main__":
         
         value = find_value_by_key(json_file, key)
         print(f"Значення для ключа '{key}': {value}")
+
+#python find_key.py Mod_Text.d.json NAME_Bloodfly
