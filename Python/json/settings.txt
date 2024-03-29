@@ -1,3 +1,5 @@
 D:\Dropbox\Archolos\CoM_localization_repository\
 pl, en, de, ru
-Mod_Text.d.json NAME_Bloodfly
+# Mod_Text.d.json NAME_Bloodfly
+Mod_NPC_Names.d.json NpcName_Lena
+Mod_NPC_Names.d.json NpcName_Alena

@@ -16,7 +16,7 @@ def read_directory(path):
         # for entry in entries:
             # print(entry.name)
 
-def main(file_path):
+def read_file(file_path):
     # Читання файлу
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
@@ -26,7 +26,10 @@ def main(file_path):
     read_directory(directory_path)
     
     # Другий рядок - масив рядків, розділених пробілом
-    string_array = lines[1].strip().replace(",", "").split(" ")
+    string_array = lines[1].strip()
+    if "," in string_array:
+        string_array = string_array.replace(",", "")
+    string_array = string_array.split(" ")
     print("Масив рядків:", string_array)
     
     # Читання пар "назва файлу і ключ"
@@ -43,5 +46,5 @@ if __name__ == "__main__":
     else:
         sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8') # не більше одного разу
         # filename = sys.argv[1]
-        main(sys.argv[1])
+        read_file(sys.argv[1])
         
