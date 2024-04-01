@@ -83,14 +83,11 @@ def get_path_Path(path):
         return directory_path
 
 # Використовує усі три фукнції - get_path_os, find_file_os, find_value_by_key
-def localization(path, filename, key, localizations = None):
+def localization(filename, key, path, localizations):
     # "cs", "de", "en", "es", "es_al", "it", "pl", "ru"
-    if not localizations:
-        localizations = ["pl", "en", "de", "ru"]
+    # if not localizations:
+        # localizations = ["pl", "en", "de", "ru"]    # default
     
-    # filename = sys.argv[1]
-    # key = sys.argv[2]
-        
     for loc in localizations:
         current_path = os.path.join(path, loc)
         directory_path = get_path_os(current_path)
@@ -103,11 +100,11 @@ def localization(path, filename, key, localizations = None):
                 else:
                     print(f"{loc}: Ключ '{key}' не знайдено у файлі '{filename}'.")
             else:
-                print(f"{loc}: Файл '{filename}' не знайдено.")
+                print(f"{loc}: Файл '{filename}' не знайдено.") # на випадок відсутності файлу лише в одній з тек
         else:
             print(f"Локалізацію '{loc}' не знайдено.")        
 
-def read_file(file_path):
+def read_file(file_path, default_path, default_locs): # default_path - шлях до репозиторію
     # Читання файлу
     if get_path_os(file_path):
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -116,58 +113,60 @@ def read_file(file_path):
         print(f"Файл '{file_path}' не знайдено.")
         sys.exit(1)
     
-    # Прибираємо лишні пробіли і закоментовані рядки
     if lines:
+        # Прибираємо лишні пробіли, закоментовані, і пусті рядки
         lines = [line.strip() for line in lines]
+        lines = [line for line in lines if line]    # видаляємо пусті рядки
         lines = [line for line in lines if not line.startswith('#')]
         lines = [line.strip() for line in lines]
     
-    # Перший рядок - шлях до теки
-    if lines:
+        # Перший рядок - шлях до теки
         directory_path = lines[0]
         directory_path = get_path_os(directory_path)
         if not directory_path:
             print(f"Шлях '{lines[0]}' не знайдено.")
-            default_path = "D:\Dropbox\Archolos\CoM_localization_repository"
             print(f"Буде використано шлях за замовчуванням '{default_path}'\n")
             directory_path = default_path
     
-    # Другий рядок - масив рядків, розділених пробілом
-    if len(lines) > 1:
-        string_array = lines[1]
-        if lines[1]:
-            if "," in string_array:
-                string_array = string_array.replace(",", "")
-            string_array = string_array.split(" ")
-        else:
-            string_array = ["pl", "en", "de", "ru"]
-            
-    # Читання пар "назва файлу і ключ"
-    if len(lines) > 2:
-        keys = []
-        for line in lines[2:]:
-            # line = line.strip()
-            # if not line.startswith("#"):
-            filename, key = line.split()
-            keys.append((filename, key))
-            # print(f"Назва файлу: {filename}, Ключ: {key}")
-        # print(keys)  
-        for filename, key in keys:
-            localization(directory_path, filename, key, string_array)
-            print()
+        # Другий рядок - масив рядків, розділених пробілом, або комою з пробілом
+        if len(lines) > 1:
+            locs_array = lines[1]
+            if lines[1]:
+                if "," in locs_array:
+                    locs_array = locs_array.replace(",", "")
+                locs_array = locs_array.split(" ")
+            else:
+                locs_array = default_locs
+                
+        # Третій рядок і далі - пари "назва файлу і ключ"
+        if len(lines) > 2:
+            keys = []
+            for line in lines[2:]:
+                # line = line.strip()
+                # if not line.startswith("#"):
+                filename, key = line.split()
+                keys.append((filename, key))
+                # print(f"Назва файлу: {filename}, Ключ: {key}")
+            # print(keys)  
+            for filename, key in keys:
+                localization(filename, key, directory_path, locs_array)
+                print()
+    else:
+        print(f"Файл '{file_path}' пустий.")
 
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    default_path = "D:\Dropbox\Archolos\CoM_localization_repository"    # windows
+    default_locs = ["pl", "en", "de", "ru"]    # "cs", "de", "en", "es", "es_al", "it", "pl", "ru"
     if len(sys.argv) == 3:
-        windows_path = "D:\Dropbox\Archolos\CoM_localization_repository"
         filename = sys.argv[1]
         key = sys.argv[2]
-        localization(windows_path, filename, key)
+        localization(filename, key, default_path, default_locs)
     elif len(sys.argv) == 2:
         settings = sys.argv[1]
-        read_file(settings)
+        read_file(settings, default_path, default_locs)
     elif len(sys.argv) == 1:
-        read_file("settings.txt")
+        read_file("settings.txt", default_path, default_locs)
     else:
         print("Забагато вхідних аргументів.")
         print("Використання:")
