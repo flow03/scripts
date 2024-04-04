@@ -4,6 +4,13 @@ from collections import OrderedDict
 
 # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
+def print_dict(dict):
+    # Ітерація по словнику з впорядкованими ключами
+    for key in sorted(dict.keys()):
+        print(key, dict[key])
+    # for key, value in dict:
+        # print(key, value)
+
 def dict_test():
     my_dict = {}
 
@@ -12,16 +19,11 @@ def dict_test():
     my_dict['a'] = 1
     my_dict['c'] = 3
     my_dict['c'] = 4
-
-    # Ітерація по словнику з впорядкованими ключами
-    # for key in sorted_keys:
-        # print(key, my_dict[key])
-        
-    for key in sorted(my_dict.keys()):
-    # for key in my_dict.keys():
-        print(key, my_dict[key])
     
+    # print_dict(my_dict)
 
+    return my_dict
+    
 def ordered_dict_test():
     # Створення словника з впорядкованими ключами
     ordered_dict = OrderedDict()
@@ -35,5 +37,14 @@ def ordered_dict_test():
     for key in ordered_dict:
         print(key, ordered_dict[key])
 
-dict_test()
-# ordered_dict_test()
+def function(dict): # передача аргумента по посиланню
+    dict['a'] = "string"
+    dict['new'] = "new_value"
+
+dict = dict_test()
+print("Before function")
+print_dict(dict)
+print()
+function(dict)
+print("After function")
+print_dict(dict)
