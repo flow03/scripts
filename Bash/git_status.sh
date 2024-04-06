@@ -1,14 +1,42 @@
 #!/bin/bash
 
-# Функція для перевірки наявності незакомічених змін у вказаному файлі чи теці
-check_uncommitted_changes() {
+# Функція для отримання дати і повідомлення останнього коміту в репозиторії
+get_last_commit_date() {
+    local repo_path="$1"
+	local num="$2"
+	if [ -z "$num" ]; then
+        num=1	# один коміт
+    fi
+    # local last_commit_date=$(cd "$repo_path" && git log -$num --format="%cd" --date=short)
+	cd "$repo_path" || return 1
+	local last_commit_info=$(git log -$num --pretty=format:"  %cd %s" --date=short)
+    echo "$last_commit_info"
+}
+
+# Функція для перевірки наявності незакомічених змін у вказаному файлі чи теці, і виводу їх на екран
+check_uncommitted_changes_print() {
 	local file_path="$1"
     # Перевірка статусу за допомогою git status
-	if [ -n "$(git status --porcelain "$file_path")" ]; then
-		return 0
-	else
-		return 1
-	fi
+	# if [ -n "$(git status --porcelain "$file_path")" ]; then
+	local uncommitted_files=$(git status --porcelain "$file_path" | awk '{print $2}')
+    if [ -n "$uncommitted_files" ]; then
+        echo "+ Знайдено незакомічені зміни в $(basename "$file_path"):"
+        echo "$uncommitted_files" | while read -r line; do echo "  $(basename "$line")"; done
+		# uncommitted_files=$(while read -r line; do echo "  $(basename "$line")"; done <<< "$uncommitted_files")
+		# echo "$uncommitted_files"
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Функція для перевірки наявності незакомічених змін
+check_uncommitted_changes() {
+    if [[ $(git status --porcelain) ]]; then
+        return 0  # є незакомічені зміни
+    else
+        return 1  # немає незакомічених змін
+    fi
 }
 
 # Основна частина скрипту
@@ -23,15 +51,14 @@ main() {
         echo "Перевірка статусу git репозиторію в $normalized_dir"
 		
         local project_save=$(realpath "$dir/DialogeOmegaT/omegat/project_save.tmx")
-		local glossary=$(realpath "$dir/DialogeOmegaT/glossary/")
+		local glossary=$(realpath "$dir/DialogeOmegaT/glossary/")	# тека з глосаріями
 		
-        if check_uncommitted_changes "$project_save"; then
-            echo "+ Знайдено незакомічені зміни в project_save.tmx"
-		fi
+		# check_uncommitted_changes_print "$project_save"
+		# check_uncommitted_changes_print "$glossary"
 		
-		if check_uncommitted_changes "$glossary"; then
-            echo "+ Знайдено незакомічені зміни в glossary"
-        fi
+		get_last_commit_date "$normalized_dir" 3
+		echo
+		
         # cd "$original_directory"  # повертаємося до початкової теки
     done
 }

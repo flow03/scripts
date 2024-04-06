@@ -94,8 +94,8 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-directory="/d/Dropbox/Archolos/OmegaT/$1_DialogeOmegaT_pl"
-branch_name="$1"
+# directory="/d/Dropbox/Archolos/OmegaT/$1_DialogeOmegaT_pl"
+# branch_name="$1"
 
 # if [ $# -ne 2 ]; then
     # echo "Потрібно передати шлях до репозиторію і назву нової гілки"
