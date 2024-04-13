@@ -151,14 +151,14 @@ def run_with_argv():
         merge_tmx_files(directory_path)
         print_time(start_time, "Час виконання:")
 
-def run(path):
+def run(directory_path):
     start_time = time.time()
     print("Програма запущена")
-    merge_tmx_files(path)
+    merge_tmx_files(directory_path)
     print_time(start_time, "Час виконання:")
 
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    # run_with_argv()
-    run('D:\Dropbox\Archolos\OmegaT')
+    run_with_argv()
+    # run('D:\Dropbox\Archolos\OmegaT')

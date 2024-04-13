@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ------------- Не вимагають перебувати у репозиторії ----------
+
 # Функція для отримання дати і повідомлення останнього коміту в репозиторії
 get_last_commit_date() {
     local repo_path="$1"
@@ -31,6 +33,8 @@ check_uncommitted_changes_print() {
     fi
 }
 
+# ------------- Вимагають cd repository ------------------------
+
 # Функція для перевірки наявності незакомічених змін
 check_uncommitted_changes() {
     if [[ $(git status --porcelain) ]]; then
@@ -40,7 +44,7 @@ check_uncommitted_changes() {
     fi
 }
 
-# Функція для додавання незакомічених змін до індексу, створення коміту та відправки на сервер
+# Функція для додання незакомічених змін до індексу, створення коміту та відправки на сервер
 commit_and_push_changes() {
 	local file_path="$1"
     local commit_message="$2"
@@ -52,10 +56,7 @@ commit_and_push_changes() {
 	if [ -z "$commit_message" ]; then
         commit_message="Автоматичний коміт: $(date +'%Y-%m-%d %H:%M:%S')"
     fi
-	
-    # git config advice.addIgnoredFile false
-    # git add ./omegat/project_save.tmx
-	# git add ./glossary/*.txt
+	# ------------------------------------------------------------------------
 	if ! git add "$file_path" --quiet; then
 		echo "При доданні $(basename "$file_path") до індексу сталася помилка"
 		return 1
@@ -78,23 +79,29 @@ commit_and_push_changes() {
 	return 0
 }
 
+# --------------------------------------------------------------
+
 # Основна частина скрипту
 main() {
-    local directory="$1"
+	# echo "Функція main з git_functions.sh"
+
+	local directory="$(get_directory)"
+	
     # local original_directory="$(pwd)"  # зберігаємо поточну теку
 
-    # Перемикаємо до кожної підтеки заданої теки
+    # Перемикаємось до кожної підтеки заданої теки
     for dir in "$directory"/*/; do
         normalized_dir=$(realpath "$dir")  # нормалізуємо шлях до директорії
         cd "$normalized_dir" || exit  # перемикаємося до нормалізованої директорії
         echo "Перевірка статусу git репозиторію в $normalized_dir"
 		
-		# some code
+		# git config advice.addIgnoredFile false
 		
         # cd "$original_directory"  # повертаємося до початкової теки
     done
 }
 
+# Перевіряє наявність шляху
 check_directory() {
 	local directory="$1"
 	if [ ! -e "$directory" ]; then
@@ -107,12 +114,19 @@ check_directory() {
 	fi
 }
 
+# Задає теку з репозиторіями для усіх суміжних скриптів
 get_directory() {
 	# directory="/d/Dropbox/Archolos/OmegaT/"
 	local directory="/d/Archolos_test/Test_repos/"	# тест
-	echo "$directory"
+
+	if check_directory "$directory"; then
+		echo "$directory"
+	else
+		exit 1
+	fi
 }
 
+# Перевірка, чи це основний виконуваний файл
 # if __name__ == "__main__": # python
 if [ "$0" == "$BASH_SOURCE" ]; then
 	echo "$(basename "$BASH_SOURCE") це основний виконуваний файл."

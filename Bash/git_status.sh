@@ -4,10 +4,10 @@ source git_functions.sh
 
 # Основна частина скрипту
 main() {
-    local directory="$1"
+    local directory="$(get_directory)"
     # local original_directory="$(pwd)"  # зберігаємо поточну теку
 
-    # Перемикаємо до кожної підтеки заданої теки
+    # Перемикаємось до кожної підтеки заданої теки
     for dir in "$directory"/*/; do
         normalized_dir=$(realpath "$dir")  # нормалізуємо шлях до директорії
         cd "$normalized_dir" || exit  # перемикаємося до нормалізованої директорії
@@ -28,6 +28,4 @@ main() {
     done
 }
 
-if check_directory "$(get_directory)"; then
-	main "$(get_directory)"
-fi
+main # виклик
