@@ -19,8 +19,9 @@ get_last_commit_date() {
 check_uncommitted_changes_print() {
 	local file_path="$1"
     # Перевірка статусу за допомогою git status
-	# if [ -n "$(git status --porcelain "$file_path")" ]; then
-	local uncommitted_files=$(git status --porcelain "$file_path" | awk '{print $2}')
+	# if [ -n "$(git status --porcelain "$file_path" 2>/dev/null) " ]; then
+	local uncommitted_files=$(git status --porcelain "$file_path" | awk '{print $2}') 
+	# awk '{print $2}' отримує друге поле (слово) з кожного рядка вводу
     if [ -n "$uncommitted_files" ]; then
         echo "+ Знайдено незакомічені зміни в $(basename "$file_path"):"
         echo "$uncommitted_files" | while read -r line; do echo "  $(basename "$line")"; done
@@ -37,7 +38,15 @@ check_uncommitted_changes_print() {
 
 # Функція для перевірки наявності незакомічених змін
 check_uncommitted_changes() {
-    if [[ $(git status --porcelain) ]]; then
+	local file_path="$1"
+	if [ -n "$file_path" ]; then
+		local status="$(git status --porcelain "$file_path" 2>/dev/null)"
+	else
+		local status="$(git status --porcelain)"
+	fi
+	
+	# return "$status"
+    if [ -n "$status" ]; then
         return 0  # є незакомічені зміни
     else
         return 1  # немає незакомічених змін
@@ -52,15 +61,24 @@ commit_and_push_changes() {
 	if [ -z "$file_path" ]; then
         echo "Не вказано шлях для додання незакомічених змін до індексу"
 		return 1
+	elif [ ! -e "$file_path" ]; then
+		echo "Шляху $file_path не існує"
+		return 1
     fi
+	# ------------------------------------------------------------------------
 	if [ -z "$commit_message" ]; then
         commit_message="Автоматичний коміт: $(date +'%Y-%m-%d %H:%M:%S')"
     fi
 	# ------------------------------------------------------------------------
-	if ! git add "$file_path" --quiet; then
+	if ! check_uncommitted_changes "$file_path"; then
+		echo "Немає незакомічених змін в $(basename "$file_path")"
+		return 1
+    fi
+	# ------------------------------------------------------------------------
+	if ! git add "$file_path" 2> /dev/null; then
 		echo "При доданні $(basename "$file_path") до індексу сталася помилка"
 		return 1
-	fi	
+	fi
 	# ------------------------------------------------------------------------
     if git commit -m "$commit_message" --quiet; then
 		echo "Коміт $commit_message успішно створено"
@@ -101,18 +119,29 @@ main() {
     done
 }
 
-# Перевіряє наявність шляху
+# Перевіряє наявність директорії
 check_directory() {
 	local directory="$1"
-	if [ ! -e "$directory" ]; then
-		echo "Шлях $directory не існує"
-		# exit 1
-		return 1
-	else
-		# echo "Шлях $directory існує"
+	if [ -d "$directory" ]; then
 		return 0
+	else
+		echo "Директорія $directory не існує"
+		return 1
 	fi
 }
+
+# Перевіряє наявність файлу
+check_file() {
+	local filename="$1"
+	
+	if [ -f "$filename" ]; then
+		return 0
+	else
+		echo "Файл $filename не існує"
+		return 1
+	fi
+}
+# -e перевіряє наявність шляху, незалежно від того, чи це файл, чи директорія
 
 # Задає теку з репозиторіями для усіх суміжних скриптів
 get_directory() {

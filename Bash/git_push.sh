@@ -12,16 +12,12 @@ main() {
     for dir in "$root_directory"/*/; do
         normalized_dir=$(realpath "$dir")  # нормалізуємо шлях до директорії
         cd "$normalized_dir" || exit  # перемикаємося до нормалізованої директорії
-        echo "Перевірка статусу git репозиторію в $(basename "$normalized_dir")"
+        echo "+ Перевірка статусу git репозиторію в $(basename "$normalized_dir")"
 		
 		local project_save=$(realpath "$dir/DialogeOmegaT/omegat/project_save.tmx")
 		# local glossary=$(realpath "$dir/DialogeOmegaT/glossary/")	# тека з глосаріями
         
-        if check_uncommitted_changes "$project_save"; then
-			commit_and_push_changes "$project_save" "$commit_message" # помилки виводяться всередині
-        else
-            echo "Немає незакомічених змін в $(basename "$normalized_dir")"
-        fi
+		commit_and_push_changes "$project_save" "$commit_message" # помилки виводяться всередині
         
         # cd "$original_directory"  # повертаємося до початкової теки
     done
