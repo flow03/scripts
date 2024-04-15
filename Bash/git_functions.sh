@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ------------- Не вимагають перебувати у репозиторії ----------
+# ------------- Не вимагають знаходження у репозиторії ----------
 
 # Функція для отримання дати і повідомлення останнього коміту в репозиторії
 get_last_commit_date() {
@@ -34,7 +34,7 @@ check_uncommitted_changes_print() {
     fi
 }
 
-# ------------- Вимагають cd repository ------------------------
+# ------------- Вимагають знаходження у репозиторії -------------
 
 # Функція для перевірки наявності незакомічених змін
 check_uncommitted_changes() {
@@ -53,53 +53,49 @@ check_uncommitted_changes() {
     fi
 }
 
-# Функція для додання незакомічених змін до індексу, створення коміту та відправки на сервер
-commit_and_push_changes() {
-	local file_path="$1"
-    local commit_message="$2"
-	
-	if [ -z "$file_path" ]; then
-        echo "Не вказано шлях для додання незакомічених змін до індексу"
-		return 1
-	elif [ ! -e "$file_path" ]; then
-		echo "Шляху $file_path не існує"
-		return 1
+# Функція для перевірки наявності незакомічених змін
+# check_uncommitted_changes() {
+    # if [[ $(git status --porcelain) ]]; then
+        # return 0  # є незакомічені зміни
+    # else
+        # return 1  # немає незакомічених змін
+    # fi
+# }
+
+# Функція для перевірки наявності гілки у локальному репозиторії
+branch_exists_locally() {
+    local branch_name="$1"
+    
+    if git show-ref --quiet --verify "refs/heads/$branch_name"; then
+        return 0  # гілка існує у локальному репозиторії
+    else
+        return 1  # гілка не існує у локальному репозиторії
     fi
-	# ------------------------------------------------------------------------
-	if [ -z "$commit_message" ]; then
-        commit_message="Автоматичний коміт: $(date +'%Y-%m-%d %H:%M:%S')"
-    fi
-	# ------------------------------------------------------------------------
-	if ! check_uncommitted_changes "$file_path"; then
-		echo "Немає незакомічених змін в $(basename "$file_path")"
-		return 1
-    fi
-	# ------------------------------------------------------------------------
-	if ! git add "$file_path" 2> /dev/null; then
-		echo "При доданні $(basename "$file_path") до індексу сталася помилка"
-		return 1
-	fi
-	# ------------------------------------------------------------------------
-    if git commit -m "$commit_message" --quiet; then
-		echo "Коміт $commit_message успішно створено"
-	else
-		echo "При створенні коміту сталася помилка"
-		return 1
-	fi
-	# ------------------------------------------------------------------------
-    # if git push --quiet 2> /dev/null; then
-		# echo "Дані успішно відправлено до віддаленого репозиторію"
-	# else
-		# echo "При відправці до віддаленого репозиторію сталася помилка"
-		# return 1
-	# fi
-	# ------------------------------------------------------------------------
-	return 0
 }
+# У багатьох мовах програмування, включаючи і Bash, 0 вважається "успішним" кодом виходу, а будь-яке інше значення (не 0) вважається "невдалим". Умова if в мові Bash (і багатьох інших мовах програмування) інтерпретує 0 як істинне значення, тобто "успіх", а будь-яке інше значення вважається хибою або неправдивим.
+
+# Функція для перевірки наявності гілки у віддаленому репозиторії
+branch_exists_remotely() {
+    local branch_name="$1"
+    local remote_name="$2"
+    
+	if ! git remote | grep -q "^$remote_name$"; then
+		echo "  Репозиторію $remote_name НЕ існує"
+		return 1
+	fi
+	
+    if git ls-remote --quiet --exit-code "$remote_name" "refs/heads/$branch_name" > /dev/null; then
+        return 0  # гілка існує у віддаленому репозиторії
+    else
+        return 1  # гілка не існує у віддаленому репозиторії
+    fi
+}
+# > /dev/null перенаправляє стандартний вивід(stdout) команди git ls-remote до спеціального файлу /dev/null, який фактично є "чорною дірою" для даних. При цьому код виходу (exit code) команди git ls-remote не буде змінений від цього перенаправлення виводу.
 
 # --------------------------------------------------------------
 
 # Основна частина скрипту
+# Можна використовувати для виконання команд у кожному репозиторії
 main() {
 	# echo "Функція main з git_functions.sh"
 
@@ -109,10 +105,16 @@ main() {
 
     # Перемикаємось до кожної підтеки заданої теки
     for dir in "$directory"/*/; do
-        normalized_dir=$(realpath "$dir")  # нормалізуємо шлях до директорії
+        normalized_dir="$(realpath "$dir")"  # нормалізуємо шлях до директорії
         cd "$normalized_dir" || exit  # перемикаємося до нормалізованої директорії
         echo "Перевірка статусу git репозиторію в $normalized_dir"
 		
+		# git remote add origin git@github.com:flow03/Archolos.git
+		# git remote -v
+		git fetch -p --quiet
+		git branch -avv
+		# get_last_commit_date "$normalized_dir" 3
+		# git remote -v
 		# git config advice.addIgnoredFile false
 		
         # cd "$original_directory"  # повертаємося до початкової теки
@@ -147,6 +149,7 @@ check_file() {
 get_directory() {
 	# directory="/d/Dropbox/Archolos/OmegaT/"
 	local directory="/d/Archolos_test/Test_repos/"	# тест
+	# local directory="/d/Archolos_test/Old_test_repos/"	# тест
 
 	if check_directory "$directory"; then
 		echo "$directory"

@@ -11,7 +11,7 @@ main() {
     for dir in "$directory"/*/; do
         normalized_dir=$(realpath "$dir")  # нормалізуємо шлях до директорії
         cd "$normalized_dir" || exit  # перемикаємося до нормалізованої директорії
-        echo "Перевірка статусу git репозиторію в $normalized_dir"
+        echo "Перевірка статусу git репозиторію в $(basename "$normalized_dir")"
 		
 		# git remote
 		
