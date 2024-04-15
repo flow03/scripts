@@ -23,7 +23,7 @@ check_uncommitted_changes_print() {
 	local uncommitted_files=$(git status --porcelain "$file_path" | awk '{print $2}') 
 	# awk '{print $2}' отримує друге поле (слово) з кожного рядка вводу
     if [ -n "$uncommitted_files" ]; then
-        echo "+ Знайдено незакомічені зміни в $(basename "$file_path"):"
+        echo "  Знайдено незакомічені зміни в $(basename "$file_path"):"
         echo "$uncommitted_files" | while read -r line; do echo "  $(basename "$line")"; done
 		# uncommitted_files=$(while read -r line; do echo "  $(basename "$line")"; done <<< "$uncommitted_files")
 		# echo "$uncommitted_files"
@@ -98,8 +98,8 @@ branch_exists_remotely() {
 # Можна використовувати для виконання команд у кожному репозиторії
 main() {
 	# echo "Функція main з git_functions.sh"
-
 	local directory="$(get_directory)"
+	local commits_number="$1"
 	
     # local original_directory="$(pwd)"  # зберігаємо поточну теку
 
@@ -111,9 +111,9 @@ main() {
 		
 		# git remote add origin git@github.com:flow03/Archolos.git
 		# git remote -v
-		git fetch -p --quiet
-		git branch -avv
-		# get_last_commit_date "$normalized_dir" 3
+		# git fetch -p --quiet
+		# git branch -avv
+		get_last_commit_date "$normalized_dir" "$commits_number"
 		# git remote -v
 		# git config advice.addIgnoredFile false
 		
@@ -147,9 +147,8 @@ check_file() {
 
 # Задає теку з репозиторіями для усіх суміжних скриптів
 get_directory() {
-	# directory="/d/Dropbox/Archolos/OmegaT/"
-	local directory="/d/Archolos_test/Test_repos/"	# тест
-	# local directory="/d/Archolos_test/Old_test_repos/"	# тест
+	directory="/d/Dropbox/Archolos/OmegaT/"	# робоча
+	# local directory="/d/Archolos_test/Test_repos/"	# тест
 
 	if check_directory "$directory"; then
 		echo "$directory"
@@ -161,11 +160,8 @@ get_directory() {
 # Перевірка, чи це основний виконуваний файл
 # if __name__ == "__main__": # python
 if [ "$0" == "$BASH_SOURCE" ]; then
-	echo "$(basename "$BASH_SOURCE") це основний виконуваний файл."
-	
-	if check_directory "$(get_directory)"; then
-		main "$(get_directory)"
-	fi
+	# echo "$(basename "$BASH_SOURCE") це основний виконуваний файл."
+	main 3
 # else
 	# echo "Файл $BASH_SOURCE є включеним або імпортованим."
 fi

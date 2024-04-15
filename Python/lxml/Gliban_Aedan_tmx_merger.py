@@ -82,7 +82,7 @@ def merge_tmx_files(directory):
     for item in os.listdir(directory):
         item_path = os.path.join(directory, item)
         if os.path.isdir(item_path):
-            start_time = time.time()
+            # start_time = time.time()
             save_path = os.path.join(item_path, 'DialogeOmegaT\omegat\project_save.tmx')        
             # tree = etree.parse(os.path.join(dirpath, filename))
             # print(save_path)
@@ -114,7 +114,7 @@ def merge_tmx_files(directory):
                         replace += replace_tu(tu, alt_dict, prop_id)
             # ------                
             print(save_path, "додано")
-            print_time(start_time, "Час:")
+            # print_time(start_time, "Час:")
                 
     print("------")
     if alt_dict:
@@ -146,19 +146,20 @@ def run_with_argv():
         directory_path = sys.argv[1]
         directory_path = os.path.normpath(directory_path)
         # directory_path = directory_path.rstrip(os.path.sep)
-        print("Шлях", directory_path)
+        # print("Шлях", directory_path)
         start_time = time.time()
         merge_tmx_files(directory_path)
         print_time(start_time, "Час виконання:")
 
 def run(directory_path):
     start_time = time.time()
-    print("Програма запущена")
+    # print("Програма запущена")
     merge_tmx_files(directory_path)
     print_time(start_time, "Час виконання:")
 
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    run_with_argv()
-    # run('D:\Dropbox\Archolos\OmegaT')
+    # run_with_argv()
+    run('D:\Dropbox\Archolos\OmegaT')
+    # print("------")
