@@ -92,6 +92,41 @@ branch_exists_remotely() {
 }
 # > /dev/null перенаправляє стандартний вивід(stdout) команди git ls-remote до спеціального файлу /dev/null, який фактично є "чорною дірою" для даних. При цьому код виходу (exit code) команди git ls-remote не буде змінений від цього перенаправлення виводу.
 
+# Перевіряє, чи вказана тека є репозиторієм
+is_git() {
+	local dir="$1"
+	
+	if [ ! -d "$dir" ]; then
+		echo "  $(basename "$dir") не існує"
+		return 1
+	fi
+	
+	if [ -d "$dir/.git" ] || git -C "$dir" rev-parse --is-inside-work-tree &>/dev/null; then
+		# echo "  $(basename "$dir") є git репозиторієм"
+		return 0
+	else
+		# echo "  $(basename "$dir") НЕ є git репозиторієм"
+		return 1
+	fi
+}
+
+# Видаляє суфікс _DialogeOmegaT_pl
+remove_suffix() {
+    local input_string="$1"
+    local suffix="_DialogeOmegaT_pl"
+    local length=${#suffix}
+    
+    # Перевірка, чи рядок закінчується суфіксом "_DialogeOmegaT_pl"
+    if [[ "$input_string" == *"$suffix" ]]; then
+        # Обрізаємо суфікс з кінця рядка
+        local result="${input_string:0:-length}"
+        echo "$result"
+    else
+        # Якщо рядок не має суфікса, просто повертаємо вхідний рядок
+        echo "$input_string"
+    fi
+}
+
 # --------------------------------------------------------------
 
 # Основна частина скрипту
@@ -109,11 +144,13 @@ main() {
         cd "$normalized_dir" || exit  # перемикаємося до нормалізованої директорії
         echo "Перевірка статусу git репозиторію в $normalized_dir"
 		
+		is_git "$normalized_dir"
+		echo "  $(remove_suffix "$(basename "$normalized_dir")")"
 		# git remote add origin git@github.com:flow03/Archolos.git
 		# git remote -v
 		# git fetch -p --quiet
 		# git branch -avv
-		get_last_commit_date "$normalized_dir" "$commits_number"
+		# get_last_commit_date "$normalized_dir" "$commits_number"
 		# git remote -v
 		# git config advice.addIgnoredFile false
 		
@@ -143,7 +180,7 @@ check_file() {
 		return 1
 	fi
 }
-# -e перевіряє наявність шляху, незалежно від того, чи це файл, чи директорія
+# -e перевіряє наявність шляху, незалежно від того, це файл чи директорія
 
 # Задає теку з репозиторіями для усіх суміжних скриптів
 get_directory() {
@@ -161,7 +198,17 @@ get_directory() {
 # if __name__ == "__main__": # python
 if [ "$0" == "$BASH_SOURCE" ]; then
 	# echo "$(basename "$BASH_SOURCE") це основний виконуваний файл."
-	main 3
+	# main "$1"
+	file_path="/d/Archolos_test/Test_repos/Gliban/DialogeOmegaT/omegat/project_save.tmx"
+	
+	if [ -f "$file_path" ]; then
+		dir_path="$(dirname "$file_path")"
+	elif [ -d "$file_path" ]; then
+		dir_path="$file_path"
+	fi
+	
+	echo "$dir_path"
+	git -C "$dir_path" add "$file_path"
 # else
 	# echo "Файл $BASH_SOURCE є включеним або імпортованим."
 fi

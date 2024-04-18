@@ -16,6 +16,12 @@ commit_and_push_changes() {
 		return 1
     fi
 	# ------------------------------------------------------------------------
+	if [ -f "$file_path" ]; then
+		local dir_path="$(dirname "$file_path")"
+	elif [ -d "$file_path" ]; then
+		local dir_path="$file_path"
+	fi
+	# ------------------------------------------------------------------------
 	if [ -z "$commit_message" ]; then
         commit_message="Автоматичний коміт $(date +'%d.%m.%Y %H:%M:%S')"
     fi
@@ -25,19 +31,19 @@ commit_and_push_changes() {
 		return 1
     fi
 	# ------------------------------------------------------------------------
-	if ! git add "$file_path" 2> /dev/null; then
+	if ! git -C "$dir_path" add "$file_path" 2> /dev/null; then
 		echo "  При доданні $(basename "$file_path") до індексу сталася помилка"
 		return 1
 	fi
 	# ------------------------------------------------------------------------
-    if git commit -m "$commit_message" --quiet; then
+    if git -C "$dir_path" commit -m "$commit_message" --quiet; then
 		echo "  Коміт \"$commit_message\" успішно створено"
 	else
 		echo "  При створенні коміту сталася помилка"
 		return 1
 	fi
 	# ------------------------------------------------------------------------
-    if git push --quiet 2> /dev/null; then
+    if git -C "$dir_path" push --quiet 2> /dev/null; then
 		echo "  Дані успішно відправлено до віддаленого репозиторію"
 	else
 		echo "  При відправці до віддаленого репозиторію сталася помилка"
