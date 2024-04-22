@@ -4,7 +4,7 @@ date_n_time="$(date +'%d.%m.%Y %H:%M:%S')"
 ./git_push.sh "Перед синхронізацією $date_n_time"
 echo "------"
 echo "Виконання python скрипта..."
-python "../Python/lxml/Gliban_Aedan_tmx_merger.py" # "D:\Dropbox\Archolos\OmegaT"
+python "../Python/lxml/TMX_merger.py" # "D:\Dropbox\Archolos\OmegaT"
 echo "------"
 ./git_replace.sh "MERGED.tmx" # збережено в поточній теці
 echo "------"

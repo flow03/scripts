@@ -5,6 +5,6 @@
 *.jpeg
 *.png
 *.gif
-#*.tmx
+*.tmx
 #*.json
 MERGED.tmx
