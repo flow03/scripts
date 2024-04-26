@@ -1,8 +1,9 @@
 D:\Dropbox\Archolos\CoM_localization_repository\
 pl, en, de, ru, es
 
-Mod_Text.d.json NAME_Shadowbeast
+DIA_NONE_11068_Grayson.d.json DIA_Grayson_KQ405_Finish_15_12
 
+# Mod_Text.d.json NAME_Shadowbeast
 # Mod_Text.d.json NAME_Bloodfly
 # Mod_NPC_Names.d.json NpcName_Lena
 # Mod_NPC_Names.d.json NpcName_Alena
