@@ -24,7 +24,7 @@ check_uncommitted_changes_print() {
 	# awk '{print $2}' отримує друге поле (слово) з кожного рядка вводу
     if [ -n "$uncommitted_files" ]; then
         echo "  Знайдено незакомічені зміни в $(basename "$file_path"):"
-        echo "$uncommitted_files" | while read -r line; do echo "  $(basename "$line")"; done
+        echo "$uncommitted_files" | while read -r line; do echo "  + $(basename "$line")"; done
 		# uncommitted_files=$(while read -r line; do echo "  $(basename "$line")"; done <<< "$uncommitted_files")
 		# echo "$uncommitted_files"
         return 0
@@ -84,7 +84,7 @@ branch_exists_remotely() {
 		return 1
 	fi
 	
-    if git ls-remote --quiet --exit-code "$remote_name" "refs/heads/$branch_name" > /dev/null; then
+    if git ls-remote --quiet --exit-code "$remote_name" "refs/heads/$branch_name" >/dev/null; then
         return 0  # гілка існує у віддаленому репозиторії
     else
         return 1  # гілка не існує у віддаленому репозиторії
@@ -127,6 +127,17 @@ remove_suffix() {
     fi
 }
 
+garbage_collect() {
+	local dir="$1"
+	if is_git "$dir" && ! check_uncommitted_changes "$dir"; then
+		echo "  Очищення теки .git"
+		cd "$dir"
+		if git gc --aggressive --prune=all 2>/dev/null; then
+			echo "  Теку .git успішно очищено"
+		fi
+	fi
+}
+
 # --------------------------------------------------------------
 
 # Основна частина скрипту
@@ -144,8 +155,9 @@ main() {
         cd "$normalized_dir" || exit  # перемикаємося до нормалізованої директорії
         echo "Перевірка статусу git репозиторію в $normalized_dir"
 		
-		is_git "$normalized_dir"
-		echo "  $(remove_suffix "$(basename "$normalized_dir")")"
+		garbage_collect "$normalized_dir"
+		# is_git "$normalized_dir"
+		# echo "  $(remove_suffix "$(basename "$normalized_dir")")"
 		# git remote add origin git@github.com:flow03/Archolos.git
 		# git remote -v
 		# git fetch -p --quiet
@@ -194,21 +206,29 @@ get_directory() {
 	fi
 }
 
+get_dirname() {
+	local dir_path="$1"
+	# dir_path="/d/Archolos_test/Test_repos/Gliban/DialogeOmegaT/omegat/project_save.tmx"
+
+	if [ -f "$file_path" ]; then
+		dir_path="$(dirname "$dir_path")"
+	# elif [ -d "$file_path" ]; then
+		# dir_path="$file_path"
+	fi
+	
+	echo "$dir_path"
+	
+	# echo "$dir_path"
+	# git -C "$dir_path" add "$file_path"
+}
+
 # Перевірка, чи це основний виконуваний файл
 # if __name__ == "__main__": # python
 if [ "$0" == "$BASH_SOURCE" ]; then
 	# echo "$(basename "$BASH_SOURCE") це основний виконуваний файл."
-	# main "$1"
-	file_path="/d/Archolos_test/Test_repos/Gliban/DialogeOmegaT/omegat/project_save.tmx"
+	main "$1"
 	
-	if [ -f "$file_path" ]; then
-		dir_path="$(dirname "$file_path")"
-	elif [ -d "$file_path" ]; then
-		dir_path="$file_path"
-	fi
-	
-	echo "$dir_path"
-	git -C "$dir_path" add "$file_path"
+
 # else
 	# echo "Файл $BASH_SOURCE є включеним або імпортованим."
 fi

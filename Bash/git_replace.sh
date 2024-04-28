@@ -48,15 +48,16 @@ copy() {
 	fi	
 }
 
-# Перевірка наявності аргументів
-if [ $# -lt 1 ]; then # -lt less than, -gt greater than
-    filename="MERGED.tmx"
-else
-	filename="$1"
+if [ "$0" == "$BASH_SOURCE" ]; then
+	# Перевірка наявності аргументів
+	if [ $# -lt 1 ]; then # -lt less than, -gt greater than
+		filename="MERGED.tmx"
+	else
+		filename="$1"
+	fi
+	# Перевірка наявності файлу
+	if check_file "$filename"; then
+		file_path="$(realpath "$filename")"
+		main "$file_path"
+	fi
 fi
-
-if check_file "$filename"; then
-	file_path="$(realpath "$filename")"
-	main "$file_path"
-fi
-

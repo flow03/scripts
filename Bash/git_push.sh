@@ -14,6 +14,9 @@ commit_and_push_changes() {
 	elif [ ! -e "$file_path" ]; then
 		echo "  Шляху $file_path не існує"
 		return 1
+	elif ! is_git "$file_path"; then
+		echo "  Шлях $file_path не є репозиторієм"
+		return 1
     fi
 	# ------------------------------------------------------------------------
 	if [ -f "$file_path" ]; then
