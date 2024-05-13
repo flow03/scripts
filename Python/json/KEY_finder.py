@@ -77,7 +77,8 @@ def get_path_Path(path):
     directory_path = directory_path.resolve()
     if not directory_path.exists():
         print(f"Шлях '{directory_path}' не знайдено.")
-        sys.exit(1)
+        # sys.exit(1)
+        return None
     else:
         print(f"Шлях '{directory_path}'") 
         return directory_path

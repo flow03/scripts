@@ -1,4 +1,4 @@
-python KEY_finder.py Mod_Text.d.json NAME_Bloodfly
+python -u KEY_finder.py Mod_Text.d.json NAME_Bloodfly
 echo "------------------------"
 # python KEY_finder.py Mod_NPC_Names.d.json NpcName_Lena
 # echo

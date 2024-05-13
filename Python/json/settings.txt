@@ -1,9 +1,6 @@
 D:\Dropbox\Archolos\CoM_localization_repository\
-pl, en, de, ru, es
+pl, en, de, ru
 
-DIA_NONE_11068_Grayson.d.json DIA_Grayson_KQ405_Finish_15_12
+# DIA_MIL_4000_Roderich.d.json DIA_Roderich_Q312_Finish_Why_03_07
 
-# Mod_Text.d.json NAME_Shadowbeast
-# Mod_Text.d.json NAME_Bloodfly
-# Mod_NPC_Names.d.json NpcName_Lena
-# Mod_NPC_Names.d.json NpcName_Alena
+DIA_BAU_704_Bastian.d.json DIA_Bastian_SQ213_Music_704_09

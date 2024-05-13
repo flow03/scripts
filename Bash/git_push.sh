@@ -14,9 +14,9 @@ commit_and_push_changes() {
 	elif [ ! -e "$file_path" ]; then
 		echo "  Шляху $file_path не існує"
 		return 1
-	elif ! is_git "$file_path"; then
-		echo "  Шлях $file_path не є репозиторієм"
-		return 1
+	# elif ! is_git "$file_path"; then
+		# echo "  Шлях $file_path не є репозиторієм"
+		# return 1
     fi
 	# ------------------------------------------------------------------------
 	if [ -f "$file_path" ]; then
@@ -24,6 +24,11 @@ commit_and_push_changes() {
 	elif [ -d "$file_path" ]; then
 		local dir_path="$file_path"
 	fi
+	# ------------------------------------------------------------------------
+	# if ! is_git "$dir_path"; then
+		# echo "  Шлях $dir_path не є репозиторієм"
+		# return 1
+	# fi
 	# ------------------------------------------------------------------------
 	if [ -z "$commit_message" ]; then
         commit_message="Автоматичний коміт $(date +'%d.%m.%Y %H:%M:%S')"
@@ -71,7 +76,12 @@ main() {
 		local project_save=$(realpath "$dir/DialogeOmegaT/omegat/project_save.tmx")
 		# local glossary=$(realpath "$dir/DialogeOmegaT/glossary/")	# тека з глосаріями
         
-		commit_and_push_changes "$project_save" "$commit_message" # помилки виводяться всередині
+		if is_git "$normalized_dir"; then
+			commit_and_push_changes "$project_save" "$commit_message" # помилки виводяться всередині
+		else
+			echo "  Шлях $normalized_dir не є репозиторієм"
+			return 1
+		fi
         
         # cd "$original_directory"  # повертаємося до початкової теки
     done

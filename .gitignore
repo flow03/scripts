@@ -7,4 +7,6 @@
 *.gif
 *.tmx
 #*.json
-MERGED.tmx
+# MERGED.tmx
+__pycache__
+

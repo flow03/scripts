@@ -155,14 +155,8 @@ main() {
         cd "$normalized_dir" || exit  # перемикаємося до нормалізованої директорії
         echo "Перевірка статусу git репозиторію в $normalized_dir"
 		
-		garbage_collect "$normalized_dir"
-		# is_git "$normalized_dir"
-		# echo "  $(remove_suffix "$(basename "$normalized_dir")")"
-		# git remote add origin git@github.com:flow03/Archolos.git
-		# git remote -v
-		# git fetch -p --quiet
-		# git branch -avv
-		# get_last_commit_date "$normalized_dir" "$commits_number"
+		# garbage_collect "$normalized_dir"
+		get_last_commit_date "$normalized_dir" "$commits_number"
 		# git remote -v
 		# git config advice.addIgnoredFile false
 		

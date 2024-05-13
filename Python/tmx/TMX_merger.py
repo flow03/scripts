@@ -163,6 +163,7 @@ class TMX_Merger():
 
 # ----------------------------------------------------
 
+# Перевіряє розширення
 def check_ext(file_path, ext):
     if os.path.isfile(file_path):
         file_name, file_ext = os.path.splitext(file_path)
@@ -170,13 +171,13 @@ def check_ext(file_path, ext):
             return True
         else:
             return False
-    else:
-        print(f"Файл {file_path} не існує")
-        return False
+    # else:
+        # print(f"Файл {file_path} не існує")
+        # return False
 
 def run_with_argv():
     if len(sys.argv) < 2:
-        print("Використання: python script.py <folder_path>")
+        print("Використання: python script.py <directory_path> <tmx_file>")
         sys.exit(1)
     else:
         directory_path = sys.argv[1]
