@@ -3,10 +3,10 @@ import sys
 import os
 
 def import_tmx():
-    parent_dir = os.path.abspath(os.path.join(__file__, '..', '..'))
-    tmx_dir = os.path.join(parent_dir, 'tmx')
+    tmx_dir = os.path.abspath(os.path.join(__file__, '..', '..', 'tmx'))
+    # tmx_dir = os.path.join(tmx_dir, 'tmx')
     sys.path.append(tmx_dir)
-    print(tmx_dir)
+    # print(tmx_dir)
     
 def tests():
     # parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -26,7 +26,7 @@ def tests():
     print(os.sep)
 
 import_tmx()
-from TMX_merger import check_ext
+from TMX_Merger import check_ext
 
 class jsonFile():
     def __init__(self, json_file):
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         filename = sys.argv[1]
         
-        if check_ext(filename, '.json'):
+        if check_ext(filename, 'json'):
             json_file = jsonFile(filename)
             print(type(json_file.data))
             value = json_file.get_value('NAME_Bloodfly')
