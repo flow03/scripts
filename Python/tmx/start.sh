@@ -6,4 +6,5 @@
 # echo
 # python TMX_merger.py
 
-python TMX_merger.py "D:\Dropbox\Archolos\OmegaT" "project_save.tmx"
+# python -u TMX_Merger_run.py "D:\Dropbox\Archolos\OmegaT" "project_save.tmx"
+python -u TMX_Merger_run.py

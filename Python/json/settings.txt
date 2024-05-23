@@ -1,6 +1,0 @@
-D:\Dropbox\Archolos\CoM_localization_repository\
-pl, en, de, ru
-
-# DIA_MIL_4000_Roderich.d.json DIA_Roderich_Q312_Finish_Why_03_07
-
-DIA_BAU_704_Bastian.d.json DIA_Bastian_SQ213_Music_704_09
