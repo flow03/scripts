@@ -170,7 +170,7 @@ check_directory() {
 	if [ -d "$directory" ]; then
 		return 0
 	else
-		echo "Директорія $directory не існує"
+		echo -e "\tДиректорія $directory не існує"
 		return 1
 	fi
 }
@@ -182,7 +182,7 @@ check_file() {
 	if [ -f "$filename" ]; then
 		return 0
 	else
-		echo "Файл $filename не існує"
+		echo -e "\tФайл $filename не існує"
 		return 1
 	fi
 }
@@ -190,7 +190,7 @@ check_file() {
 
 # Задає теку з репозиторіями для усіх суміжних скриптів
 get_directory() {
-	directory="/d/Dropbox/Archolos/OmegaT/"	# робоча
+	local directory="/d/Dropbox/Archolos/OmegaT/"	# робоча
 	# local directory="/d/Archolos_test/Test_repos/"	# тест
 
 	if check_directory "$directory"; then
