@@ -5,7 +5,7 @@ echo "------------------------"
 # python KEY_finder.py Mod_NPC_Names.d.json NpcName_Alena
 # echo
 
-python KEY_finder.py
+python -u KEY_finder.py
 echo "------------------------"
 python KEY_finder.py input.txt
 echo "------------------------"
