@@ -44,9 +44,9 @@ def run_params(*args):
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     # run_with_argv()
-    run_repos('D:\Dropbox\Archolos\OmegaT')
+    # run_repos('D:\Dropbox\Archolos\OmegaT')
     # run_repos('D:\\Archolos_test\\Test_repos')
-    # run_dir('test')
+    run_dir('merge')
     # run_dir('files')
     # run_params("project_save_WhiteForest_.tmx", "project_save_Gliban.tmx")
     # print("------")
