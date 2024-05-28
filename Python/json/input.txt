@@ -1,9 +1,0 @@
-D:\Dropbox\Archolos\CoM_localization_repository\sfsfd
-en рядок_2 ru
-
- назва_файлу_1 ключ_1
-			# назва_файлу_2 ключ_2
-	#   назва_файлу_3 ключ_3
-	
-#назва_файлу_n ключ_n
-	Mod_NPC_Names.d.json NpcName_Lena 	
