@@ -1,4 +1,9 @@
-python KEY_finder.py NAME_Bloodfly
+# python KEY_finder.py NAME_Bloodfly
+# echo
+# python KEY_finder.py -f NAME_Bloodfly
+# echo
+# python KEY_finder.py -i
+
 # python KEY_finder.py NpcName_Lena
 # echo
 # python KEY_finder.py NpcName_Alena
@@ -13,9 +18,9 @@ python KEY_finder.py NAME_Bloodfly
 # python KEY_finder.py empty.txt
 # echo "------------------------"
 # python KEY_finder.py invalid_file.txt
-echo
-python KEY_finder.py invalid_file.txt 1 2 3
-# echo
+# echo "------------------------"
+# python KEY_finder.py invalid_file.txt 1 2 3
+# echo "------------------------"
 
 # python KEY_finder.py NAME_Something
 # echo
@@ -24,4 +29,4 @@ python KEY_finder.py invalid_file.txt 1 2 3
 
 # python read_file.py input.txt
 # echo
-# python read_file.py settings.txt
+python KEY_finder.py settings.txt

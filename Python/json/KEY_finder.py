@@ -16,37 +16,42 @@ class Finder:
         # "cs", "de", "en", "es", "es_al", "it", "pl", "ru"
         
         # print("------------------")
-        print()
+        # print()
         print(key)
         for loc in self.locs:
-            directory_path = check_path_os(os.path.join(self.repo, loc))
-            if directory_path:
-                value = jsonFile.find_value_new(directory_path, key)
+            if loc in self.locs_data:
+                value = self.locs_data[loc].get_value(key)
                 self.print_value(value, loc)
             else:
-                print(f"Локалізацію '{loc}' не знайдено.")        
+                directory_path = check_path_os(os.path.join(self.repo, loc))
+                if directory_path:
+                    value = jsonFile.find_value_new(directory_path, key)
+                    self.print_value(value, loc)
+                else:
+                    print(f"Локалізацію '{loc}' не знайдено.")
+        print()
 
     def read_settings(self, settings_path):
         # Читання файлу
         if check_path_os(settings_path):
             with open(settings_path, 'r', encoding='utf-8') as file:
                 lines = file.readlines()
-        else:
-            print(f"Файл '{settings_path}' не знайдено: read_settings")
-            sys.exit(1)
         
-        if lines:
-            # Прибираємо лишні пробіли, закоментовані, і пусті рядки
-            lines = [line.strip() for line in lines]
-            lines = [line for line in lines if line]
-            lines = [line for line in lines if not line.startswith('#')]
-            lines = [line.strip() for line in lines]
-        
-            for key in lines:
-                self.find(key)
+            if lines:
+                # Прибираємо лишні пробіли, закоментовані, і пусті рядки
+                lines = [line.strip() for line in lines]
+                lines = [line for line in lines if line]
+                lines = [line for line in lines if not line.startswith('#')]
+                lines = [line.strip() for line in lines]
+            
+                for key in lines:
+                    self.find(key)
 
+            else:
+                print(f"Файл '{settings_path}' пустий.")
         else:
-            print(f"Файл '{settings_path}' пустий.")
+            print(f"Файл '{settings_path}' не знайдено")
+            # sys.exit(1)
 
     def get_data(self):
         for loc in self.locs:
@@ -56,6 +61,25 @@ class Finder:
                 json_loc.load_loc(directory_path)
                 self.locs_data[loc] = json_loc
 
+    def get_data_from_files(self):
+        for loc in self.locs:
+            filename = check_path_os(loc + ".json")
+            if filename:
+                json_loc = jsonFile(filename)
+                # json_loc.add(filename)
+                self.locs_data[loc] = json_loc
+                print(f"Файл {filename} успішно завантажено")
+            else:
+                print(f"Файл {filename} відсутній")
+        print()
+
+    def create_files(self):
+        self.get_data()
+        for loc in self.locs_data:
+            filename = loc + ".json"
+            self.locs_data[loc].write(filename)
+            print(f"Файл {filename} успішно створено")
+
     def print_value(self, value, loc):
         if value:
             print(f"{loc}: {value}")
@@ -63,19 +87,16 @@ class Finder:
             print(f"{loc}: Ключ не знайдено.")
 
     def input(self):
-        # self.get_data()
+        if not self.locs_data: #  is None
+            self.get_data()
         print("Введіть q або quit для виходу")
         while True:
             # print("Введіть ключ: ", end="")
             key = input("Введіть ключ: ")
             if key == 'q' or  key == "quit":
                 break
-            # print()
-            # print(key)
-            for loc in self.locs_data:
-                value = self.locs_data[loc].get_value(key)
-                self.print_value(value, loc)
-            print()
+            
+            self.find(key)
 
 # def find_file_os(start_dir, filename):
 #     # cycles = 0
@@ -131,23 +152,31 @@ def check_path_os(path):
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     finder = Finder()
+
+    if '-c' in sys.argv:
+        finder.create_files()
+        sys.argv.remove('-c')
+    if '-f' in sys.argv:
+        finder.get_data_from_files()
+        sys.argv.remove('-f')
     if '-i' in sys.argv:
-        finder.get_data()
         finder.input()
-    elif len(sys.argv) == 2:
-        if sys.argv[1].endswith(".txt"):
-            settings = sys.argv[1]
-            finder.read_settings(settings)
-        else:
-            key = sys.argv[1]
-            finder.find(key)
-    elif len(sys.argv) == 1:
-        finder.read_settings("settings.txt")
-    else:
-        print("Забагато вхідних аргументів. Використання:")
-        # print("")
-        print("python script.py <key>")
+        sys.exit(0)
+    
+    if '-h' in sys.argv:
+        print("Використання:")
+        print("python script.py <key1> <key2> <key3>")
         print("python script.py <settings.txt>")
         print("python script.py -i")
         print("python script.py")
         sys.exit(1)
+
+    # print(sys.argv)
+    if len(sys.argv) == 1:
+        finder.read_settings("settings.txt")
+    else:
+        for arg in sys.argv[1:]:
+            if arg.endswith(".txt"):
+                finder.read_settings(arg) # settings
+            else:
+                finder.find(arg) # key

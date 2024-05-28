@@ -6,7 +6,9 @@
 *.png
 *.gif
 *.tmx
-#*.json
+*.json
+!tasks.json
+
 # MERGED.tmx
 __pycache__
 settings.txt
