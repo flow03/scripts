@@ -36,7 +36,7 @@ def run_dir(directory_path):
         merger = TMX_Merger()
         merger.merge_dir(directory_path)
 
-def run_params(*args):
+def run_args(*args):
     merger = TMX_Merger()
     merger.merge_args(*args)
 

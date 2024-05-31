@@ -34,6 +34,32 @@ class base_tu:
     def get_key(self):
         pass
 
+    @staticmethod    
+    def create_tu(pl_text, uk_text, name = "TMX_Merger"):
+        # Поточна дата і час в потрібному форматі
+        current_time = datetime.now().strftime("%Y%m%dT%H%M%SZ")
+        # datetime.utcnow() для отримання UTC часу
+        
+        # Створення кореневого елемента <tu>
+        tu = etree.Element("tu")
+
+        # Створення першого дочірнього елемента <tuv> з мовою "pl"
+        tuv_pl = etree.SubElement(tu, "tuv", lang="pl")
+        seg_pl = etree.SubElement(tuv_pl, "seg")
+        seg_pl.text = pl_text
+
+        # Створення другого дочірнього елемента <tuv> з мовою "uk" та додатковими атрибутами
+        tuv_uk = etree.SubElement(tu, "tuv", 
+                                lang="uk", 
+                                changeid=name, 
+                                changedate=current_time, 
+                                creationid=name, 
+                                creationdate=current_time)
+        seg_uk = etree.SubElement(tuv_uk, "seg")
+        seg_uk.text = uk_text
+
+        return tu
+
 class norm_tu(base_tu):
     def __init__(self, tu):
         super().__init__(tu)
@@ -62,7 +88,7 @@ class prop_tu(base_tu):
         return tu.find("./prop")
 
 class TMX_Merger():
-    def __init__(self):
+    def __init__(self, tmx_file = None):
         self.root = etree.Element('tmx')
         self.header = None
         self.body = etree.SubElement(self.root, 'body')
@@ -77,10 +103,14 @@ class TMX_Merger():
         self.alt_diff = 0
         self.alt_replace = 0
 
+        if tmx_file:
+            self.add_tmx(tmx_file)
+
     def add_tmx(self, tmx_file):
         print("------")
         self.parse(tmx_file)
-        print(f"Додатковий {tmx_file} додано")
+        print(f"{tmx_file} додано")
+        # print(f"{os.path.basename(tmx_file)} додано")
 
     def create(self, filename : str, start_time = None):
         print("------")
@@ -207,6 +237,14 @@ class TMX_Merger():
         # tmx_file_path = 'MERGED.tmx'
         with open(tmx_file_path, 'wb') as f:
             f.write(etree.tostring(self.root, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
+
+    def load_json(self, pl_json, uk_json):
+        for key, pl_text in pl_json.data:
+            if pl_text not in self.tu_dict:
+                if key in uk_json.data:
+                    uk_text = uk_json.data[key]
+                    tu = base_tu.create_tu(pl_text, uk_text)
+                    self.tu_dict[pl_text] = tu
 
 # Виводить час, який пройшов зі start_time
 def print_time(start_time, text):
