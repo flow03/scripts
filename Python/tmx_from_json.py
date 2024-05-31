@@ -3,8 +3,8 @@ import sys
 # import time
 import io
 # import json
-from .tmx.TMX_Merger import TMX_Merger
-from .json.jsonFile import jsonFile
+from ._tmx.TMX_Merger import TMX_Merger
+from ._json.jsonFile import jsonFile
 
 # ----------------------------------------------------
 
