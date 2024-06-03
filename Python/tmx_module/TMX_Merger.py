@@ -21,12 +21,12 @@ class base_tu:
         uk_text = self.tu.find("./tuv[@lang='uk']/seg").text
         return uk_text
 
-    def equal_pl(self, other_tu : 'base_tu'): #  : 'base_tu'
+    def equal_pl(self, other_tu : 'base_tu'):
         pl_1_text = self.get_pl_text()
         pl_2_text = other_tu.get_pl_text()
         return pl_1_text == pl_2_text
 
-    def equal_uk(self, other_tu : 'base_tu'): #  : 'base_tu'
+    def equal_uk(self, other_tu : 'base_tu'):
         uk_1_text = self.get_uk_text()
         uk_2_text = other_tu.get_uk_text()
         return uk_1_text == uk_2_text
@@ -34,9 +34,20 @@ class base_tu:
     def get_key(self):
         pass
 
+    def add_uk_text(self, text):
+        seg_uk = self.tu.find("./tuv[@lang='uk']/seg")
+        seg_uk.text = text + seg_uk.text
+        # seg_uk.text = etree.CDATA(text + seg_uk.text)
+
+class norm_tu(base_tu):
+    def __init__(self, tu):
+        super().__init__(tu)
+
+    def get_key(self):
+        return self.get_pl_text()
+
     @staticmethod    
     def create_tu(pl_text, uk_text, name = "TMX_Merger"):
-        # Поточна дата і час в потрібному форматі
         current_time = datetime.now().strftime("%Y%m%dT%H%M%SZ")
         # datetime.utcnow() для отримання UTC часу
         
@@ -58,14 +69,7 @@ class base_tu:
         seg_uk = etree.SubElement(tuv_uk, "seg")
         seg_uk.text = uk_text
 
-        return tu
-
-class norm_tu(base_tu):
-    def __init__(self, tu):
-        super().__init__(tu)
-
-    def get_key(self):
-        return self.get_pl_text()
+        return norm_tu(tu)
 
 class prop_tu(base_tu):
     def __init__(self, tu):
@@ -235,16 +239,23 @@ class TMX_Merger():
     def write_file(self, tmx_file_path):
         # tmx_file_path = os.path.join(directory, 'MERGED.tmx')
         # tmx_file_path = 'MERGED.tmx'
-        with open(tmx_file_path, 'wb') as f:
-            f.write(etree.tostring(self.root, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
+        with open(tmx_file_path, 'w', encoding='utf-8') as file: # 'wb'
+            xml_string = etree.tostring(self.root, pretty_print=True, xml_declaration=True, encoding='UTF-8').decode()
+            file.write(xml_string)
 
-    def load_json(self, pl_json, uk_json):
-        for key, pl_text in pl_json.data:
+    def load_json(self, pl_json, uk_json, add_text=None):
+        counter = 0
+        for key, pl_text in pl_json.data.items():
             if pl_text not in self.tu_dict:
                 if key in uk_json.data:
                     uk_text = uk_json.data[key]
-                    tu = base_tu.create_tu(pl_text, uk_text)
+                    tu = norm_tu.create_tu(pl_text, uk_text)
+                    if add_text:
+                        tu.add_uk_text(add_text)
                     self.tu_dict[pl_text] = tu
+                    counter += 1
+
+        print(counter, "нових сегментів додано")
 
 # Виводить час, який пройшов зі start_time
 def print_time(start_time, text):

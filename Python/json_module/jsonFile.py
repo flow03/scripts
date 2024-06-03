@@ -71,8 +71,7 @@ class jsonFile():
                 if file.endswith(".json"):
                     file_path = os.path.join(root, file)
                     self.add(file_path)
-                # else:
-                #     print(f"'{file}' is not json")
+
     def write(self, filename):
         with open(filename, 'w', encoding='utf-8-sig') as json_file:
             json.dump(self.data, json_file, ensure_ascii=False, indent=4) # indent це відступи

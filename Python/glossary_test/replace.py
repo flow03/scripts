@@ -1,10 +1,11 @@
+import os
+
 def replace_and_print(content, char, new_char):
     # num_replacements = content.count(char)
-    print(char, content.count(char))
+    # print(char, content.count(char))
     return content.replace(char, new_char)
-    
 
-def read_and_replace(filename):
+def replace_file(filename):
     content = None
     # Відкриття файлу у режимі читання
     with open(filename, 'r', encoding='utf-8-sig') as file:
@@ -29,6 +30,14 @@ def read_and_replace(filename):
         
         # return content
 
+def replace_folder(folder):
+    for root, dirs, files in os.walk(folder):
+        for file in files:
+            # if check_ext(file, 'json'):
+            if file.endswith(".json"):
+                file_path = os.path.join(root, file)
+                replace_file(file_path)    
+
 # Замінює існуючий файл
 def write_file(filename, content):
     # Відкриття файлу у режимі запису
@@ -40,5 +49,6 @@ def add_write_file(filename):
     with open(filename, 'a', encoding='utf-8-sig') as file:
         file.write("ADDITIONAL_DATA")
 
-filename = 'SQ116_TerryDead.d_RAW.json'
-content = read_and_replace(filename)
+if __name__ == "__main__":
+    filename = 'SQ116_TerryDead.d_RAW.json'
+    replace_file(filename)
