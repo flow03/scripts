@@ -5,7 +5,7 @@ def replace_and_print(content, char, new_char):
     # print(char, content.count(char))
     return content.replace(char, new_char)
 
-def replace_file(filename):
+def replace_quotes(filename):
     content = None
     # Відкриття файлу у режимі читання
     with open(filename, 'r', encoding='utf-8-sig') as file:
@@ -30,13 +30,13 @@ def replace_file(filename):
         
         # return content
 
-def replace_folder(folder):
+def replace_quotes_folder(folder):
     for root, dirs, files in os.walk(folder):
         for file in files:
             # if check_ext(file, 'json'):
             if file.endswith(".json"):
                 file_path = os.path.join(root, file)
-                replace_file(file_path)    
+                replace_quotes(file_path)    
 
 # Замінює існуючий файл
 def write_file(filename, content):
@@ -51,4 +51,4 @@ def add_write_file(filename):
 
 if __name__ == "__main__":
     filename = 'SQ116_TerryDead.d_RAW.json'
-    replace_file(filename)
+    replace_quotes(filename)

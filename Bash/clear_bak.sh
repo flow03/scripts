@@ -88,5 +88,5 @@ move() {
 
 
 if [ "$0" == "$BASH_SOURCE" ]; then
-	main "/d/W/Archolos_files/Back/bak" # bak_directory
+	main "/d/W/OmegaT_bak_files" # bak_directory
 fi

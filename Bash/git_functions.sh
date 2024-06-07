@@ -156,9 +156,12 @@ main() {
         echo "Перевірка статусу git репозиторію в $normalized_dir"
 		
 		# garbage_collect "$normalized_dir"
-		get_last_commit_date "$normalized_dir" "$commits_number"
+		# get_last_commit_date "$normalized_dir" "$commits_number"
 		# git remote -v
 		# git config advice.addIgnoredFile false
+		git fetch
+		git remote rm upstream
+		git remote prune origin
 		
         # cd "$original_directory"  # повертаємося до початкової теки
     done

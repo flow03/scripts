@@ -1,12 +1,12 @@
 import os
 import sys
-# import time
+import datetime
 import io
 import shutil
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from tmx_module.TMX_Merger import TMX_Merger, norm_tu
 from json_module.jsonFile import jsonFile
-from glossary_test.replace import replace_folder
+from glossary_test.replace import replace_quotes_folder
 
 # ----------------------------------------------------
 
@@ -18,24 +18,26 @@ from glossary_test.replace import replace_folder
 def backup(file_path):
     if os.path.isfile(file_path):
         file_path = os.path.abspath(file_path)
-        new_path = file_path + ".bak"
-        shutil.copy(file_path, new_path) # перезаписує файл, якщо він існує
+        current_time = datetime.now().strftime("%Y%m%dT%H%M%SZ")
+        new_path = file_path + '.' + current_time + ".bak"
+        shutil.copy(file_path, new_path) # перезаписує файл
+
+def load_loc(name):
+    loc = jsonFile()
+    # replace_quotes_folder(name)
+    loc.load_loc(name)
+    return loc
 
 def run():
-    pl_json = jsonFile()
-    # replace_folder("pl")
-    pl_json.load_loc("pl")
-
-    uk_json = jsonFile()
-    # replace_folder("uk")
-    uk_json.load_loc("uk")
+    pl_json = load_loc("pl")
+    uk_json = load_loc("uk")
 
     filepath = "project_save.tmx"
     backup(filepath)
     tmx_file = TMX_Merger(filepath)
     # tmx_file = TMX_Merger()
     tmx_file.load_json(pl_json, uk_json, "[DEEPL]")
-    tmx_file.create(filepath)
+    tmx_file.create(filepath) # "FROM_JSON.tmx"
 
 def run_tu_test():
     tu = norm_tu.create_tu("Польський текст", "Український текст")

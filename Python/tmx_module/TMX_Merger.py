@@ -33,9 +33,13 @@ class base_tu:
 
     def get_key(self):
         pass
+    
+    def get_uk_seg(self):
+        uk_seg = self.tu.find("./tuv[@lang='uk']/seg")
+        return uk_seg
 
     def add_uk_text(self, text):
-        seg_uk = self.tu.find("./tuv[@lang='uk']/seg")
+        seg_uk = self.get_uk_seg()
         seg_uk.text = text + seg_uk.text
         # seg_uk.text = etree.CDATA(text + seg_uk.text)
 
@@ -116,9 +120,10 @@ class TMX_Merger():
         print(f"{tmx_file} додано")
         # print(f"{os.path.basename(tmx_file)} додано")
 
-    def create(self, filename : str, start_time = None):
-        print("------")
-        self.print_stats()
+    def create(self, filename : str, start_time = None, is_print = True):
+        if is_print:
+            print("------")
+            self.print_stats()
         
         self.create_body()
         
@@ -167,7 +172,7 @@ class TMX_Merger():
     def run(self):
         run_time = time.time()
         
-        self.create('MERGED.tmx', run_time)
+        self.create('MERGED.tmx', run_time, False)
 
     def parse(self, save_path):
         tree = etree.parse(save_path)
@@ -256,6 +261,23 @@ class TMX_Merger():
                     counter += 1
 
         print(counter, "нових сегментів додано")
+
+    def replace_uk_text(self, tu_dict, text, replace): # static
+        count = 0
+        for key in tu_dict:
+            uk_seg = tu_dict[key].get_uk_seg()
+            if text in uk_seg.text:
+                uk_seg.text = uk_seg.text.replace(text, replace)
+                count += 1
+        return count
+
+    def replace_newlines(self):
+        count = self.replace_uk_text(self.tu_dict, '\n', "")
+        print("Замін \\n", count)
+        
+        if self.alt_dict:
+            alt_count = self.replace_uk_text(self.alt_dict, '\n', "")
+            print("Альтернативних замін \\n", alt_count)
 
 # Виводить час, який пройшов зі start_time
 def print_time(start_time, text):
