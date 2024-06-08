@@ -169,11 +169,6 @@ class TMX_Merger():
                     
         self.create('MERGED_args.tmx', start_time)
 
-    def run(self):
-        run_time = time.time()
-        
-        self.create('MERGED.tmx', run_time, False)
-
     def parse(self, save_path):
         tree = etree.parse(save_path)
         # ------
@@ -247,37 +242,6 @@ class TMX_Merger():
         with open(tmx_file_path, 'w', encoding='utf-8') as file: # 'wb'
             xml_string = etree.tostring(self.root, pretty_print=True, xml_declaration=True, encoding='UTF-8').decode()
             file.write(xml_string)
-
-    def load_json(self, pl_json, uk_json, add_text=None):
-        counter = 0
-        for key, pl_text in pl_json.data.items():
-            if pl_text not in self.tu_dict:
-                if key in uk_json.data:
-                    uk_text = uk_json.data[key]
-                    tu = norm_tu.create_tu(pl_text, uk_text)
-                    if add_text:
-                        tu.add_uk_text(add_text)
-                    self.tu_dict[pl_text] = tu
-                    counter += 1
-
-        print(counter, "нових сегментів додано")
-
-    def replace_uk_text(self, tu_dict, text, replace): # static
-        count = 0
-        for key in tu_dict:
-            uk_seg = tu_dict[key].get_uk_seg()
-            if text in uk_seg.text:
-                uk_seg.text = uk_seg.text.replace(text, replace)
-                count += 1
-        return count
-
-    def replace_newlines(self):
-        count = self.replace_uk_text(self.tu_dict, '\n', "")
-        print("Замін \\n", count)
-        
-        if self.alt_dict:
-            alt_count = self.replace_uk_text(self.alt_dict, '\n', "")
-            print("Альтернативних замін \\n", alt_count)
 
 # Виводить час, який пройшов зі start_time
 def print_time(start_time, text):

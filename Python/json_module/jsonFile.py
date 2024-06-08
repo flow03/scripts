@@ -8,7 +8,7 @@ def import_tmx():
     # tmx_dir = os.path.join(tmx_dir, 'tmx')
     sys.path.append(tmx_dir)
     # print(tmx_dir)
-    
+
 def tests_path():
     # parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     parent_dir = os.path.abspath(os.path.dirname(__file__))

@@ -7,9 +7,7 @@ def replace_and_print(content, char, new_char):
 
 def replace_quotes(filename):
     content = None
-    # Відкриття файлу у режимі читання
     with open(filename, 'r', encoding='utf-8-sig') as file:
-        # Зчитування вмісту файлу
         content = file.read()
         
         content = replace_and_print(content, '«', '"')
@@ -50,5 +48,5 @@ def add_write_file(filename):
         file.write("ADDITIONAL_DATA")
 
 if __name__ == "__main__":
-    filename = 'SQ116_TerryDead.d_RAW.json'
+    filename = 'glossary_test\\SQ116_TerryDead.d_RAW.json'
     replace_quotes(filename)
