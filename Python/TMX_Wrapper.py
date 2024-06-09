@@ -17,13 +17,13 @@ class TMX_Wrapper:
 
     def backup(self):
         if os.path.isfile(self.filepath):
-            # self.filepath = os.path.abspath(self.filepath)
             current_time = datetime.now().strftime("%Y.%m.%d-%H.%M")
             new_path = self.filepath + '.' + current_time + ".bak"
             shutil.copy(self.filepath, new_path) # перезаписує файл
             print(os.path.basename(new_path), "створено")
 
-    def load_loc(self, name):
+    @staticmethod
+    def load_loc(name):
         loc = jsonFile()
         # replace_quotes_folder(name)
         loc.load_loc(name)
@@ -31,8 +31,9 @@ class TMX_Wrapper:
 
     # tmx_from_json
     def tmx_from_json(self, pl_path, uk_path):
-        pl_json = self.load_loc(pl_path)
-        uk_json = self.load_loc(uk_path)
+        pl_json = TMX_Wrapper.load_loc(pl_path)
+        # replace_quotes_folder(uk_path)
+        uk_json = TMX_Wrapper.load_loc(uk_path)
 
         # self.backup()
         self.load_json(pl_json, uk_json, "[DEEPL]")
@@ -84,7 +85,9 @@ def run_tu_test():
     tmx_file.create("tu_test.tmx")
 
 def run_tmx_from_json():
-    wrapper = TMX_Wrapper("tmx_from_json_test.tmx")
+    # filepath = "tmx_from_json_test.tmx"
+    filepath = "D:\\Archolos_work\\ArcholosOmegaT\\omegat\\project_save.tmx"
+    wrapper = TMX_Wrapper(filepath)
     wrapper.backup()
     wrapper.tmx_from_json("pl", "uk")
 
@@ -93,8 +96,56 @@ def run_replace_newlines():
     wrapper.backup()
     wrapper.replace_newlines()
 
+def create_json_list(filename, json_folder):
+    if os.path.exists(json_folder):
+        file_list = []
+        for root, dirs, files in os.walk(json_folder):
+            for file in files:
+                if file.endswith(".json"):
+                    file_list.append(file)
+        with open(filename, 'w', encoding='utf-8') as txt_file:
+            for name in file_list:
+                txt_file.write(name + '\n')
+
+def move_json(json_folder, new_folder):
+    if os.path.exists(json_folder):
+        count = 0
+        for root, dirs, files in os.walk(json_folder):
+            for file in files:
+                if file.endswith(".json"):
+                    file_path = os.path.join(root, file)
+                    # new_path = os.path.join(new_folder, file)
+                    # другим аргументом приймає теку, або нове ім'я файлу
+                    shutil.move(file_path, new_folder)
+                    count += 1
+        print(count, "json файлів переміщено до", new_folder)
+
+def create_pl_source():
+    pl_source = TMX_Wrapper.load_loc("pl")
+
+    name = "source"
+    textname = os.path.join("pl", "pl_" + name + ".txt")
+    jsonname = os.path.join("pl", "pl_" + name + ".json")
+
+    create_json_list(textname, "pl")
+    print(textname, "успішно створено")
+
+    move_json("pl", "pl_back")
+
+    pl_source.write(jsonname)
+    print(jsonname, "успішно створено")
+
+    uk_jsonname = os.path.join("uk", "uk_" + name + ".json")
+    # pl_source.write(uk_jsonname)
+    shutil.copy(jsonname, uk_jsonname)
+    print(uk_jsonname, "успішно створено")
+
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    run_tmx_from_json()
+    if '-c' in sys.argv:
+        create_pl_source()
+    else:
+        run_tmx_from_json()
+
     # run_replace_newlines()

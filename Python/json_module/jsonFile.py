@@ -46,9 +46,13 @@ class jsonFile():
                 self.data.update(loaded_data)
                 # self.add_repeat(loaded_data)
                 # self.files += 1
-            except json.JSONDecodeError:
-                # print(f"Неможливо прочитати JSON з файлу '{json_file}'")
-                print(f"Cannot read JSON from file '{json_file}'")
+            except json.JSONDecodeError as e:
+                print(f"Неможливо прочитати JSON з файлу '{json_file}'")
+                # print(f"Cannot read JSON from file '{json_file}'")
+                print(f"Line: {e.lineno}, Column: {e.colno}, {e.msg}")
+                # print(e.msg)
+                print(f"Content: {e.doc.splitlines()[e.lineno - 1]}")
+                sys.exit(1)
 
     # def add_repeat(self, new_data : dict):
     #     for key, value in new_data.items():
@@ -65,12 +69,13 @@ class jsonFile():
             return None
 
     def load_loc(self, loc_path):
-        for root, dirs, files in os.walk(loc_path):
-            for file in files:
-                # if check_ext(file, 'json'):
-                if file.endswith(".json"):
-                    file_path = os.path.join(root, file)
-                    self.add(file_path)
+        if os.path.exists(loc_path):
+            for root, dirs, files in os.walk(loc_path):
+                for file in files:
+                    # if check_ext(file, 'json'):
+                    if file.endswith(".json"):
+                        file_path = os.path.join(root, file)
+                        self.add(file_path)
 
     def write(self, filename):
         with open(filename, 'w', encoding='utf-8-sig') as json_file:

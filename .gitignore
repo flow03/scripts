@@ -8,7 +8,11 @@
 *.tmx
 *.bak
 *.json
+*.txt
+
 !tasks.json
+# Unix path
+!*/Terms/*.txt
 
 # MERGED.tmx
 __pycache__
