@@ -84,12 +84,12 @@ def run_tu_test():
     tmx_file.create("tu_test.tmx")
 
 def run_tmx_from_json():
-    wrapper = TMX_Wrapper("project_save.tmx")
+    wrapper = TMX_Wrapper("tmx_from_json_test.tmx")
     wrapper.backup()
     wrapper.tmx_from_json("pl", "uk")
 
 def run_replace_newlines():
-    wrapper = TMX_Wrapper("replaced_save.tmx")
+    wrapper = TMX_Wrapper("newlines_test.tmx")
     wrapper.backup()
     wrapper.replace_newlines()
 

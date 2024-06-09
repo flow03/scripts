@@ -14,6 +14,7 @@ class Finder:
 
     def find(self, key):
         # "cs", "de", "en", "es", "es_al", "it", "pl", "ru"
+        key = key.strip()
         
         # print("------------------")
         # print()
@@ -53,32 +54,40 @@ class Finder:
             print(f"Файл '{settings_path}' не знайдено")
             # sys.exit(1)
 
+    def get_data_from_repo(self, loc):
+        directory_path = check_path_os(os.path.join(self.repo, loc))
+        if directory_path:
+            json_loc = jsonFile()
+            json_loc.load_loc(directory_path)
+            self.locs_data[loc] = json_loc
+            print(f"Локалізацію '{loc}' завантажено з репозиторію")
+        else:
+            print(f"Локалізацію '{loc}' не знайдено.")
+
+    def get_data_from_file(self, loc):
+        filename = check_path_os(loc + ".json")
+        if filename:
+            self.locs_data[loc] = jsonFile(filename)
+            print(f"Файл '{filename}' успішно завантажено")
+            return True
+        else:
+            return False
+
     def get_data(self):
         for loc in self.locs:
-            directory_path = check_path_os(os.path.join(self.repo, loc))
-            if directory_path:
-                json_loc = jsonFile()
-                json_loc.load_loc(directory_path)
-                self.locs_data[loc] = json_loc
-
-    def get_data_from_files(self):
-        for loc in self.locs:
-            filename = check_path_os(loc + ".json")
-            if filename:
-                json_loc = jsonFile(filename)
-                # json_loc.add(filename)
-                self.locs_data[loc] = json_loc
-                print(f"Файл {filename} успішно завантажено")
-            else:
-                print(f"Файл {filename} відсутній")
+            if loc not in self.locs_data:
+                if not self.get_data_from_file(loc):
+                    self.get_data_from_repo(loc)
         print()
+        self.locs = self.locs_data.keys() # list
 
     def create_files(self):
-        self.get_data()
+        if not self.locs_data:
+            self.get_data()
         for loc in self.locs_data:
             filename = loc + ".json"
             self.locs_data[loc].write(filename)
-            print(f"Файл {filename} успішно створено")
+            print(f"Файл '{filename}' успішно створено")
 
     def print_value(self, value, loc):
         if value:
@@ -152,13 +161,14 @@ def check_path_os(path):
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     finder = Finder()
+    finder.get_data()
 
     if '-c' in sys.argv:
         finder.create_files()
         sys.argv.remove('-c')
-    if '-f' in sys.argv:
-        finder.get_data_from_files()
-        sys.argv.remove('-f')
+    # if '-f' in sys.argv:
+    #     finder.get_data_from_files()
+    #     sys.argv.remove('-f')
     if '-i' in sys.argv:
         finder.input()
         sys.exit(0)
