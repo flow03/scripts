@@ -1,7 +1,8 @@
 class Glossary:
-    def __init__(self, txt_file):
+    def __init__(self, txt_file = None):
         self.content = []
-        self.add(txt_file)
+        if txt_file:
+            self.add(txt_file)
 
     def add(self, txt_file):
         with open(txt_file, 'r', encoding='utf-8') as file:

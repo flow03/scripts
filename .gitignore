@@ -13,6 +13,7 @@
 !tasks.json
 # Unix path
 !*/Terms/*.txt
+!*/Terms/*.md
 
 # MERGED.tmx
 __pycache__
