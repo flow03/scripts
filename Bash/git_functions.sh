@@ -2,19 +2,6 @@
 
 # ------------- Не вимагають знаходження у репозиторії ----------
 
-# Функція для отримання дати і повідомлення останнього коміту в репозиторії
-get_last_commit_date() {
-    local repo_path="$1"
-	local num="$2"
-	if [ -z "$num" ]; then
-        num=1	# один коміт
-    fi
-    # local last_commit_date=$(cd "$repo_path" && git log -$num --format="%cd" --date=short)
-	cd "$repo_path" || return 1
-	local last_commit_info=$(git log -$num --pretty=format:"  %cd %s" --date=short)
-    echo "$last_commit_info"
-}
-
 # Функція для перевірки наявності незакомічених змін у вказаному файлі чи теці, і виводу їх на екран
 check_uncommitted_changes_print() {
 	local file_path="$1"
@@ -156,12 +143,11 @@ main() {
         echo "Перевірка статусу git репозиторію в $normalized_dir"
 		
 		# garbage_collect "$normalized_dir"
-		# get_last_commit_date "$normalized_dir" "$commits_number"
 		# git remote -v
 		# git config advice.addIgnoredFile false
-		git fetch
-		git remote rm upstream
-		git remote prune origin
+		# git fetch
+		# git remote rm upstream
+		# git remote prune origin
 		
         # cd "$original_directory"  # повертаємося до початкової теки
     done
