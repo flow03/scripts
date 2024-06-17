@@ -1,26 +1,19 @@
 class Glossary:
     def __init__(self, txt_file = None):
-        self.content = []
+        self.content = set()
         if txt_file:
-            self.add(txt_file)
+            self.add_file(txt_file)
 
-    def add(self, txt_file):
+    def add_file(self, txt_file):
         with open(txt_file, 'r', encoding='utf-8') as file:
             lines = file.readlines()
             for line in lines:
-                # line = line.strip()
-                # line = line.split('\t')
                 line = tuple(line.strip().split('\t'))
-                # print(line)
-                if line not in self.content:
-                    self.content.append(line)
-        
-        self.content.sort()
+                self.content.add(line)
 
     def add_line(self, key, value):
         line = (key, value) # tuple
-        if line not in self.content:
-            self.content.append(line)
+        self.content.add(line)
 
     def get_str(self, line : tuple):
         line = '\t'.join(line) + '\n'
@@ -28,9 +21,9 @@ class Glossary:
 
     def write(self, filename):
         with open(filename, 'w', encoding='utf-8') as file:
-            for line in self.content:
+            for line in sorted(self.content):
                 file.write(self.get_str(line))
 
 if __name__ == '__main__':
-    gloss = Glossary("glossary.txt")
-    gloss.write("new_glossary.txt")
+    gloss = Glossary("glossary_test\\glossary.txt")
+    gloss.write("glossary_test\\new_glossary.txt")

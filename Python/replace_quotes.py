@@ -1,15 +1,17 @@
 import os
 
-def replace_and_print(content, char, new_char):
+def replace_and_print(content : str, char, new_char):
     # num_replacements = content.count(char)
     # print(char, content.count(char))
     return content.replace(char, new_char)
 
 def replace_quotes(filename):
     content = None
+    # Відкриття файлу у режимі читання
     with open(filename, 'r', encoding='utf-8-sig') as file:
-        content = file.read()
+        origin = file.read()
         
+        content = origin
         content = replace_and_print(content, '«', '"')
         content = replace_and_print(content, '»', '"')
         content = replace_and_print(content, '“', "'")
@@ -22,9 +24,11 @@ def replace_quotes(filename):
         # file.write(content)
         # Обрізка файлу, якщо новий вміст коротший за попередній
         # file.truncate()
-        
-    with open(filename, 'w', encoding='utf-8-sig') as file:
-        file.write(content)
+
+    if content != origin:
+        write_file(filename, content)
+    else:
+        print(os.path.basename(filename), "не містить зазначених символів")
         
         # return content
 
@@ -48,5 +52,6 @@ def add_write_file(filename):
         file.write("ADDITIONAL_DATA")
 
 if __name__ == "__main__":
-    filename = 'glossary_test\\SQ116_TerryDead.d_RAW.json'
+    filename = r"test\uk\uk_source.json" # raw Windows path
+    # filename = 'quotes_test\\SQ116_TerryDead.d_RAW.json'
     replace_quotes(filename)
