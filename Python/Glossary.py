@@ -15,14 +15,24 @@ class Glossary:
         line = (key, value) # tuple
         self.content.add(line)
 
-    def get_str(self, line : tuple):
+    @staticmethod
+    def get_str(line : tuple):
         line = '\t'.join(line) + '\n'
         return line
 
     def write(self, filename):
         with open(filename, 'w', encoding='utf-8') as file:
             for line in sorted(self.content):
-                file.write(self.get_str(line))
+            # for line in self.content:
+                file.write(Glossary.get_str(line))
+
+    def diff(self, glossary : "Glossary"):
+        # return self.content - glossary.content
+        return self.content.difference(glossary.content)
+    
+    def add_glossary(self, glossary : "Glossary"):
+        # self.content = self.content.union(glossary.content)
+        self.content.update(glossary.content)
 
 if __name__ == '__main__':
     gloss = Glossary("glossary_test\\glossary.txt")
