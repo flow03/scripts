@@ -57,5 +57,5 @@ if __name__ == '__main__':
     sync = Glossary_sync()
     sync.print_diff()
     # name = os.path.join("glossary_test", "glossary.txt")
-    sync.create()
-    sync.rewrite()
+    # sync.create()
+    # sync.rewrite()

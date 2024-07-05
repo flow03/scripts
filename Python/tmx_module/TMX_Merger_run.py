@@ -23,30 +23,35 @@ def run_with_argv():
 
         if os.path.isdir(directory_path):
             merger.merge_repos(directory_path)
+            merger.create('MERGED_repo.tmx')
         # else:
         #     print(directory_path, "не є директорією")
 
-def run_repos(repositories_path):
+def run_repos():
+    repositories_path = r'D:\Dropbox\Archolos\OmegaT'
     if os.path.isdir(repositories_path):
         merger = TMX_Merger()
         merger.merge_repos(repositories_path)
+        merger.force_add_tmx(r'D:\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
+        merger.create('MERGED_repo.tmx')
 
 def run_dir(directory_path):
     if os.path.isdir(directory_path):
         merger = TMX_Merger()
         merger.merge_dir(directory_path)
+        merger.create('MERGED_dir.tmx')
 
 def run_args(*args):
     merger = TMX_Merger()
     merger.merge_args(*args)
+    merger.create('MERGED_args.tmx')
 
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     # run_with_argv()
-    run_repos('D:\Dropbox\Archolos\OmegaT')
-    # run_repos('D:\\Archolos_test\\Test_repos')
+    run_repos()
     # run_dir('merge')
     # run_dir('files')
-    # run_params("project_save_WhiteForest_.tmx", "project_save_Gliban.tmx")
-    # print("------")
+    # run_args("fiercepretzel_save.tmx")
+    # print("------")py 

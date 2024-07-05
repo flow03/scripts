@@ -120,8 +120,15 @@ class TMX_Merger():
         print(f"{tmx_file} додано")
         # print(f"{os.path.basename(tmx_file)} додано")
 
-    def create(self, filename : str, start_time = None, is_print = True):
-        if is_print:
+    def force_add_tmx(self, tmx_file):
+        start_time = time.time()
+        print("------")
+        self.force_parse(tmx_file)
+        print(f"{tmx_file} примусово додано")
+        print_time(start_time, "Час:")
+
+    def create(self, filename : str, _print_stats = True):
+        if _print_stats:
             print("------")
             self.print_stats()
         
@@ -129,9 +136,9 @@ class TMX_Merger():
         
         self.write_file(filename) # 'MERGED_repo.tmx'
 
-        if start_time:
-            print("------")
-            print_time(start_time, "Час виконання:")
+        # if start_time:
+        #     print("------")
+        #     print_time(start_time, "Час виконання:")
 
     def merge_repos(self, repo_root):
         start_time = time.time()
@@ -139,17 +146,17 @@ class TMX_Merger():
         for repo in os.listdir(repo_root):
             repo_path = os.path.join(repo_root, repo)
             if os.path.isdir(repo_path):
-                # parse_time = time.time()
                 save_path = os.path.join(repo_path, 'DialogeOmegaT\omegat\project_save.tmx')
                 if os.path.isfile(save_path):  
+                    parse_time = time.time()
                     self.parse(save_path)
                     print(os.path.basename(repo_path), "додано")
-                    # print_time(parse_time, "Час:")
-                    
-        self.create('MERGED_repo.tmx', start_time)
+                    print_time(parse_time, "Час:")
+
+        print_time(start_time, "Час:")            
 
     def merge_dir(self, directory):
-        start_time = time.time()
+        # start_time = time.time()
         print("------")
         for file in os.listdir(directory):
             file_path = os.path.join(directory, file)
@@ -157,17 +164,17 @@ class TMX_Merger():
                 self.parse(file_path)
                 print(os.path.basename(file_path), "додано")
                     
-        self.create('MERGED_dir.tmx', start_time)
+        # self.create('MERGED_dir.tmx', start_time)
 
-    def merge_args(self, *args):
-        start_time = time.time()
+    def merge_args(self, *tmx_files):
+        # start_time = time.time()
         print("------")
-        for arg in args:
-            if check_ext(arg, "tmx"):
-                self.parse(arg)
-                print(os.path.basename(arg), "додано")
+        for file in tmx_files:
+            if check_ext(file, "tmx"):
+                self.parse(file)
+                print(os.path.basename(file), "додано")
                     
-        self.create('MERGED_args.tmx', start_time)
+        # self.create('MERGED_args.tmx', start_time)
 
     def parse(self, save_path):
         tree = etree.parse(save_path)
@@ -193,6 +200,37 @@ class TMX_Merger():
                 else:
                     self.replace_prop_tu(tu)
 
+    def force_parse(self, save_path):
+        tree = etree.parse(save_path)
+        # ------
+        if self.header is None:
+            self.header = tree.find('header')
+            self.root.insert(0, self.header)
+        # ------
+        for tu in tree.xpath("//tu"):
+            if prop_tu.check_prop(tu) is None:
+                tu = norm_tu(tu)
+                pl_text = tu.get_pl_text()
+                if pl_text not in self.tu_dict:
+                    self.tu_dict[pl_text] = tu
+                else:
+                    ex_tu = self.tu_dict[pl_text]
+                    if not tu.equal_uk(ex_tu):
+                        self.diff += 1
+                        self.replace += 1
+                        self.tu_dict[pl_text] = tu
+            else: # prop
+                tu = prop_tu(tu)
+                prop_id = tu.get_prop_id()
+                if prop_id not in self.alt_dict:
+                    self.alt_dict[prop_id] = tu
+                else:
+                    ex_tu = self.alt_dict[prop_id]
+                    if not tu.equal_uk(ex_tu):
+                        self.alt_diff += 1
+                        self.alt_replace += 1
+                        self.alt_dict[prop_id] = tu
+
     def replace_tu(self, tu : norm_tu):
         key = tu.get_pl_text()
         ex_tu = self.tu_dict[key]
@@ -207,15 +245,15 @@ class TMX_Merger():
 
     def replace_prop_tu(self, tu : prop_tu):
         id = tu.get_prop_id()
-        if id not in self.alt_dict:
-            self.alt_dict[id] = tu
-        else:
-            ex_tu = self.alt_dict[id]
-            if not tu.equal_uk(ex_tu):
-                self.alt_diff += 1
-                if (tu.get_date() > ex_tu.get_date()):
-                    self.alt_dict[id] = tu
-                    self.alt_replace += 1
+        # if id not in self.alt_dict:
+        #     self.alt_dict[id] = tu
+        # else:
+        ex_tu = self.alt_dict[id]
+        if not tu.equal_uk(ex_tu):
+            self.alt_diff += 1
+            if (tu.get_date() > ex_tu.get_date()):
+                self.alt_dict[id] = tu
+                self.alt_replace += 1
 
     def create_body(self):
         for key in sorted(self.tu_dict.keys()):
