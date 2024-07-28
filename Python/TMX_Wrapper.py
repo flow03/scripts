@@ -24,12 +24,15 @@ class TMX_Wrapper:
             print(os.path.basename(new_path), "створено")
 
     # tmx_from_json
+    #-----------------------------------------------------------
+    # створює json файл на основі усіх json файлів у переданій теці і її підтеках
     @staticmethod
     def get_json(path):
         loc = jsonFile()
         loc.load_loc(path)
         return loc
 
+    # завантажує дві json ТЕКИ, щоб передати їх у load_json, і створює tmx файл
     def tmx_from_json(self, pl_path, uk_path):
         pl_json = TMX_Wrapper.get_json(pl_path)
         # replace_quotes_folder(uk_path)
@@ -38,6 +41,18 @@ class TMX_Wrapper:
         self.load_json(pl_json, uk_json, "[DEEPL]")
         self.tmx_file.create(self.filepath, is_print=False)  # перезаписує існуючий
 
+    # завантажує два json ФАЙЛИ і створює tmx файл
+    def tmx_from_json_file(self, pl_file, uk_file):
+        pl_json = jsonFile()
+        pl_json.load_file(pl_file)
+        uk_json = jsonFile()
+        uk_json.load_file(uk_file)
+
+        self.load_json(pl_json, uk_json, "[DEEPL]")
+        self.tmx_file.create(self.filepath, is_print=False)  # перезаписує існуючий
+
+    # створює новий tmx файл на основі двох переданих json файлів
+    # також дописує на початок кожного сегмента переданий рядок
     def load_json(self, pl_json, uk_json, add_text=None):
         counter = 0
         for key, pl_text in pl_json.data.items():
@@ -54,6 +69,7 @@ class TMX_Wrapper:
     #-----------------------------------------------------------
 
     # replace_newlines
+    #-----------------------------------------------------------
     def replace_uk_text(self, tu_dict, text, replace): # static
         count = 0
         for key in tu_dict:
@@ -75,6 +91,25 @@ class TMX_Wrapper:
     #-----------------------------------------------------------
 
     # create_pl_source
+    #-----------------------------------------------------------
+    # об'єднує усі json файли у вказаній теці source_folder в один
+    # і створює два однакових файли у теці призначення dest_folder
+    # pl_source.json і uk_source.json
+    def create_pl_source_new(self, source_folder, dest_folder):
+        pl_source = TMX_Wrapper.get_json(source_folder)
+
+        name = "source"
+        pl_jsonname = os.path.join(dest_folder, "pl_" + name + ".json")
+        uk_jsonname = os.path.join(dest_folder, "uk_" + name + ".json")
+
+        pl_source.write(pl_jsonname)
+        print(f"{pl_jsonname} успішно створено ({len(pl_source.data)} елементів)")
+
+        shutil.copy(pl_jsonname, uk_jsonname)
+        print(uk_jsonname, "успішно скопійовано")
+    
+    # об'єднує усі json файли у вказаній теці в один, і копіює цей файл у теку uk_folder
+    # переміщуючи при цьому усі файли у нову теку з префіксом _back
     def create_pl_source(self, pl_folder, uk_folder):
         pl_source = TMX_Wrapper.get_json(pl_folder)
 
@@ -95,6 +130,7 @@ class TMX_Wrapper:
         shutil.copy(jsonname, uk_jsonname)
         print(uk_jsonname, "успішно скопійовано")
 
+    # створює txt файл зі списоком json файлів у вказаній теці
     def create_json_txt(self, filename, json_folder):
         if os.path.exists(json_folder):
             file_list = []
@@ -106,6 +142,7 @@ class TMX_Wrapper:
                 for name in file_list:
                     txt_file.write(name + '\n')
 
+    # переміщує json файли у теку pl_back
     def move_json_files(self, json_folder, new_folder):
         if os.path.isdir(json_folder):
             count = 0
@@ -128,6 +165,7 @@ class TMX_Wrapper:
     #-----------------------------------------------------------
 
     # create_glossary
+    #-----------------------------------------------------------
     def create_glossary(self, json_path, glossary_path):
         json_file = jsonFile(json_path)
         glossary = Glossary()
@@ -149,6 +187,21 @@ def run_tu_test():
     tmx_file.tu_dict[tu.get_pl_text()] = tu
     tmx_file.tu_dict[tu_2.get_pl_text()] = tu_2
     tmx_file.create("tu_test.tmx")
+
+def run_tmx_from_json_new():
+    tmx_path = os.path.join("test", "project_save.tmx")
+    source_folder = os.path.join("test", "source")
+    # dest_folder = "test"
+    pl_file = os.path.join("test", "pl_source.json")
+    uk_file = os.path.join("test", "uk_source.json")
+
+    wrapper = TMX_Wrapper(tmx_path)
+    if '-c' in sys.argv:
+        wrapper.create_pl_source_new(source_folder, "test")
+    else:
+        wrapper.backup()
+        wrapper.tmx_from_json_file(pl_file, uk_file)
+
 
 def run_tmx_from_json():
     tmx_path = os.path.join("test", "tmx_from_json_test.tmx")

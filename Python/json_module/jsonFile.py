@@ -1,7 +1,6 @@
 import json
 import sys
 import os
-import timeit
 
 def import_tmx():
     tmx_dir = os.path.abspath(os.path.join(__file__, '..', '..', 'tmx'))
@@ -77,6 +76,11 @@ class jsonFile():
                         file_path = os.path.join(root, file)
                         self.add(file_path)
 
+    def load_file(self, file):
+        if os.path.isfile(file):
+            if file.endswith(".json"):
+                self.add(file)
+
     def write(self, filename):
         with open(filename, 'w', encoding='utf-8-sig') as json_file:
             json.dump(self.data, json_file, ensure_ascii=False, indent=4) # indent це відступи
@@ -136,58 +140,7 @@ def run_test():
     value = json_loc.get_value(key)
     print(key, ':', value)
 
-def run_static():
-    repo = "D:\\Dropbox\\Archolos\\CoM_localization_repository\\pl"
-    key = 'NAME_Bloodfly'
-
-    value = jsonFile.find_value(repo, key)
-    # print(key, ':', value)
-
-def run_static_new():
-    repo = "D:\\Dropbox\\Archolos\\CoM_localization_repository\\pl"
-    key = 'NAME_Bloodfly'
-
-    value = jsonFile.find_value_new(repo, key)
-    # print(key, ':', value)
-
-def time_test(func):
-    _setup = "from __main__ import jsonFile, repo, key"
-
-    func_name = func.__name__   # дозволяє отримати назву функції у вигляді рядка
-    # print(func_name)
-    _func_str = func_name + "()"
-    _setup_str = "from __main__ import " + func_name
-
-    # якщо функція передається рядком, то обов'язково потрібно вказати параметр setup
-    # timer = timeit.Timer("jsonFile.find_value(repo, key)", setup=_setup)
-    timer = timeit.Timer(_func_str, setup=_setup_str) 
-    # timer = timeit.Timer(func)
-
-    # print(timer.timeit(10))
-    # print(timer.repeat(5, 10))
-    for time in timer.repeat(5, 10):
-        print(time)
-
-# if __name__ == "__main__":
-#     repo = "D:\\Dropbox\\Archolos\\CoM_localization_repository\\pl"
-#     key = 'NAME_Bloodfly'
-
-def time_tests():
-    # print(timeit.timeit("jsonFile.find_value(repo, key)", setup=_setup, number=10))
-    # print("-----------")
-    # print(timeit.timeit("jsonFile.find_value_new(repo, key)", setup=_setup, number=10))
-
-    # print(timeit.timeit(run_static, number=10))
-    # print("-----------")
-    # print(timeit.timeit(run_static_new, number=10))
-
-    time_test(run_static)
-    print("-----------")
-    time_test(run_static_new)
-
 if __name__ == "__main__":
     # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     # run_with_argv()
     run_test()
-
-    # time_tests()

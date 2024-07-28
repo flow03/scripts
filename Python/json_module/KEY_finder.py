@@ -17,7 +17,7 @@ class Finder:
         key = key.strip()
         
         # print("------------------")
-        # print()
+        print()
         print(key)
         for loc in self.locs:
             if loc in self.locs_data:
@@ -65,7 +65,8 @@ class Finder:
             print(f"Локалізацію '{loc}' не знайдено.")
 
     def get_data_from_file(self, loc):
-        filename = check_path_os(loc + ".json")
+        path = os.path.join("locs", loc + ".json")
+        filename = check_path_os(path)
         if filename:
             self.locs_data[loc] = jsonFile(filename)
             print(f"Файл '{filename}' успішно завантажено")
@@ -85,7 +86,7 @@ class Finder:
         if not self.locs_data:
             self.get_data()
         for loc in self.locs_data:
-            filename = loc + ".json"
+            filename = os.path.join("locs", loc + ".json")
             self.locs_data[loc].write(filename)
             print(f"Файл '{filename}' успішно створено")
 
