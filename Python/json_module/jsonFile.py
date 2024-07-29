@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+from shutil import move
 
 def import_tmx():
     tmx_dir = os.path.abspath(os.path.join(__file__, '..', '..', 'tmx'))
@@ -36,7 +37,7 @@ class jsonFile():
         # self.files = 0
         
         if json_file:
-            self.load_file(json_file)
+            self.load_file(json_file) # використовує add
     
     def add(self, json_file):
         with open(json_file, 'r', encoding='utf-8-sig') as file: # відкриття файлу з кодуванням UTF-8-BOM
@@ -53,20 +54,13 @@ class jsonFile():
                 print(f"Content: {e.doc.splitlines()[e.lineno - 1]}")
                 sys.exit(1)
 
-    # def add_repeat(self, new_data : dict):
-    #     for key, value in new_data.items():
-    #         if key in self.data:
-    #             # self.repeat.append((key, value))
-    #             self.repeat += 1
-    #         else:
-    #             self.data[key] = value
-
     def get_value(self, key):
         if key in self.data:
             return self.data[key]
         else:
             return None
 
+    # шукає у вказаній теці і її підтеках усі json-файли, і завантажує їх
     def load_loc(self, loc_path):
         if os.path.exists(loc_path):
             for root, dirs, files in os.walk(loc_path):
@@ -76,11 +70,13 @@ class jsonFile():
                         file_path = os.path.join(root, file)
                         self.add(file_path)
 
+    # перевіряє, чи файл існує, чи має він розширення json, і завантажує його
     def load_file(self, file):
         if os.path.isfile(file):
             if file.endswith(".json"):
                 self.add(file)
 
+    # записує поточний об'єкт у файл з вказаним ім'ям
     def write(self, filename):
         with open(filename, 'w', encoding='utf-8-sig') as json_file:
             json.dump(self.data, json_file, ensure_ascii=False, indent=4) # indent це відступи
@@ -100,6 +96,7 @@ class jsonFile():
                             print(f"Cannot read JSON from file '{json_file}'")
         return None
 
+    # шукає у вказаній теці і її підтеках усі json-файли, і шукає в них вказаний ключ
     @staticmethod
     def find_value_new(loc_path, key):
         for root, dirs, files in os.walk(loc_path):
@@ -111,6 +108,62 @@ class jsonFile():
                     if value:
                         return value
         return None
+
+    # створює txt файл зі списоком json файлів у вказаній теці
+    @staticmethod
+    def create_txt_list(filename, json_folder):
+        if os.path.exists(json_folder):
+            file_list = []
+            for root, dirs, files in os.walk(json_folder):
+                for file in files:
+                    if file.endswith(".json"):
+                        file_list.append(file)
+            with open(filename, 'w', encoding='utf-8') as txt_file:
+                for name in file_list:
+                    txt_file.write(name + '\n')
+
+    # переміщує json файли у теку pl_back
+    @staticmethod
+    def move_json_files(json_folder, new_folder):
+        if os.path.isdir(json_folder):
+            count = 0
+            if os.path.isfile(new_folder):
+                os.remove(new_folder)
+                print("Файл", new_folder, "видалено")
+            if not os.path.exists(new_folder):
+                os.makedirs(new_folder)
+                print("Теку", new_folder, "створено")
+
+            for root, dirs, files in os.walk(json_folder):
+                for file in files:
+                    if file.endswith(".json"):
+                        file_path = os.path.join(root, file)
+                        # new_path = os.path.join(new_folder, file)
+                        # другим аргументом приймає теку, або нове ім'я файлу
+                        move(file_path, new_folder) # The destination path must not already exist.
+                        count += 1
+            print(count, "json файлів переміщено до", new_folder)
+
+    def write_txt(self, filename):
+        with open(filename, 'w', encoding='utf-8') as txt_file:
+            for line in self.data.values():
+                txt_file.write(line + '\n')
+
+    def read_txt(self, filename):
+        with open(filename, 'r', encoding='utf-8') as txt_file:
+            lines = txt_file.readlines()
+
+        new_data = dict(zip(self.data.keys(), lines))
+        self.data.update(new_data)
+
+        # if lines and self.data:
+        #     i = 0
+        #     for key in self.data:
+        #         self.data[key] = lines[i]
+        #         i += 1
+        #         if i >= len(lines):
+        #             print(f"У txt файлі менше рядків({len(lines)}) ніж у поточному json({len(self.data)})")
+        #             break
 
 def run_with_argv():
     if len(sys.argv) == 2:

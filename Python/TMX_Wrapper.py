@@ -2,7 +2,7 @@ import os
 import sys
 from datetime import datetime
 import io
-import shutil
+from shutil import copy
 # sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from tmx_module.TMX_Merger import TMX_Merger, norm_tu
 from json_module.jsonFile import jsonFile
@@ -16,14 +16,20 @@ class TMX_Wrapper:
         self.tmx_file = TMX_Merger(tmx_file)
         self.filepath = os.path.abspath(tmx_file)
 
+    # створює резервну копію поточного tmx файлу
     def backup(self):
         if os.path.isfile(self.filepath):
-            current_time = datetime.now().strftime("%Y.%m.%d-%H.%M")
+            current_time = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
             new_path = self.filepath + '.' + current_time + ".bak"
-            shutil.copy(self.filepath, new_path) # перезаписує файл, якщо такий є
+            copy(self.filepath, new_path) # перезаписує файл, якщо такий є
             print(os.path.basename(new_path), "створено")
 
-    # tmx_from_json
+    # ОБЕРЕЖНО! Перезаписує існуючий tmx файл
+    # бажано використовувати разом з backup
+    def create(self):
+        self.tmx_file.create(self.filepath, _print_stats=False)
+    #-----------------------------------------------------------
+    # TMX FROM JSON
     #-----------------------------------------------------------
     # створює json файл на основі усіх json файлів у переданій теці і її підтеках
     @staticmethod
@@ -39,7 +45,7 @@ class TMX_Wrapper:
         uk_json = TMX_Wrapper.get_json(uk_path)
 
         self.load_json(pl_json, uk_json, "[DEEPL]")
-        self.tmx_file.create(self.filepath, is_print=False)  # перезаписує існуючий
+        self.create()  # перезаписує існуючий
 
     # завантажує два json ФАЙЛИ і створює tmx файл
     def tmx_from_json_file(self, pl_file, uk_file):
@@ -47,9 +53,9 @@ class TMX_Wrapper:
         uk_json = jsonFile(uk_file)
 
         self.load_json(pl_json, uk_json, "[DEEPL]")
-        self.tmx_file.create(self.filepath, is_print=False)  # перезаписує існуючий
+        self.create()  # перезаписує існуючий
 
-    # створює новий tmx файл на основі двох переданих json файлів
+    # дописує tmx файл на основі двох переданих json файлів
     # також дописує на початок кожного сегмента переданий рядок
     def load_json(self, pl_json, uk_json, add_text=None):
         counter = 0
@@ -65,8 +71,33 @@ class TMX_Wrapper:
 
         print(counter, "нових сегментів додано")
     #-----------------------------------------------------------
+    # TMX FROM TXT
+    #-----------------------------------------------------------
+    # дописує tmx файл на основі двох txt файлів
+    def load_txt(self, pl_txt, uk_txt, add_text=None):
+        counter = 0
+        pl_txt = self.get_txt(pl_txt)
+        uk_txt = self.get_txt(uk_txt)
+        new_data = list(zip(pl_txt, uk_txt))
 
-    # replace_newlines
+        for pl_text, uk_text in new_data:
+            if pl_text not in self.tmx_file.tu_dict:
+                tu = norm_tu.create_tu(pl_text, uk_text)
+                if add_text:
+                    tu.add_uk_text(add_text)
+                self.tmx_file.tu_dict[pl_text] = tu
+                counter += 1
+
+        print(counter, "нових сегментів додано")
+
+    # повертає list з рядків переданого txt файлу
+    @staticmethod
+    def get_txt(filename : str):
+        if os.path.isfile(filename) and filename.endswith(".txt"):
+            with open(filename, 'r', encoding='utf-8') as txt_file:
+                return txt_file.readlines()
+    #-----------------------------------------------------------
+    # REPLACE NEWLINES
     #-----------------------------------------------------------
     def replace_uk_text(self, tu_dict, text, replace): # static
         count = 0
@@ -85,15 +116,14 @@ class TMX_Wrapper:
             alt_count = self.replace_uk_text(self.tmx_file.alt_dict, '\n', "")
             print("Альтернативних замін \\n", alt_count)
 
-        self.tmx_file.create(self.filepath, is_print=False) # перезаписує існуючий
+        self.create()  # перезаписує існуючий
     #-----------------------------------------------------------
-
-    # create_pl_source
+    # CREATE PL SOURCE
     #-----------------------------------------------------------
     # об'єднує усі json файли у вказаній теці source_folder в один
-    # і створює два однакових файли у теці призначення dest_folder
-    # pl_source.json і uk_source.json
-    def create_pl_source_new(self, source_folder, pl_jsonname, uk_jsonname):
+    # і створює два однакових файли pl_jsonname і uk_jsonname
+    @staticmethod
+    def create_pl_source_json(source_folder, pl_jsonname, uk_jsonname):
         pl_source = TMX_Wrapper.get_json(source_folder)
 
         # name = "source"
@@ -103,66 +133,48 @@ class TMX_Wrapper:
         pl_source.write(pl_jsonname)
         print(f"{pl_jsonname} успішно створено ({len(pl_source.data)} елементів)")
 
-        shutil.copy(pl_jsonname, uk_jsonname)
+        copy(pl_jsonname, uk_jsonname)
         print(uk_jsonname, "успішно скопійовано")
+
+        # pl_source.write_txt(uk_jsonname + ".txt")
+        # print(f"{uk_jsonname + ".txt"} успішно створено")
     
-    # об'єднує усі json файли у вказаній теці в один, і копіює цей файл у теку uk_folder
+    # створює два однакових txt файли
+    # на основі json файлів у теці і підтеках source_folder
+    @staticmethod
+    def create_pl_source_txt(source_folder, pl_txtname, uk_txtname):
+        pl_source = TMX_Wrapper.get_json(source_folder)
+
+        pl_source.write_txt(pl_txtname)
+        print(f"{pl_txtname} успішно створено ({len(pl_source.data)} елементів)")
+
+        copy(pl_txtname, uk_txtname)
+        print(uk_txtname, "успішно скопійовано")
+
+    # об'єднує усі json файли у вказаній теці в один
     # переміщуючи при цьому усі файли у нову теку з префіксом _back
-    def create_pl_source(self, pl_folder, uk_folder):
+    @staticmethod
+    def create_pl_source_json_old(pl_folder, uk_folder):
         pl_source = TMX_Wrapper.get_json(pl_folder)
 
         name = "source"
         textname = os.path.join(pl_folder, "pl_" + name + ".txt")
         jsonname = os.path.join(pl_folder, "pl_" + name + ".json")
 
-        self.create_json_txt(textname, pl_folder)
+        jsonFile.create_txt_list(textname, pl_folder)
         print(textname, "успішно створено")
 
-        self.move_json_files(pl_folder, pl_folder + "_back")
+        jsonFile.move_json_files(pl_folder, pl_folder + "_back")
 
         pl_source.write(jsonname)
         print(f"{jsonname} успішно створено ({len(pl_source.data)} елементів)")
 
         uk_jsonname = os.path.join(uk_folder, "uk_" + name + ".json")
         # pl_source.write(uk_jsonname)
-        shutil.copy(jsonname, uk_jsonname)
+        copy(jsonname, uk_jsonname)
         print(uk_jsonname, "успішно скопійовано")
-
-    # створює txt файл зі списоком json файлів у вказаній теці
-    def create_json_txt(self, filename, json_folder):
-        if os.path.exists(json_folder):
-            file_list = []
-            for root, dirs, files in os.walk(json_folder):
-                for file in files:
-                    if file.endswith(".json"):
-                        file_list.append(file)
-            with open(filename, 'w', encoding='utf-8') as txt_file:
-                for name in file_list:
-                    txt_file.write(name + '\n')
-
-    # переміщує json файли у теку pl_back
-    def move_json_files(self, json_folder, new_folder):
-        if os.path.isdir(json_folder):
-            count = 0
-            if os.path.isfile(new_folder):
-                os.remove(new_folder)
-                print("Файл", new_folder, "видалено")
-            if not os.path.exists(new_folder):
-                os.makedirs(new_folder)
-                print("Теку", new_folder, "створено")
-
-            for root, dirs, files in os.walk(json_folder):
-                for file in files:
-                    if file.endswith(".json"):
-                        file_path = os.path.join(root, file)
-                        # new_path = os.path.join(new_folder, file)
-                        # другим аргументом приймає теку, або нове ім'я файлу
-                        shutil.move(file_path, new_folder) # The destination path must not already exist.
-                        count += 1
-            print(count, "json файлів переміщено до", new_folder)
     #-----------------------------------------------------------
-
-    # create_glossary
+    # CREATE GLOSSARY
     #-----------------------------------------------------------
     def create_glossary(self, json_path, glossary_path):
         json_file = jsonFile(json_path)
@@ -186,7 +198,7 @@ def run_tu_test():
     tmx_file.tu_dict[tu_2.get_pl_text()] = tu_2
     tmx_file.create("tu_test.tmx")
 
-def run_tmx_from_json_new():
+def create_tmx_from_json():
     tmx_path = os.path.join("test", "project_save.tmx")
     source_folder = os.path.join("test", "source")
 
@@ -196,26 +208,35 @@ def run_tmx_from_json_new():
     if os.path.isfile(tmx_path):
         wrapper = TMX_Wrapper(tmx_path)
         if '-c' in sys.argv:
-            wrapper.create_pl_source_new(source_folder, pl_file, uk_file)
+            wrapper.create_pl_source_json(source_folder, pl_file, uk_file)
         else:
             wrapper.backup()
             wrapper.tmx_from_json_file(pl_file, uk_file)
     else:
         print(f"Файл {tmx_path} відсутній")
 
+#-----------------------------------------------------------
+def create_txt_from_json():
+    source_folder = os.path.join("test", "source")
+    pl_file = os.path.join("test", "pl_source.txt")
+    uk_file = os.path.join("test", "uk_source.txt")
 
-def run_tmx_from_json():
-    tmx_path = os.path.join("test", "tmx_from_json_test.tmx")
-    # tmx_path = "D:\\Archolos_work\\ArcholosOmegaT\\omegat\\project_save.tmx"
-    pl_folder = os.path.join("test", "pl")
-    uk_folder = os.path.join("test", "uk")
-    wrapper = TMX_Wrapper(tmx_path)
+    if os.path.isdir(source_folder):
+        TMX_Wrapper.create_pl_source_txt(source_folder, pl_file, uk_file)
 
-    if '-c' in sys.argv:
-        wrapper.create_pl_source(pl_folder, uk_folder)
-    else:
+def create_tmx_from_txt():
+    tmx_path = os.path.join("test", "project_save.tmx")
+    pl_file = os.path.join("test", "pl_source.txt")
+    uk_file = os.path.join("test", "uk_source.txt")
+
+    if os.path.isfile(tmx_path):
+        wrapper = TMX_Wrapper(tmx_path)
+        wrapper.load_txt(pl_file, uk_file, "[DEEPL]")
         wrapper.backup()
-        wrapper.tmx_from_json(pl_folder, uk_folder)
+        wrapper.create()    # перезаписує існуючий
+    else:
+        print(f"Файл {tmx_path} відсутній")
+#-----------------------------------------------------------
 
 def run_replace_newlines():
     wrapper = TMX_Wrapper("test\\newlines_test.tmx")
@@ -234,6 +255,10 @@ def run_create_glossary():
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    run_tmx_from_json_new()
+    # run_tmx_from_json()
     # run_create_glossary()
     # run_replace_newlines()
+    if '-c' in sys.argv:
+        create_txt_from_json()
+    else:
+        create_tmx_from_txt()
