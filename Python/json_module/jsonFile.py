@@ -36,7 +36,7 @@ class jsonFile():
         # self.files = 0
         
         if json_file:
-            self.add(json_file)
+            self.load_file(json_file)
     
     def add(self, json_file):
         with open(json_file, 'r', encoding='utf-8-sig') as file: # відкриття файлу з кодуванням UTF-8-BOM

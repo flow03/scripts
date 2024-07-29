@@ -43,10 +43,8 @@ class TMX_Wrapper:
 
     # завантажує два json ФАЙЛИ і створює tmx файл
     def tmx_from_json_file(self, pl_file, uk_file):
-        pl_json = jsonFile()
-        pl_json.load_file(pl_file)
-        uk_json = jsonFile()
-        uk_json.load_file(uk_file)
+        pl_json = jsonFile(pl_file)
+        uk_json = jsonFile(uk_file)
 
         self.load_json(pl_json, uk_json, "[DEEPL]")
         self.tmx_file.create(self.filepath, is_print=False)  # перезаписує існуючий
@@ -95,12 +93,12 @@ class TMX_Wrapper:
     # об'єднує усі json файли у вказаній теці source_folder в один
     # і створює два однакових файли у теці призначення dest_folder
     # pl_source.json і uk_source.json
-    def create_pl_source_new(self, source_folder, dest_folder):
+    def create_pl_source_new(self, source_folder, pl_jsonname, uk_jsonname):
         pl_source = TMX_Wrapper.get_json(source_folder)
 
-        name = "source"
-        pl_jsonname = os.path.join(dest_folder, "pl_" + name + ".json")
-        uk_jsonname = os.path.join(dest_folder, "uk_" + name + ".json")
+        # name = "source"
+        # pl_jsonname = os.path.join(dest_folder, "pl_" + name + ".json")
+        # uk_jsonname = os.path.join(dest_folder, "uk_" + name + ".json")
 
         pl_source.write(pl_jsonname)
         print(f"{pl_jsonname} успішно створено ({len(pl_source.data)} елементів)")
@@ -191,16 +189,19 @@ def run_tu_test():
 def run_tmx_from_json_new():
     tmx_path = os.path.join("test", "project_save.tmx")
     source_folder = os.path.join("test", "source")
-    # dest_folder = "test"
+
     pl_file = os.path.join("test", "pl_source.json")
     uk_file = os.path.join("test", "uk_source.json")
 
-    wrapper = TMX_Wrapper(tmx_path)
-    if '-c' in sys.argv:
-        wrapper.create_pl_source_new(source_folder, "test")
+    if os.path.isfile(tmx_path):
+        wrapper = TMX_Wrapper(tmx_path)
+        if '-c' in sys.argv:
+            wrapper.create_pl_source_new(source_folder, pl_file, uk_file)
+        else:
+            wrapper.backup()
+            wrapper.tmx_from_json_file(pl_file, uk_file)
     else:
-        wrapper.backup()
-        wrapper.tmx_from_json_file(pl_file, uk_file)
+        print(f"Файл {tmx_path} відсутній")
 
 
 def run_tmx_from_json():
@@ -233,6 +234,6 @@ def run_create_glossary():
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    run_tmx_from_json()
+    run_tmx_from_json_new()
     # run_create_glossary()
     # run_replace_newlines()
