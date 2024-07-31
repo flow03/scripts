@@ -180,6 +180,9 @@ class jsonFile():
             result.data = new_data
             return result
 
+    def remove_newlines(self):
+        for key, text in self.data.items():
+            self.data[key] = text.replace('\n', "")
 
 def run_create_range(filename : str, start : int, end : int):
     if os.path.isfile(filename):

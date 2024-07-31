@@ -36,6 +36,7 @@ class TMX_Wrapper:
     def get_json(path):
         loc = jsonFile()
         loc.load_loc(path)
+        loc.remove_newlines()
         return loc
 
     # завантажує дві json ТЕКИ, щоб передати їх у load_json, і створює tmx файл
@@ -95,9 +96,12 @@ class TMX_Wrapper:
     def get_txt(filename : str):
         if os.path.isfile(filename) and filename.endswith(".txt"):
             with open(filename, 'r', encoding='utf-8') as txt_file:
-                return txt_file.readlines()
+                lines = txt_file.readlines()
+            
+            lines = TMX_Wrapper.remove_newlines_txt(lines)
+            return lines
     #-----------------------------------------------------------
-    # REPLACE NEWLINES
+    # REMOVE NEWLINES
     #-----------------------------------------------------------
     def replace_uk_text(self, tu_dict, text, replace): # static
         count = 0
@@ -108,7 +112,7 @@ class TMX_Wrapper:
                 count += 1
         return count
     
-    def replace_newlines(self):
+    def remove_newlines_tmx(self):
         count = self.replace_uk_text(self.tmx_file.tu_dict, '\n', "")
         print("Замін \\n", count)
         
@@ -117,6 +121,14 @@ class TMX_Wrapper:
             print("Альтернативних замін \\n", alt_count)
 
         self.create()  # перезаписує існуючий
+
+    @staticmethod
+    def remove_newlines_txt(txt_lines : list):
+        new_txt = []
+        for line in txt_lines:
+            new_txt.append(line.replace('\n', ""))
+        
+        return new_txt
     #-----------------------------------------------------------
     # CREATE PL SOURCE
     #-----------------------------------------------------------
@@ -241,7 +253,7 @@ def create_tmx_from_txt():
 def run_replace_newlines():
     wrapper = TMX_Wrapper("test\\newlines_test.tmx")
     wrapper.backup()
-    wrapper.replace_newlines()
+    wrapper.remove_newlines_tmx()
 
 def run_create_glossary():
     # tmx_path = "tmx_from_json_test.tmx"
