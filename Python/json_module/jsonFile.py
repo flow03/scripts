@@ -1,4 +1,5 @@
 import json
+import io
 import sys
 import os
 from shutil import move
@@ -79,7 +80,7 @@ class jsonFile():
     # записує поточний об'єкт у файл з вказаним ім'ям
     def write(self, filename):
         with open(filename, 'w', encoding='utf-8-sig') as json_file:
-            json.dump(self.data, json_file, ensure_ascii=False, indent=4) # indent це відступи
+            json.dump(self.data, json_file, ensure_ascii=False, indent=4) # indent це відступи, може бути 2
 
     @staticmethod
     def find_value(loc_path, key):
@@ -165,6 +166,36 @@ class jsonFile():
         #             print(f"У txt файлі менше рядків({len(lines)}) ніж у поточному json({len(self.data)})")
         #             break
 
+    # повертає новий jsonFile з підмножиною елементів
+    # у вказаному діапазоні зі start по end ВКЛЮЧНО
+    def create_range(self, start, end):
+        start -= 1
+        # end -= 1 # не включно
+        keys = list(self.data.keys())
+        if start >= 0 and start < end and end <= len(keys): # <= враховує останній елемент, < ні
+            keys = keys[start : end] # не включає елемент з індексом end
+            new_data = {k: self.data[k] for k in keys} # dictionary comprehension
+
+            result = jsonFile()
+            result.data = new_data
+            return result
+
+
+def run_create_range(filename : str, start : int, end : int):
+    if os.path.isfile(filename):
+        file = jsonFile(filename)
+        print(f"{filename} ({len(file.data)} елементів)")
+        new_file = file.create_range(start, end)
+
+        if new_file:
+            name, ext = os.path.splitext(filename)
+            # new_filename = name + '_' + str(start) + '-' + str(end) + ext
+            new_filename = f"{name}_{start}-{end}{ext}"
+            new_file.write(new_filename)
+            print(new_filename, "успішно створено")
+        else:
+            print(f"Помилка створення вказаного діапазону {start}-{end}")
+
 def run_with_argv():
     if len(sys.argv) == 2:
         filename = sys.argv[1]
@@ -194,6 +225,9 @@ def run_test():
     print(key, ':', value)
 
 if __name__ == "__main__":
-    # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     # run_with_argv()
-    run_test()
+    # run_test()
+    path = os.path.join("test", "LOG_Entries.d.json")
+    run_create_range(path, 1, 10)
+    # run_create_range(path, 3450, 3459)
