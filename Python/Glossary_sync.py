@@ -7,7 +7,7 @@ class Glossary_sync:
         origin_path = os.path.join(r"D:\Archolos\Archolos_edit\DialogeOmegaT\glossary", self.filename)
         self.origin = Glossary(origin_path)
 
-        self.pathes = self.get_pathes()
+        self.pathes = Glossary_sync.get_pathes()
         # for path in self.pathes:
         #     print(path)
         self.glossaries = {}
@@ -66,17 +66,19 @@ class Glossary_sync:
             print(filepath, "створено")
 
     # повертає шляхи до усіх тек з глосаріями
-    def get_pathes(self):
+    @staticmethod
+    def get_pathes():
         pathes = []
         pathes.append(r"D:\Archolos\Archolos_edit\DialogeOmegaT\glossary")
         pathes.append(r"D:\Archolos\Archolos_work\ArcholosOmegaT\glossary")
-        pathes.extend(self.get_repo_pathes(r"D:\Dropbox\Archolos\OmegaT", "DialogeOmegaT")) # +=
-        pathes.extend(self.get_repo_pathes(r"D:\Dropbox\Archolos\OmegaT_a", "ArcholosOmegaT")) # +=
+        pathes.extend(Glossary_sync.get_repo_pathes(r"D:\Dropbox\Archolos\OmegaT", "DialogeOmegaT")) # +=
+        pathes.extend(Glossary_sync.get_repo_pathes(r"D:\Dropbox\Archolos\OmegaT_a", "ArcholosOmegaT")) # +=
 
         return pathes
     
     # повертає шляхи до усіх тек з глосаріями у вказаному репозиторії
-    def get_repo_pathes(self, repo, folder = "DialogeOmegaT"):
+    @staticmethod
+    def get_repo_pathes(repo, folder = "DialogeOmegaT"):
         pathes = []
         for name in os.listdir(repo):
             glossary_path = os.path.join(repo, name, folder, "glossary")

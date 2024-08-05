@@ -8,6 +8,7 @@ from tmx_module.TMX_Merger import TMX_Merger, norm_tu
 from json_module.jsonFile import jsonFile
 from replace_quotes import replace_quotes_folder
 from Glossary import Glossary
+from Glossary_sync import Glossary_sync
 
 # ----------------------------------------------------
 
@@ -188,7 +189,8 @@ class TMX_Wrapper:
     #-----------------------------------------------------------
     # CREATE GLOSSARY
     #-----------------------------------------------------------
-    def create_glossary(self, json_path, glossary_path):
+    # створює глосарій на основі переданих tmx і json
+    def create_glossary(self, json_path):
         json_file = jsonFile(json_path)
         glossary = Glossary()
         for pl_text in json_file.data.values():
@@ -196,7 +198,18 @@ class TMX_Wrapper:
                 uk_text = self.tmx_file.tu_dict[pl_text].get_uk_text()
                 glossary.add_line(pl_text, uk_text)
 
-        glossary.write(glossary_path)
+        # glossary.write(glossary_path)
+        return glossary
+
+    # перезаписує усі глосарії зі вказаним ім'ям
+    @staticmethod
+    def write_glossaries(glossary : Glossary, filename : str):
+        pathes = Glossary_sync.get_pathes()
+
+        for path in pathes:
+            filepath = os.path.join(path, filename)
+            glossary.write(filepath)
+            print(filepath, "створено")
     #-----------------------------------------------------------
 
 def run_tu_test():
@@ -251,18 +264,27 @@ def create_tmx_from_txt():
 #-----------------------------------------------------------
 
 def run_replace_newlines():
-    wrapper = TMX_Wrapper("test\\newlines_test.tmx")
+    wrapper = TMX_Wrapper(os.path.join("test","newlines_test.tmx"))
     wrapper.backup()
     wrapper.remove_newlines_tmx()
 
 def run_create_glossary():
-    # tmx_path = "tmx_from_json_test.tmx"
-    tmx_path = "D:\\Archolos\\Archolos_work\\ArcholosOmegaT\\omegat\\project_save.tmx"
-    json_path = "glossary_test\\pl_Mod_Text.d.json"
-    glossary_path = "glossary\\Items.txt"
+    filename = "Items.txt"
+    tmx_path = os.path.normpath("D:\\Archolos\\Archolos_work\\ArcholosOmegaT\\omegat\\project_save.tmx")
+    # glossary_path = os.path.join("glossary","Items.txt")
+
+    # Items.txt
+    json_path = os.path.normpath(r"D:\Archolos\Archolos_work\ArcholosOmegaT\source\Scripts\Content\Story\Mod_Text.d.json")
+
+    # names.txt
+    # json_path = os.path.normpath(r"D:\Archolos\Archolos_work\ArcholosOmegaT\source\Scripts\Content\Story\Mod_NPC_Names.d.json")
+
     wrapper = TMX_Wrapper(tmx_path)
-    wrapper.create_glossary(json_path, glossary_path)
-    print(glossary_path, "створено")
+    glossary = wrapper.create_glossary(json_path)
+    print(filename, len(glossary.content))
+    # glossary.write(glossary_path)
+    # print(glossary_path, "створено")
+    TMX_Wrapper.write_glossaries(glossary, filename) # перезаписує усі глосарії!
 
 # Запуск програми
 if __name__ == "__main__":
@@ -270,6 +292,7 @@ if __name__ == "__main__":
     # run_tmx_from_json()
     # run_create_glossary()
     # run_replace_newlines()
+    
     if '-c' in sys.argv:
         create_txt_from_json()
     else:
