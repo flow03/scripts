@@ -257,9 +257,9 @@ def run_replace_newlines():
 
 def run_create_glossary():
     # tmx_path = "tmx_from_json_test.tmx"
-    tmx_path = "D:\\Archolos_work\\ArcholosOmegaT\\omegat\\project_save.tmx"
+    tmx_path = "D:\\Archolos\\Archolos_work\\ArcholosOmegaT\\omegat\\project_save.tmx"
     json_path = "glossary_test\\pl_Mod_Text.d.json"
-    glossary_path = "glossary_test\\json_glossary.txt"
+    glossary_path = "glossary\\Items.txt"
     wrapper = TMX_Wrapper(tmx_path)
     wrapper.create_glossary(json_path, glossary_path)
     print(glossary_path, "створено")

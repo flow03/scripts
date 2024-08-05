@@ -30,10 +30,10 @@ class Glossary:
         # return self.content - glossary.content
         return self.content.difference(glossary.content)
     
-    def add_glossary(self, glossary : "Glossary"):
+    def update(self, glossary : "Glossary"):
         # self.content = self.content.union(glossary.content)
         self.content.update(glossary.content)
 
 if __name__ == '__main__':
-    gloss = Glossary("glossary_test\\glossary.txt")
-    gloss.write("glossary_test\\new_glossary.txt")
+    gloss = Glossary("glossary\\glossary.txt")
+    gloss.write("glossary\\new_glossary.txt")

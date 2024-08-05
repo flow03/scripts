@@ -8,12 +8,13 @@ from jsonFile import jsonFile
 class Finder:
     def __init__(self):
         self.repo = "D:\\Dropbox\\Archolos\\CoM_localization_repository"    # windows
+        # "cs", "de", "en", "es", "es_al", "it", "pl", "ru"
+        # self.locs = ["pl", "en", "cs", "de", "es", "it", "ru"]
         self.locs = ["pl", "en", "ru"]
         # self.settings = "settings.txt"
         self.locs_data = {}
 
     def find(self, key):
-        # "cs", "de", "en", "es", "es_al", "it", "pl", "ru"
         key = key.strip()
         
         # print("------------------")
@@ -80,6 +81,7 @@ class Finder:
                 if not self.get_data_from_file(loc):
                     self.get_data_from_repo(loc)
         print()
+        # відсікає усі локалізації, які не вдалось завантажити
         self.locs = self.locs_data.keys() # list
 
     def create_files(self):
