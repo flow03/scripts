@@ -28,12 +28,14 @@ def run_with_argv():
         #     print(directory_path, "не є директорією")
 
 def run_repos():
-    repositories_path = r'D:\Dropbox\Archolos\OmegaT'
+    repositories_path = os.path.normpath(r'D:\Dropbox\Archolos\OmegaT')
+    tmx_path = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
+    name = os.path.join('tmx', 'project_save.tmx')
     if os.path.isdir(repositories_path):
-        merger = TMX_Merger()
+        merger = TMX_Merger(tmx_path)
         merger.merge_repos(repositories_path)
-        merger.force_add_tmx(r'D:\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
-        merger.create('MERGED_repo.tmx')
+        merger.create(name)
+        print("Об\'єднаний", name, "успішно створено")
 
 def run_dir(directory_path):
     if os.path.isdir(directory_path):

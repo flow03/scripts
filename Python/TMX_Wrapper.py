@@ -264,7 +264,8 @@ def create_tmx_from_txt():
 #-----------------------------------------------------------
 
 def run_replace_newlines():
-    wrapper = TMX_Wrapper(os.path.join("test","newlines_test.tmx"))
+    # wrapper = TMX_Wrapper(os.path.join("test","newlines_test.tmx"))
+    wrapper = TMX_Wrapper("project_save.tmx")
     wrapper.backup()
     wrapper.remove_newlines_tmx()
 
@@ -291,9 +292,9 @@ if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     # run_tmx_from_json()
     # run_create_glossary()
-    # run_replace_newlines()
+    run_replace_newlines()
     
-    if '-c' in sys.argv:
-        create_txt_from_json()
-    else:
-        create_tmx_from_txt()
+    # if '-c' in sys.argv:
+    #     create_txt_from_json()
+    # else:
+    #     create_tmx_from_txt()

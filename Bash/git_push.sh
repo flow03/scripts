@@ -56,20 +56,20 @@ commit_and_push_changes() {
 	fi
 	# ------------------------------------------------------------------------
 	# відправка до віддаленого репозиторію
-    # if git -C "$dir_path" push --quiet 2> /dev/null; then
-	# 	echo "  Дані успішно відправлено до віддаленого репозиторію"
-	# else
-	# 	echo "  При відправці до віддаленого репозиторію сталася помилка"
-	# 	return 1
-	# fi
+    if git -C "$dir_path" push --quiet 2> /dev/null; then
+		echo "  Дані успішно відправлено до віддаленого репозиторію"
+	else
+		echo "  При відправці до віддаленого репозиторію сталася помилка"
+		return 1
+	fi
 	# ------------------------------------------------------------------------
 	return 0
 }
 
 # Основна частина скрипту
 main() {
-    # local commit_message="$1"
-	local commit_message="Оновлені глосарії $(date +'%Y.%m.%d %H:%M:%S')"
+    local commit_message="$1"
+	# local commit_message="Оновлені глосарії $(date +'%Y.%m.%d %H:%M:%S')"
     local root_directory="$(get_directory)"
     # local original_directory="$(pwd)"  # зберігаємо поточну теку для commit_and_push
 
@@ -84,8 +84,8 @@ main() {
         
 		if is_git "$normalized_dir"; then
 			# помилки виводяться всередині
-			commit_and_push_changes "$glossary" "$commit_message"		# коммітимо глосарії
-			# commit_and_push_changes "$project_save" "$commit_message"	# коммітимо сейв
+			# commit_and_push_changes "$glossary" "$commit_message"		# коммітимо глосарії
+			commit_and_push_changes "$project_save" "$commit_message"	# коммітимо сейв
 		else
 			echo "  Шлях $normalized_dir не є репозиторієм"
 			return 1

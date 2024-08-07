@@ -115,10 +115,13 @@ class TMX_Merger():
             self.add_tmx(tmx_file)
 
     def add_tmx(self, tmx_file):
-        print("------")
-        self.parse(tmx_file)
-        print(f"{tmx_file} додано")
-        # print(f"{os.path.basename(tmx_file)} додано")
+        if os.path.isfile(tmx_file):
+            print("------")
+            self.parse(tmx_file)
+            print(f"{tmx_file} додано")
+            # print(f"{os.path.basename(tmx_file)} додано")
+        else:
+            print(f"Файл {tmx_file} відсутній")
 
     def force_add_tmx(self, tmx_file):
         start_time = time.time()
@@ -136,24 +139,20 @@ class TMX_Merger():
         
         self.write_file(filename) # 'MERGED_repo.tmx'
 
-        # if start_time:
-        #     print("------")
-        #     print_time(start_time, "Час виконання:")
-
     def merge_repos(self, repo_root):
         start_time = time.time()
         print("------")
         for repo in os.listdir(repo_root):
             repo_path = os.path.join(repo_root, repo)
             if os.path.isdir(repo_path):
-                save_path = os.path.join(repo_path, 'DialogeOmegaT\omegat\project_save.tmx')
+                save_path = os.path.join(repo_path, 'DialogeOmegaT','omegat','project_save.tmx')
                 if os.path.isfile(save_path):  
                     parse_time = time.time()
                     self.parse(save_path)
                     print(os.path.basename(repo_path), "додано")
                     print_time(parse_time, "Час:")
 
-        print_time(start_time, "Час:")            
+        print_time(start_time, "Загальний час:")            
 
     def merge_dir(self, directory):
         # start_time = time.time()
@@ -273,6 +272,7 @@ class TMX_Merger():
         if self.alt_dict:
             print("Альтернативних відмінностей:", self.alt_diff)
             print("Альтернативних замін:", self.alt_replace)
+        print("------")
 
     def write_file(self, tmx_file_path):
         # tmx_file_path = os.path.join(directory, 'MERGED.tmx')
@@ -288,10 +288,10 @@ def print_time(start_time, text):
     print(text, execution_time)
 
 # Перевіряє розширення
-def check_ext(file_path, ext):
+def check_ext(file_path : str, ext : str):
     if os.path.isfile(file_path):
         file_name, file_ext = os.path.splitext(file_path)
-        file_ext = file_ext.lstrip('.')
+        file_ext = file_ext.lstrip('.') # видаляє крапку
         # print("file_ext", file_ext)
         # print("ext", ext)
         return file_ext == ext

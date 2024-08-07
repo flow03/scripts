@@ -88,8 +88,8 @@ class Glossary_sync:
         return pathes
 
 if __name__ == '__main__':
-    sync = Glossary_sync() # "names.txt" "Items.txt"
-    sync.print_diff()
+    sync = Glossary_sync("Items.txt") # "names.txt" "Items.txt"
+    sync.print_diff(True)
     # name = os.path.join("glossary_test", "glossary.txt")
     # sync.create()
     # sync.rewrite()
