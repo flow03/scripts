@@ -21,6 +21,7 @@ class TMX_Wrapper:
             current_time = datetime.now().strftime("%Y.%m.%d-%H.%M")
             new_path = self.filepath + '.' + current_time + ".bak"
             shutil.copy(self.filepath, new_path) # перезаписує файл, якщо такий є
+            print("------")
             print(os.path.basename(new_path), "створено")
 
     # tmx_from_json

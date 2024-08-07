@@ -123,7 +123,7 @@ class TMX_Merger():
     def force_add_tmx(self, tmx_file):
         start_time = time.time()
         print("------")
-        self.force_parse(tmx_file)
+        self.parse(tmx_file, force=True)
         print(f"{tmx_file} примусово додано")
         print_time(start_time, "Час:")
 
@@ -148,12 +148,12 @@ class TMX_Merger():
             if os.path.isdir(repo_path):
                 save_path = os.path.join(repo_path, 'DialogeOmegaT\omegat\project_save.tmx')
                 if os.path.isfile(save_path):  
-                    parse_time = time.time()
+                    # parse_time = time.time()
                     self.parse(save_path)
                     print(os.path.basename(repo_path), "додано")
-                    print_time(parse_time, "Час:")
+                    # print_time(parse_time, "Час:")
 
-        print_time(start_time, "Час:")            
+        print_time(start_time, "Час:")
 
     def merge_dir(self, directory):
         # start_time = time.time()
@@ -176,7 +176,7 @@ class TMX_Merger():
                     
         # self.create('MERGED_args.tmx', start_time)
 
-    def parse(self, save_path):
+    def parse(self, save_path, force=False):
         tree = etree.parse(save_path)
         # ------
         if self.header is None:
@@ -190,7 +190,7 @@ class TMX_Merger():
                 if tu_text_pl not in self.tu_dict:
                     self.tu_dict[tu_text_pl] = tu
                 else:
-                    self.replace_tu(tu)
+                    self.replace_tu(tu, force) # False as default
             else: # prop
                 # print(f"prop '{get_pl_text(tu)}' знайдено")
                 tu = prop_tu(tu)
@@ -198,60 +198,31 @@ class TMX_Merger():
                 if prop_id not in self.alt_dict:
                     self.alt_dict[prop_id] = tu
                 else:
-                    self.replace_prop_tu(tu)
+                    self.replace_prop_tu(tu, force) # False as default
 
-    def force_parse(self, save_path):
-        tree = etree.parse(save_path)
-        # ------
-        if self.header is None:
-            self.header = tree.find('header')
-            self.root.insert(0, self.header)
-        # ------
-        for tu in tree.xpath("//tu"):
-            if prop_tu.check_prop(tu) is None:
-                tu = norm_tu(tu)
-                pl_text = tu.get_pl_text()
-                if pl_text not in self.tu_dict:
-                    self.tu_dict[pl_text] = tu
-                else:
-                    ex_tu = self.tu_dict[pl_text]
-                    if not tu.equal_uk(ex_tu):
-                        self.diff += 1
-                        self.replace += 1
-                        self.tu_dict[pl_text] = tu
-            else: # prop
-                tu = prop_tu(tu)
-                prop_id = tu.get_prop_id()
-                if prop_id not in self.alt_dict:
-                    self.alt_dict[prop_id] = tu
-                else:
-                    ex_tu = self.alt_dict[prop_id]
-                    if not tu.equal_uk(ex_tu):
-                        self.alt_diff += 1
-                        self.alt_replace += 1
-                        self.alt_dict[prop_id] = tu
-
-    def replace_tu(self, tu : norm_tu):
+    def replace_tu(self, tu : norm_tu, force=False):
         key = tu.get_pl_text()
         ex_tu = self.tu_dict[key]
         if not tu.equal_uk(ex_tu):
             self.diff += 1
-            if (tu.get_date() > ex_tu.get_date()):
+            if not force:
+                if (tu.get_date() > ex_tu.get_date()):
+                    self.tu_dict[key] = tu
+                    self.replace += 1
+            else:
                 self.tu_dict[key] = tu
-                # print(f"{get_date(ex_tu)} замінено на {get_date(tu)}")
                 self.replace += 1
-            # else:
-                # print(f"{get_date(ex_tu)} залишено, натомість {get_date(tu)}")
 
-    def replace_prop_tu(self, tu : prop_tu):
+    def replace_prop_tu(self, tu : prop_tu, force=False):
         id = tu.get_prop_id()
-        # if id not in self.alt_dict:
-        #     self.alt_dict[id] = tu
-        # else:
         ex_tu = self.alt_dict[id]
         if not tu.equal_uk(ex_tu):
             self.alt_diff += 1
-            if (tu.get_date() > ex_tu.get_date()):
+            if not force:
+                if (tu.get_date() > ex_tu.get_date()):
+                    self.alt_dict[id] = tu
+                    self.alt_replace += 1
+            else:
                 self.alt_dict[id] = tu
                 self.alt_replace += 1
 
