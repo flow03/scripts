@@ -8,16 +8,17 @@ from jsonFile import jsonFile
 class Finder:
     def __init__(self):
         self.repo = "D:\\Dropbox\\Archolos\\CoM_localization_repository"    # windows
+        # "cs", "de", "en", "es", "es_al", "it", "pl", "ru"
+        # self.locs = ["pl", "en", "cs", "de", "es", "it", "ru"]
         self.locs = ["pl", "en", "ru"]
         # self.settings = "settings.txt"
         self.locs_data = {}
 
     def find(self, key):
-        # "cs", "de", "en", "es", "es_al", "it", "pl", "ru"
         key = key.strip()
         
         # print("------------------")
-        # print()
+        print()
         print(key)
         for loc in self.locs:
             if loc in self.locs_data:
@@ -65,7 +66,8 @@ class Finder:
             print(f"Локалізацію '{loc}' не знайдено.")
 
     def get_data_from_file(self, loc):
-        filename = check_path_os(loc + ".json")
+        path = os.path.join("locs", loc + ".json")
+        filename = check_path_os(path)
         if filename:
             self.locs_data[loc] = jsonFile(filename)
             print(f"Файл '{filename}' успішно завантажено")
@@ -79,13 +81,14 @@ class Finder:
                 if not self.get_data_from_file(loc):
                     self.get_data_from_repo(loc)
         print()
+        # відсікає усі локалізації, які не вдалось завантажити
         self.locs = self.locs_data.keys() # list
 
     def create_files(self):
         if not self.locs_data:
             self.get_data()
         for loc in self.locs_data:
-            filename = loc + ".json"
+            filename = os.path.join("locs", loc + ".json")
             self.locs_data[loc].write(filename)
             print(f"Файл '{filename}' успішно створено")
 
