@@ -116,7 +116,7 @@ class TMX_Merger():
 
     def add_tmx(self, tmx_file):
         if os.path.isfile(tmx_file):
-            print("------")
+            # print("------")
             self.parse(tmx_file)
             print(f"{tmx_file} додано")
             # print(f"{os.path.basename(tmx_file)} додано")
@@ -125,14 +125,13 @@ class TMX_Merger():
 
     def force_add_tmx(self, tmx_file):
         start_time = time.time()
-        print("------")
+        # print("------")
         self.force_parse(tmx_file)
         print(f"{tmx_file} примусово додано")
         print_time(start_time, "Час:")
 
     def create(self, filename : str, _print_stats = True):
         if _print_stats:
-            print("------")
             self.print_stats()
         
         self.create_body()
@@ -263,6 +262,7 @@ class TMX_Merger():
                 self.body.append(self.alt_dict[key].tu)
 
     def print_stats(self):
+        print("------")
         if self.alt_dict:
             print(f"Всього:\t {len(self.tu_dict) + len(self.alt_dict)} ({len(self.tu_dict)} + {len(self.alt_dict)})")
         else:
@@ -280,6 +280,27 @@ class TMX_Merger():
         with open(tmx_file_path, 'w', encoding='utf-8') as file: # 'wb'
             xml_string = etree.tostring(self.root, pretty_print=True, xml_declaration=True, encoding='UTF-8').decode()
             file.write(xml_string)
+    
+    def remove_newlines_dict(self, dictionary): # static
+        count = 0
+        for key in dictionary:
+            uk_seg = dictionary[key].get_uk_seg()
+            if '\n' in uk_seg.text:
+                uk_seg.text = uk_seg.text.replace('\n', "")
+                count += 1
+        return count
+    
+    def remove_newlines(self):
+        count = self.remove_newlines_dict(self.tu_dict)
+        print("------")
+        print("Замін \\n", count)
+        
+        if self.alt_dict:
+            alt_count = self.remove_newlines_dict(self.alt_dict)
+            print("Альтернативних замін \\n", alt_count)
+
+        # self.create()  # перезаписує існуючий
+
 
 # Виводить час, який пройшов зі start_time
 def print_time(start_time, text):

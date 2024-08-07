@@ -104,24 +104,9 @@ class TMX_Wrapper:
     #-----------------------------------------------------------
     # REMOVE NEWLINES
     #-----------------------------------------------------------
-    def replace_uk_text(self, tu_dict, text, replace): # static
-        count = 0
-        for key in tu_dict:
-            uk_seg = tu_dict[key].get_uk_seg()
-            if text in uk_seg.text:
-                uk_seg.text = uk_seg.text.replace(text, replace)
-                count += 1
-        return count
-    
     def remove_newlines_tmx(self):
-        count = self.replace_uk_text(self.tmx_file.tu_dict, '\n', "")
-        print("Замін \\n", count)
-        
-        if self.tmx_file.alt_dict:
-            alt_count = self.replace_uk_text(self.tmx_file.alt_dict, '\n', "")
-            print("Альтернативних замін \\n", alt_count)
-
-        self.create()  # перезаписує існуючий
+        self.tmx_file.remove_newlines()
+        self.create()   # перезаписує існуючий
 
     @staticmethod
     def remove_newlines_txt(txt_lines : list):
@@ -265,7 +250,7 @@ def create_tmx_from_txt():
 
 def run_replace_newlines():
     # wrapper = TMX_Wrapper(os.path.join("test","newlines_test.tmx"))
-    wrapper = TMX_Wrapper("project_save.tmx")
+    wrapper = TMX_Wrapper("project_save_a.tmx")
     wrapper.backup()
     wrapper.remove_newlines_tmx()
 

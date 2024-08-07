@@ -27,33 +27,36 @@ def run_with_argv():
         # else:
         #     print(directory_path, "не є директорією")
 
-def run_repos():
-    repositories_path = os.path.normpath(r'D:\Dropbox\Archolos\OmegaT')
-    tmx_path = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
-    name = os.path.join('tmx', 'project_save.tmx')
-    if os.path.isdir(repositories_path):
-        merger = TMX_Merger(tmx_path)
-        merger.merge_repos(repositories_path)
-        merger.create(name)
-        print("Об\'єднаний", name, "успішно створено")
-
 def run_dir(directory_path):
     if os.path.isdir(directory_path):
         merger = TMX_Merger()
         merger.merge_dir(directory_path)
         merger.create('MERGED_dir.tmx')
 
-def run_args(*args):
-    merger = TMX_Merger()
-    merger.merge_args(*args)
-    merger.create('MERGED_args.tmx')
+def run_Dialoges():
+    repositories_path = os.path.normpath(r'D:\Dropbox\Archolos\OmegaT')
+    tmx_path = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
+    name = os.path.join('tmx', 'project_save.tmx')
+    if os.path.isdir(repositories_path):
+        merger = TMX_Merger(tmx_path)
+        merger.merge_repos(repositories_path)
+        merger.remove_newlines()
+        merger.create(name)
+        print("Об\'єднаний", name, "успішно створено")
+
+def run_Archolos():
+    archolos_work = os.path.normpath(r"D:\Archolos\Archolos_work\ArcholosOmegaT\omegat\project_save.tmx")
+    aedan_a = os.path.normpath(r"D:\Dropbox\Archolos\OmegaT_a\Aedan_ArcholosOmegaT_pl\ArcholosOmegaT\omegat\project_save.tmx")
+    name = os.path.join('tmx', 'project_save_a.tmx')
+    merger = TMX_Merger(archolos_work)
+    merger.add_tmx(aedan_a)
+    merger.remove_newlines()
+    merger.create(name)
+    print("Об\'єднаний", name, "успішно створено (ArcholosOmegaT)")
 
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    # run_with_argv()
-    run_repos()
-    # run_dir('merge')
-    # run_dir('files')
-    # run_args("fiercepretzel_save.tmx")
-    # print("------")py 
+
+    # run_Dialoges()
+    run_Archolos()
