@@ -6,7 +6,7 @@ from shutil import copy
 # sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from tmx_module.TMX_Merger import TMX_Merger, norm_tu
 from json_module.jsonFile import jsonFile
-from replace_quotes import replace_quotes_folder
+# from test.replace_quotes import replace_quotes_folder
 from Glossary import Glossary
 from Glossary_sync import Glossary_sync
 
@@ -16,6 +16,12 @@ class TMX_Wrapper:
     def __init__(self, tmx_file):
         self.tmx_file = TMX_Merger(tmx_file)
         self.filepath = os.path.abspath(tmx_file)
+
+    @staticmethod
+    def get_folder(path : str):
+        parts = os.path.normpath(path).split(os.sep)
+        if len(parts) >= 3:
+            return parts[-3]
 
     # створює резервну копію поточного tmx файлу
     def backup(self):
@@ -28,7 +34,9 @@ class TMX_Wrapper:
     # ОБЕРЕЖНО! Перезаписує існуючий tmx файл
     # бажано використовувати разом з backup
     def create(self):
+        # self.backup() # TODO потрібно перелопатити усі застосування create
         self.tmx_file.create(self.filepath, _print_stats=False)
+        print(os.path.basename(self.filepath), "перезаписано")
     #-----------------------------------------------------------
     # TMX FROM JSON
     #-----------------------------------------------------------

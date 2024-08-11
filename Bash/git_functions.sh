@@ -179,8 +179,8 @@ check_file() {
 
 # Задає теку з репозиторіями для усіх суміжних скриптів
 get_directory() {
-	# local directory="/d/Dropbox/Archolos/OmegaT/"	# робоча
-	local directory="/d/Archolos/Archolos_test/Test_repos/"	# тест
+	local directory="/d/Dropbox/Archolos/OmegaT/"	# робоча
+	# local directory="/d/Archolos/Archolos_test/Test_repos/"	# тест
 
 	if check_directory "$directory"; then
 		echo "$directory"

@@ -22,15 +22,15 @@ class Glossary_sync:
                 self.add_glossary(glossary_path)
 
     # повертає четверту частину шляху з кінця
-    # @staticmethod
-    def get_name(self, path : str):
+    @staticmethod
+    def get_name(path : str):
         parts = os.path.normpath(path).split(os.sep)
         if len(parts) >= 4:
             return parts[-4]
 
     def add_glossary(self, glossary_path):
         if os.path.isfile(glossary_path):
-            name = self.get_name(glossary_path)
+            name = Glossary_sync.get_name(glossary_path)
             if not name:
                 name = glossary_path
 
