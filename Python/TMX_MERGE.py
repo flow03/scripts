@@ -2,19 +2,19 @@ import os
 import sys
 import io
 from TMX_Wrapper import TMX_Wrapper
-from tmx_module.TMX_Merger import TMX_Merger
+# from tmx_module.TMX_Merger import TMX_Merger
 
 class TMX_MERGE(TMX_Wrapper):
     def __init__(self, tmx_file):
         super().__init__(tmx_file)
 
-    def merge(self, repo_path):
-        if not os.path.isdir(repo_path):
-            print(f"Теки \"{repo_path}\" не існує")
+    def merge(self, repo_root):
+        if not os.path.isdir(repo_root):
+            print(f"Теки \"{repo_root}\" не існує")
             exit(1)
             
         folder = TMX_Wrapper.get_folder(self.filepath)
-        self.tmx_file.merge_repos(repo_path, folder)
+        self.tmx_file.merge_repos(repo_root, folder)
         self.tmx_file.print_stats()
         self.tmx_file.remove_newlines()
 

@@ -17,6 +17,7 @@ class TMX_Wrapper:
         self.tmx_file = TMX_Merger(tmx_file)
         self.filepath = os.path.abspath(tmx_file)
 
+    # повертає назву підтеки DialogeOmegaT чи ArcholosOmegaT
     @staticmethod
     def get_folder(path : str):
         parts = os.path.normpath(path).split(os.sep)
@@ -24,19 +25,24 @@ class TMX_Wrapper:
             return parts[-3]
 
     # створює резервну копію поточного tmx файлу
-    def backup(self):
-        if os.path.isfile(self.filepath):
+    def backup(self, filepath = None):
+        if not filepath:
+            filepath = self.filepath
+
+        if os.path.isfile(filepath):
             current_time = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
-            new_path = self.filepath + '.' + current_time + ".bak"
-            copy(self.filepath, new_path) # перезаписує файл, якщо такий є
+            new_path = filepath + '.' + current_time + ".bak"
+            copy(filepath, new_path) # перезаписує файл, якщо такий є
             print(os.path.basename(new_path), "створено")
 
     # ОБЕРЕЖНО! Перезаписує існуючий tmx файл
     # бажано використовувати разом з backup
-    def create(self):
+    def create(self, filepath = None):
+        if not filepath:
+            filepath = self.filepath
         # self.backup() # TODO потрібно перелопатити усі застосування create
-        self.tmx_file.create(self.filepath, _print_stats=False)
-        print(os.path.basename(self.filepath), "перезаписано")
+        self.tmx_file.create(filepath, _print_stats=False)
+        print(os.path.basename(filepath), "перезаписано")
     #-----------------------------------------------------------
     # TMX FROM JSON
     #-----------------------------------------------------------
