@@ -76,13 +76,13 @@ class TMX_Wrapper:
     def load_json(self, pl_json, uk_json, add_text=None):
         counter = 0
         for key, pl_text in pl_json.data.items():
-            if pl_text not in self.tmx_file.tu_dict:
+            if pl_text not in self.tmx_file._tu_dict:
                 if key in uk_json.data:
                     uk_text = uk_json.data[key]
                     tu = norm_tu.create_tu(pl_text, uk_text)
                     if add_text:
                         tu.add_uk_text(add_text)
-                    self.tmx_file.tu_dict[pl_text] = tu
+                    self.tmx_file._tu_dict[pl_text] = tu
                     counter += 1
 
         print(counter, "нових сегментів додано")
@@ -97,11 +97,11 @@ class TMX_Wrapper:
         new_data = list(zip(pl_txt, uk_txt))
 
         for pl_text, uk_text in new_data:
-            if pl_text not in self.tmx_file.tu_dict:
+            if pl_text not in self.tmx_file._tu_dict:
                 tu = norm_tu.create_tu(pl_text, uk_text)
                 if add_text:
                     tu.add_uk_text(add_text)
-                self.tmx_file.tu_dict[pl_text] = tu
+                self.tmx_file._tu_dict[pl_text] = tu
                 counter += 1
 
         print(counter, "нових сегментів додано")
@@ -193,8 +193,8 @@ class TMX_Wrapper:
         json_file = jsonFile(json_path)
         glossary = Glossary()
         for pl_text in json_file.data.values():
-            if pl_text in self.tmx_file.tu_dict:
-                uk_text = self.tmx_file.tu_dict[pl_text].get_uk_text()
+            if pl_text in self.tmx_file._tu_dict:
+                uk_text = self.tmx_file._tu_dict[pl_text].get_uk_text()
                 glossary.add_line(pl_text, uk_text)
 
         # glossary.write(glossary_path)
@@ -218,8 +218,8 @@ def run_tu_test():
     tu_2.add_uk_text("[DEEPL]")
 
     tmx_file = TMX_Merger()
-    tmx_file.tu_dict[tu.get_pl_text()] = tu
-    tmx_file.tu_dict[tu_2.get_pl_text()] = tu_2
+    tmx_file._tu_dict[tu.get_pl_text()] = tu
+    tmx_file._tu_dict[tu_2.get_pl_text()] = tu_2
     tmx_file.create("tu_test.tmx")
 
 def create_tmx_from_json():
