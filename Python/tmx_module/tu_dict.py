@@ -151,3 +151,14 @@ class tu_dict:
                 count += 1
         return count
     
+# # тест base_tu
+# def run_tu_test():
+#     tu = base_tu.create_tu("Польський текст", "Український текст")
+#     tu.add_uk_text("[Додатковий текст]") # не використовувати <>
+#     tu_2 = base_tu.create_tu("Żądło rzecznego krwiopijcy", "Жало річкового шершня", "Gliban")
+#     tu_2.add_uk_text("[DEEPL]")
+
+#     tmx_file = TMX_Merger()
+#     tmx_file._tu_dict[tu.get_pl_text()] = tu
+#     tmx_file._tu_dict[tu_2.get_pl_text()] = tu_2
+#     tmx_file.create("tu_test.tmx")

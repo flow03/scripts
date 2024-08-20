@@ -38,6 +38,23 @@ class TMX_Merger():
         print(f"{tmx_file} примусово додано")
         print_time(start_time, "Час:")
 
+    def add_tu(self, tu):
+        if prop_tu.check_prop(tu) is None:
+            self._tu_dict.add(base_tu(tu))
+        else: # prop
+            self._alt_dict.add(prop_tu(tu))
+
+    # def add_tu_weak(self, tu):
+    #     key = tu.get_key()
+    #     if key not in self._tu_dict and key not in self._alt_dict:
+    #         self.add_tu(tu)
+
+    def add_tu_force(self, tu):
+        if prop_tu.check_prop(tu) is None:
+            self._tu_dict.add(base_tu(tu), force=True)
+        else:
+            self._alt_dict.add(prop_tu(tu), force=True)
+
     def create(self, filename : str, _print_stats = True):
         if _print_stats:
             self.print_stats()
@@ -90,11 +107,10 @@ class TMX_Merger():
             self.root.insert(0, self.header)
         # ------
         for tu in tree.xpath("//tu"):
-            if prop_tu.check_prop(tu) is None:
-                self._tu_dict.add(base_tu(tu), force)
-            else: # prop
-                # print(f"prop '{get_pl_text(tu)}' знайдено")
-                self._alt_dict.add(prop_tu(tu), force)
+            if not force:
+                self.add_tu(tu)
+            else:
+                self.add_tu_force(tu)
 
     def create_body(self):
         for key in sorted(self._tu_dict.keys()):
