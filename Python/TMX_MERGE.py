@@ -2,7 +2,6 @@ import os
 import sys
 import io
 from TMX_Wrapper import TMX_Wrapper
-# from tmx_module.TMX_Merger import TMX_Merger
 
 class TMX_MERGE(TMX_Wrapper):
     def __init__(self, tmx_file):

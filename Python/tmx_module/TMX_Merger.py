@@ -1,7 +1,7 @@
 import os
 import time
 from lxml import etree
-from tu_dict import base_tu, prop_tu, tu_dict
+from tmx_module.tu_dict import base_tu, prop_tu, tu_dict
 
 class TMX_Merger():
     def __init__(self, tmx_file = None):

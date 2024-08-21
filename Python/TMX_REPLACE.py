@@ -51,8 +51,9 @@ def run_repo_test():
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-    run_repo_test()
-    # if "-a" in sys.argv:
-    #     run_repo_Archolos()
-    # else:
-    #     run_repo_Dialoge()
+    # run_repo_test()
+    
+    if "-a" in sys.argv:
+        run_repo_Archolos()
+    else:
+        run_repo_Dialoge()
