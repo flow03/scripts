@@ -94,14 +94,23 @@ main() {
 		if is_git "$normalized_dir"; then
 			local project_save=$(realpath "$dir/DialogeOmegaT/omegat/project_save.tmx")
 			local glossary=$(realpath "$dir/DialogeOmegaT/glossary/")	# тека з глосаріями
-
 			local glossary_message="Оновлені глосарії $(date +'%d.%m.%Y %H:%M:%S')"
-			commit_changes "$glossary" "$glossary_message"		# коммітимо глосарії
-			commit_changes "$project_save" "$commit_message"	# коммітимо сейв
-			push_changes "$normalized_dir"
+			
+			# коммітимо глосарії
+			commit_changes "$glossary" "$glossary_message"
+			status1=$?
+			# коммітимо сейв
+			commit_changes "$project_save" "$commit_message"
+			status2=$?
+
+			if [ $status1 -eq 0 ] || [ $status2 -eq 0 ]; then
+				push_changes "$normalized_dir"
+			else
+				echo "  Немає незакомічених змін"
+			fi
 		else
 			echo "  Шлях $normalized_dir не є репозиторієм"
-			return 1
+			# return 1
 		fi
         
         # cd "$original_directory"  # повертаємося до початкової теки
