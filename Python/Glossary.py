@@ -25,10 +25,14 @@ class Glossary:
             for line in sorted(self.content):
             # for line in self.content:
                 file.write(Glossary.get_str(line))
-
+    
     def diff(self, glossary : "Glossary"):
         # return self.content - glossary.content
-        return self.content.difference(glossary.content)
+        return self.content.difference(glossary.content)  # повертає set
+    
+    # Оператор віднімання
+    def __sub__(self, glossary : "Glossary"):
+        return self.content - glossary.content  # повертає set
     
     def update(self, glossary : "Glossary"):
         # self.content = self.content.union(glossary.content)
