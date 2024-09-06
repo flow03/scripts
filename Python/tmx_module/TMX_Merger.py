@@ -82,8 +82,9 @@ class TMX_Merger():
         # start_time = time.time()
         print("------")
         for file in os.listdir(directory):
-            file_path = os.path.join(directory, file)
-            if check_ext(file_path, "tmx"):
+            file_path = str(os.path.join(directory, file))
+            if file_path.endswith(".tmx"):
+            # if check_ext(file_path, "tmx"):
                 self.parse(file_path)
                 print(os.path.basename(file_path), "додано")
                     
@@ -121,18 +122,21 @@ class TMX_Merger():
                 self.body.append(self._alt_dict[key].text())
 
     def print_stats(self):
-        print("------")
-        if self._alt_dict:
-            print(f"Всього:\t {len(self._tu_dict) + len(self._alt_dict)} ({len(self._tu_dict)} + {len(self._alt_dict)})")
-        else:
-            print("Всього:\t", len(self._tu_dict))
+        all_str = "Всього:\t" + str(len(self._tu_dict))
+        diff_str = "Відмінностей: " + str(self._tu_dict.diff)
+        replace_str = "Замін:\t" + str(self._tu_dict.replace)
 
-        print("Відмінностей:", self._tu_dict.diff)
-        print("Замін:\t", self._tu_dict.replace)
         if self._alt_dict:
-            print("Альтернативних відмінностей:", self._alt_dict.diff)
-            print("Альтернативних замін:", self._alt_dict.replace)
-        # print("------")
+            all_str = f"Всього:\t{len(self._tu_dict) + len(self._alt_dict)} ({len(self._tu_dict)} + {len(self._alt_dict)})"
+            if self._alt_dict.diff:
+                diff_str = f"Відмінностей: {self._tu_dict.diff + self._alt_dict.diff} ({self._tu_dict.diff} + {self._alt_dict.diff})"
+            if self._alt_dict.replace:
+                replace_str = f"Замін:\t{self._tu_dict.replace + self._alt_dict.replace} ({self._tu_dict.replace} + {self._alt_dict.replace})"
+
+        print("------")
+        print(all_str)
+        print(diff_str)
+        print(replace_str)
 
     def write_file(self, tmx_file_path):
         # tmx_file_path = os.path.join(directory, 'MERGED.tmx')
@@ -142,11 +146,23 @@ class TMX_Merger():
             file.write(xml_string)
     
     def remove_newlines(self):
-        print("------")
-        print("Замін \\n", self._tu_dict.remove_newlines())
-        
+        tu_n = self._tu_dict.remove_newlines()
+        n_str = "newlines removed: " + str(tu_n)
+
+        tu_q = self._tu_dict.remove_quotes()
+        q_str = "quotes removed: " + str(tu_q)
+
         if self._alt_dict:
-            print("Альтернативних замін \\n", self._alt_dict.remove_newlines())
+            alt_n = self._alt_dict.remove_newlines()
+            alt_q = self._alt_dict.remove_quotes()
+            if alt_n:
+                n_str = "newlines removed: " + str(tu_n + alt_n) + " (" + str(tu_n) + " + " + str(alt_n) + ")"
+            if alt_q:
+                q_str = "quotes removed: " + str(tu_q + alt_q) + " (" + str(tu_q) + " + " + str(alt_q) + ")"
+
+        print("------")
+        print(n_str)
+        print(q_str)
 
 # Виводить час, який пройшов зі start_time
 def print_time(start_time, text):
@@ -166,3 +182,4 @@ def check_ext(file_path : str, ext : str):
         # print(f"Файл {file_path} не існує")
         # return False
     ...
+

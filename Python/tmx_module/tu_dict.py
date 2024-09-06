@@ -143,11 +143,17 @@ class tu_dict:
             self.replace_tu(tu, force) # False as default
 
     def remove_newlines(self):
+        return self.remove_symbol('\n')
+    
+    def remove_quotes(self):
+        return self.remove_symbol('\"')
+    
+    def remove_symbol(self, symbol):
         count = 0
         for key in self._tu_dict:
             uk_seg = self._tu_dict[key].get_uk_seg()
-            if '\n' in uk_seg.text:
-                uk_seg.text = uk_seg.text.replace('\n', "")
+            if symbol in uk_seg.text:
+                uk_seg.text = uk_seg.text.replace(symbol, "")
                 count += 1
         return count
     

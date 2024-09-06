@@ -11,32 +11,33 @@ def get_name(path : str):
     if len(parts) >= 4:
         return parts[-4]
 
-def run_with_argv():
-    if len(sys.argv) < 2:
-        print("Використання:")
-        print("python script.py <repositories>")
-        print("python script.py <repositories> <add_tmx_file>")
-        sys.exit(1)
-    else:
-        directory_path = sys.argv[1]
-        directory_path = os.path.normpath(directory_path)
-        merger = TMX_Merger()
-        if len(sys.argv) == 3:
-            add_file = sys.argv[2]
-            if check_ext(add_file, "tmx"): # isfile
-                merger.add_tmx(add_file)
-
-        if os.path.isdir(directory_path):
-            merger.merge_repos(directory_path)
-            merger.create('MERGED_repo.tmx')
-        # else:
-        #     print(directory_path, "не є директорією")
-
 def run_dir(directory_path):
     if os.path.isdir(directory_path):
         merger = TMX_Merger()
         merger.merge_dir(directory_path)
-        merger.create('MERGED_dir.tmx')
+        # merger.print_stats()
+        merger.remove_newlines()
+
+        name = "MERGED_dir.tmx"
+        merger.create(name)
+        print("------")
+        print(name, "створено")
+    else:
+        print(f"Теки \"{directory_path}\" не існує")
+
+def run_file(file_path):
+    if os.path.isfile(file_path):
+        merger = TMX_Merger(file_path)
+        # merger.merge_dir(directory_path)
+        # merger.print_stats()
+        merger.remove_newlines()
+
+        name = "FILE.tmx"
+        merger.create(name)
+        print("------")
+        print(name, "створено")
+    else:
+        print(f"Файлу \"{file_path}\" не існує")
 
 def run_Dialoges():
     archolos_edit = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
@@ -82,11 +83,5 @@ def run_repo(tmx_path, repo_path, folder = "DialogeOmegaT"):
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-    if "-a" in sys.argv:
-        archolos_work = os.path.normpath(r"D:\Archolos\Archolos_work\ArcholosOmegaT\omegat\project_save.tmx")
-        repo_path = os.path.normpath(r"D:\Dropbox\Archolos\OmegaT_a")
-        run_repo(archolos_work, repo_path, folder = "ArcholosOmegaT")
-    else:
-        archolos_edit = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
-        repo_path = os.path.normpath(r'D:\Dropbox\Archolos\OmegaT')
-        run_repo(archolos_edit, repo_path)
+    run_dir("1")
+    # run_file("project_save.tmx")

@@ -70,9 +70,9 @@ class Glossary_sync:
     def get_pathes():
         pathes = []
         pathes.append(r"D:\Archolos\Archolos_edit\DialogeOmegaT\glossary")
-        pathes.append(r"D:\Archolos\Archolos_work\ArcholosOmegaT\glossary")
+        # pathes.append(r"D:\Archolos\Archolos_work\ArcholosOmegaT\glossary")
         pathes.extend(Glossary_sync.get_repo_pathes(r"D:\Dropbox\Archolos\OmegaT", "DialogeOmegaT")) # +=
-        pathes.extend(Glossary_sync.get_repo_pathes(r"D:\Dropbox\Archolos\OmegaT_a", "ArcholosOmegaT")) # +=
+        # pathes.extend(Glossary_sync.get_repo_pathes(r"D:\Dropbox\Archolos\OmegaT_a", "ArcholosOmegaT")) # +=
 
         return pathes
     
@@ -88,8 +88,7 @@ class Glossary_sync:
         return pathes
 
 if __name__ == '__main__':
-    sync = Glossary_sync("Items.txt") # "names.txt" "Items.txt"
-    sync.print_diff(True)
-    # name = os.path.join("glossary_test", "glossary.txt")
+    sync = Glossary_sync("glossary.txt") # "names.txt" "Items.txt"
+    sync.print_diff()
     # sync.create()
     # sync.rewrite()

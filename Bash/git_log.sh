@@ -24,7 +24,7 @@ main() {
     for dir in "$directory"/*/; do
         normalized_dir="$(realpath "$dir")"  # нормалізуємо шлях до директорії
         cd "$normalized_dir" || exit
-        echo "Перевірка статусу git репозиторію в $normalized_dir"
+        echo "Перевірка статусу git репозиторію $(basename "$normalized_dir")"
 		
 		get_last_commit_date "$normalized_dir" "$commits_number"
     done

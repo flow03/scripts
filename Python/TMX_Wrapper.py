@@ -91,14 +91,15 @@ def run_replace_newlines():
     wrapper.remove_newlines_tmx()
 
 def run_create_glossary():
-    filename = "Items.txt"
-    tmx_path = os.path.normpath("D:\\Archolos\\Archolos_work\\ArcholosOmegaT\\omegat\\project_save.tmx")
+    tmx_path = os.path.normpath("D:\\Archolos\\Archolos_edit\\DialogeOmegaT\\omegat\\project_save.tmx")
     # glossary_path = os.path.join("glossary","Items.txt")
 
     # Items.txt
+    filename = "Items.txt"
     json_path = os.path.normpath(r"D:\Archolos\Archolos_work\ArcholosOmegaT\source\Scripts\Content\Story\Mod_Text.d.json")
 
     # names.txt
+    # filename = "names.txt"
     # json_path = os.path.normpath(r"D:\Archolos\Archolos_work\ArcholosOmegaT\source\Scripts\Content\Story\Mod_NPC_Names.d.json")
 
     wrapper = TMX_Wrapper(tmx_path)
@@ -111,6 +112,6 @@ def run_create_glossary():
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    # run_create_glossary()
-    run_replace_newlines()
+    run_create_glossary()
+    # run_replace_newlines()
     

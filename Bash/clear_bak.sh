@@ -19,6 +19,7 @@ main() {
 			create_directory "$bak_path"
 			
 			move "$path" "$bak_path"	# переносимо файли
+			# garbage_collect "$normalized_dir"
 		else
 			echo "  $(basename "$normalized_dir") не є репозиторієм"
 		fi
