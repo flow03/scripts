@@ -1,7 +1,45 @@
-# import os
-import sys
-import io
+import os, sys, io
 from pathlib import Path
+
+def find_file_os(start_dir, filename):
+    # cycles = 0
+    for root, dirs, files in os.walk(start_dir):
+        # cycles += 1
+        if filename in files:
+            file_path = os.path.join(root, filename)
+            # print(f"Циклів {cycles}")
+            # print(f"Файл '{file_path}' знайдено")
+            return file_path
+    
+    # print(f"Циклів {cycles}")
+    # print(f"Файл '{filename}' не знайдено.")
+    # sys.exit(1)
+    return None
+
+def find_file_Path(start_dir, filename):
+    cycles = 0
+    for file in Path(start_dir).rglob('*.json'):
+        # print(file)
+        cycles += 1
+        if file.name == filename:
+            print(f"Циклів Path {cycles}")
+            print(f"Файл '{file}' знайдено")
+            return file
+            
+    print(f"Циклів Path {cycles}")
+    print(f"Файл '{filename}' не знайдено.")
+    # sys.exit(1)
+    return None
+
+def check_path_os(path):
+    directory_path = os.path.normpath(path)
+    if os.path.exists(directory_path):
+        # print(f"Шлях '{directory_path}' не знайдено.")
+        # sys.exit(1)
+        return directory_path
+    else:
+        # print(f"Шлях '{directory_path}'") 
+        return None
 
 # def list_files(directory):
     # files = os.listdir(directory)

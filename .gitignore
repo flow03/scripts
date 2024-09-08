@@ -18,4 +18,6 @@
 
 # MERGED.tmx
 __pycache__
+build
+dist
 settings.txt

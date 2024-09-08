@@ -82,24 +82,9 @@ class jsonFile():
         with open(filename, 'w', encoding='utf-8-sig') as json_file:
             json.dump(self.data, json_file, ensure_ascii=False, indent=4) # indent це відступи, може бути 2
 
-    @staticmethod
-    def find_value(loc_path, key):
-        for root, dirs, files in os.walk(loc_path):
-            for file in files:
-                if file.endswith(".json"):
-                    file_path = os.path.join(root, file)
-                    with open(file_path, 'r', encoding='utf-8-sig') as json_file:
-                        try:
-                            loaded_data = json.load(json_file)
-                            if key in loaded_data:
-                                return loaded_data[key]
-                        except json.JSONDecodeError:
-                            print(f"Cannot read JSON from file '{json_file}'")
-        return None
-
     # шукає у вказаній теці і її підтеках усі json-файли, і шукає в них вказаний ключ
     @staticmethod
-    def find_value_new(loc_path, key):
+    def find_value(loc_path, key):
         for root, dirs, files in os.walk(loc_path):
             for file in files:
                 if file.endswith(".json"):
