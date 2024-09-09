@@ -63,13 +63,13 @@ class TMX_Merger():
         
         self.write_file(filename) # 'MERGED_repo.tmx'
 
-    def merge_repos(self, repo_root, folder = "DialogeOmegaT"):
+    def merge_repos(self, repo_root):
         start_time = time.time()
         print("------")
         for repo in os.listdir(repo_root):
             repo_path = os.path.join(repo_root, repo)
             if os.path.isdir(repo_path):
-                save_path = os.path.join(repo_path, folder,'omegat','project_save.tmx')
+                save_path = os.path.join(repo_path, "DialogeOmegaT",'omegat','project_save.tmx')
                 if os.path.isfile(save_path):
                     # parse_time = time.time()
                     self.parse(save_path)
@@ -181,5 +181,5 @@ def check_ext(file_path : str, ext : str):
     # else:
         # print(f"Файл {file_path} не існує")
         # return False
-    ...
+    # ...
 

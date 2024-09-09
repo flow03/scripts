@@ -12,8 +12,7 @@ class TMX_MERGE(TMX_Wrapper):
             print(f"Теки \"{repo_root}\" не існує")
             exit(1)
             
-        folder = TMX_Wrapper.get_folder(self.filepath)
-        self.tmx_file.merge_repos(repo_root, folder)
+        self.tmx_file.merge_repos(repo_root)
         self.tmx_file.print_stats()
         self.tmx_file.remove_newlines()
 
@@ -21,25 +20,33 @@ class TMX_MERGE(TMX_Wrapper):
         self.backup()
         self.create()
 
-def run_repo_Dialoge():
+    def merge_dir(self, directory):
+        if not os.path.isdir(directory):
+            print(f"Теки \"{directory}\" не існує")
+            exit(1)
+            
+        self.tmx_file.merge_dir(directory)
+        self.tmx_file.print_stats()
+        self.tmx_file.remove_newlines()
+
+        print("------")
+        self.backup()
+        self.create()
+
+def run_merge():
     archolos_edit = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
     repo_path = os.path.normpath(r'D:\Dropbox\Archolos\OmegaT')
     merger = TMX_MERGE(archolos_edit)
-    # merger.backup()
     merger.merge(repo_path)
 
-def run_repo_Archolos():
-    archolos_work = os.path.normpath(r"D:\Archolos\Archolos_work\ArcholosOmegaT\omegat\project_save.tmx")
-    repo_path = os.path.normpath(r"D:\Dropbox\Archolos\OmegaT_a")
-    merger = TMX_MERGE(archolos_work)
-    # merger.backup()
-    merger.merge(repo_path)
+def run_merge_dir(directory_path):
+    archolos_edit = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
+    merger = TMX_MERGE(archolos_edit)
+    merger.merge_dir(directory_path)
 
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-    if "-a" in sys.argv:
-        run_repo_Archolos()
-    else:
-        run_repo_Dialoge()
+    run_merge()
+    # run_merge_dir('1')

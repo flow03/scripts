@@ -14,13 +14,6 @@ class TMX_Wrapper:
         self.tmx_file = TMX_Merger(tmx_file)
         self.filepath = os.path.abspath(tmx_file)
 
-    # повертає назву підтеки DialogeOmegaT чи ArcholosOmegaT
-    @staticmethod
-    def get_folder(path : str):
-        parts = os.path.normpath(path).split(os.sep)
-        if len(parts) >= 3:
-            return parts[-3]
-
     # створює резервну копію поточного tmx файлу
     def backup(self, filepath = None):
         if not filepath:
@@ -43,10 +36,6 @@ class TMX_Wrapper:
     #-----------------------------------------------------------
     # REMOVE NEWLINES
     #-----------------------------------------------------------
-    def remove_newlines_tmx(self):
-        self.tmx_file.remove_newlines()
-        self.create()   # перезаписує існуючий
-
     @staticmethod
     def remove_newlines_txt(txt_lines : list):
         new_txt = []
@@ -57,10 +46,11 @@ class TMX_Wrapper:
     #-----------------------------------------------------------
 
 def run_replace_newlines():
-    # wrapper = TMX_Wrapper(os.path.join("test","newlines_test.tmx"))
-    wrapper = TMX_Wrapper("project_save_a.tmx")
+    archolos_edit = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
+    wrapper = TMX_Wrapper(archolos_edit)
+    wrapper.tmx_file.remove_newlines()
     wrapper.backup()
-    wrapper.remove_newlines_tmx()
+    wrapper.create()    # перезаписує існуючий
 
 # Запуск програми
 if __name__ == "__main__":

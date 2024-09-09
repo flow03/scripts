@@ -71,7 +71,8 @@ if __name__ == "__main__":
     sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
     finder = Finder()
     finder.get_data()
-    # print(finder.locs_data)
+    print("Версія перекладу від 15.12.23")
+    print("------")
 
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:

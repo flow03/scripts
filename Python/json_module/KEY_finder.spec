@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
-
 # pyinstaller KEY_finder.spec
+
 datas_list = []
 datas_list.append(('locs/*.json', 'locs/'))
 
@@ -40,5 +40,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='star-key_64.ico',
+    icon='star-key.ico',
 )

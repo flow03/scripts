@@ -39,9 +39,10 @@ class Glossary_sync:
 
             # Додаємо всі інші глосарії, окрім поточного
             for p, gl in self.glossaries.items():
-                if p != path:  # Пропускаємо поточний глосарій
-                    others.update(gl)  # Додаємо значення до загального глосарію
+                if p != path:
+                    others.update(gl)
             
+            # Віднімаємо від поточного значення усіх інших глосаріїв
             # diff = glossary - others
             diff = glossary.diff(others)
             if diff:
@@ -63,7 +64,7 @@ class Glossary_sync:
 
         return merged
 
-    # перезаписує УСІ глосарії за вказаними шляхами
+    # перезаписує УСІ додані глосарії
     def sync(self):
         merged = self.merge()
         for path in self.glossaries.keys():
@@ -76,7 +77,7 @@ class Glossary_sync:
     def get_pathes():
         pathes = []
         pathes.append(r"D:\Archolos\Archolos_edit\DialogeOmegaT\glossary")
-        pathes.extend(Glossary_sync.get_repo_pathes(r"D:\Dropbox\Archolos\OmegaT", "DialogeOmegaT")) # +=
+        pathes.extend(Glossary_sync.get_repo_pathes(r"D:\Dropbox\Archolos\OmegaT")) # +=
 
         return pathes
     
@@ -86,10 +87,10 @@ class Glossary_sync:
     
     # повертає шляхи до усіх тек з глосаріями у вказаному репозиторії
     @staticmethod
-    def get_repo_pathes(repo, folder = "DialogeOmegaT"):
+    def get_repo_pathes(repo):
         pathes = []
         for name in os.listdir(repo):
-            glossary_path = os.path.join(repo, name, folder, "glossary")
+            glossary_path = os.path.join(repo, name, "DialogeOmegaT", "glossary")
             if os.path.isdir(glossary_path):
                 pathes.append(glossary_path)
 
