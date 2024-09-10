@@ -161,8 +161,8 @@ class TMX_Merger():
                 q_str = "quotes removed: " + str(tu_q + alt_q) + " (" + str(tu_q) + " + " + str(alt_q) + ")"
 
         print("------")
-        print(n_str)
-        print(q_str)
+        print(n_str + " segments")
+        print(q_str + " segments")
 
 # Виводить час, який пройшов зі start_time
 def print_time(start_time, text):

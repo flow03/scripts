@@ -145,9 +145,6 @@ class tu_dict:
     def remove_newlines(self):
         return self.remove_symbol('\n')
     
-    def remove_quotes(self):
-        return self.remove_symbol('\"')
-    
     def remove_symbol(self, symbol):
         count = 0
         for key in self._tu_dict:
@@ -157,6 +154,30 @@ class tu_dict:
                 count += 1
         return count
     
+    # def remove_eight_spaces(self):
+    #     return self.remove_symbol("        ")
+
+    def remove_quotes(self):
+        count = 0
+        for key in self._tu_dict:
+            uk_seg = self._tu_dict[key].get_uk_seg()
+            if '\"' in uk_seg.text:
+                self.detect_quotes(uk_seg)
+                count += 1
+        return count
+    
+    def detect_quotes(self, seg):
+        count = seg.text.count('\"')
+        print("------")
+        print(f"{count} quotes")
+        print(f"{seg.text}")
+        if count > 1:
+            seg.text = seg.text.replace('\"', "\'")
+        else:
+            seg.text = seg.text.replace('\"', "")
+
+        print(f"{seg.text}")    # відображає вже замінений варіант, не враховує наявні '
+
 # # тест base_tu
 # def run_tu_test():
 #     tu = base_tu.create_tu("Польський текст", "Український текст")

@@ -44,9 +44,18 @@ def run_merge_dir(directory_path):
     merger = TMX_MERGE(archolos_edit)
     merger.merge_dir(directory_path)
 
+def run_file(filepath):
+    merger = TMX_MERGE(filepath)
+    merger.tmx_file.print_stats()
+    merger.tmx_file.remove_newlines()
+    # print("------")
+    # merger.backup()
+    # merger.create()
+
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-    run_merge()
+    # run_merge()
     # run_merge_dir('1')
+    # run_file('quotes_test.tmx')
