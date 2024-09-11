@@ -34,7 +34,7 @@ class base_tu:
 
     def get_key(self):
         return self.get_pl_text()
-    
+
     def get_uk_seg(self):
         uk_seg = self.tu.find("./tuv[@lang='uk']/seg")
         return uk_seg
@@ -68,6 +68,21 @@ class base_tu:
         seg_uk.text = uk_text
 
         return base_tu(tu)
+
+    # @staticmethod
+    def check_note(self):
+        return self.tu.find("./note")
+
+    def print_note(self):
+        if self.check_note() is not None:
+            print("------")
+            tuv_uk = self.tu.find("./tuv[@lang='uk']")
+            creationid = tuv_uk.attrib.get('creationid')
+            changeid = tuv_uk.attrib.get('changeid')
+            print(self.get_date().strftime("%d.%m.%y"))
+            print(f"{creationid}, {changeid}:", self.tu.find("./note").text)
+            print("pl:", self.get_pl_text())
+            print("uk:", self.get_uk_text())
 
 class prop_tu(base_tu):
     def __init__(self, tu):
@@ -177,6 +192,10 @@ class tu_dict:
             seg.text = seg.text.replace('\"', "")
 
         print(f"{seg.text}")    # відображає вже замінений варіант, не враховує наявні '
+
+    def print_notes(self):
+        for tu in self._tu_dict.values():
+            tu.print_note() # check_note inside
 
 # # тест base_tu
 # def run_tu_test():

@@ -13,11 +13,11 @@ class TMX_Merger():
         self._alt_dict = tu_dict()   # Alternative translations
 
         # self.repeat = 0
-        self.diff = 0
-        self.replace = 0
+        # self.diff = 0
+        # self.replace = 0
         # self.alt_repeat = 0
-        self.alt_diff = 0
-        self.alt_replace = 0
+        # self.alt_diff = 0
+        # self.alt_replace = 0
 
         if tmx_file:
             self.add_tmx(tmx_file)
@@ -94,7 +94,7 @@ class TMX_Merger():
         # start_time = time.time()
         print("------")
         for file in tmx_files:
-            if check_ext(file, "tmx"):
+            if file.endswith(".tmx"):
                 self.parse(file)
                 print(os.path.basename(file), "додано")
                     
@@ -164,6 +164,10 @@ class TMX_Merger():
         print(n_str + " segments")
         print(q_str + " segments")
 
+    def print_notes(self):
+        self._tu_dict.print_notes()
+        self._alt_dict.print_notes()
+
 # Виводить час, який пройшов зі start_time
 def print_time(start_time, text):
     end_time = time.time()
@@ -171,15 +175,9 @@ def print_time(start_time, text):
     print(text, execution_time)
 
 # Перевіряє розширення
-def check_ext(file_path : str, ext : str):
-    if os.path.isfile(file_path):
-        file_name, file_ext = os.path.splitext(file_path)
-        file_ext = file_ext.lstrip('.') # видаляє крапку
-        # print("file_ext", file_ext)
-        # print("ext", ext)
-        return file_ext == ext
-    # else:
-        # print(f"Файл {file_path} не існує")
-        # return False
-    # ...
+# def check_ext(file_path : str, ext : str):
+#     if os.path.isfile(file_path):
+#         file_name, file_ext = os.path.splitext(file_path)
+#         file_ext = file_ext.lstrip('.') # видаляє крапку
+#         return file_ext == ext
 

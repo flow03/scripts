@@ -44,10 +44,13 @@ def run_merge_dir(directory_path):
     merger = TMX_MERGE(archolos_edit)
     merger.merge_dir(directory_path)
 
-def run_file(filepath):
+def run_file(filepath = None):
+    if not filepath:
+        filepath = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
     merger = TMX_MERGE(filepath)
     merger.tmx_file.print_stats()
     merger.tmx_file.remove_newlines()
+    merger.tmx_file.print_notes()
     # print("------")
     # merger.backup()
     # merger.create()
@@ -58,4 +61,4 @@ if __name__ == "__main__":
 
     # run_merge()
     # run_merge_dir('1')
-    # run_file('quotes_test.tmx')
+    run_file() # 'quotes_test.tmx'
