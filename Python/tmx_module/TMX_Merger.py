@@ -152,17 +152,25 @@ class TMX_Merger():
         tu_q = self._tu_dict.remove_quotes()
         q_str = "quotes removed: " + str(tu_q)
 
+        tu_d = self._tu_dict.replace_four_dots()
+        d_str = "dots removed: " + str(tu_d)
+
         if self._alt_dict:
             alt_n = self._alt_dict.remove_newlines()
             alt_q = self._alt_dict.remove_quotes()
+            alt_d = self._alt_dict.replace_four_dots()
+
             if alt_n:
                 n_str = "newlines removed: " + str(tu_n + alt_n) + " (" + str(tu_n) + " + " + str(alt_n) + ")"
             if alt_q:
                 q_str = "quotes removed: " + str(tu_q + alt_q) + " (" + str(tu_q) + " + " + str(alt_q) + ")"
+            if alt_d:
+                d_str = "quotes removed: " + str(tu_d + d_str) + " (" + str(tu_d) + " + " + str(d_str) + ")"
 
         print("------")
         print(n_str + " segments")
         print(q_str + " segments")
+        print(d_str + " segments")
 
     def print_notes(self):
         self._tu_dict.print_notes()

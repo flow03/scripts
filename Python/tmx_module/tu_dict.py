@@ -158,19 +158,22 @@ class tu_dict:
             self.replace_tu(tu, force) # False as default
 
     def remove_newlines(self):
-        return self.remove_symbol('\n')
+        return self.replace_symbol('\n')
     
-    def remove_symbol(self, symbol):
+    def replace_symbol(self, symbol, replacement=""):
         count = 0
         for key in self._tu_dict:
             uk_seg = self._tu_dict[key].get_uk_seg()
             if symbol in uk_seg.text:
-                uk_seg.text = uk_seg.text.replace(symbol, "")
+                uk_seg.text = uk_seg.text.replace(symbol, replacement)
                 count += 1
         return count
     
+    def replace_four_dots(self):
+        return self.replace_symbol("....", "...")
+
     # def remove_eight_spaces(self):
-    #     return self.remove_symbol("        ")
+    #     return self.replace_symbol("        ")
 
     def remove_quotes(self):
         count = 0
