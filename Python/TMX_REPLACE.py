@@ -2,6 +2,7 @@ import os, io, sys
 from shutil import copy
 from TMX_Wrapper import TMX_Wrapper
 
+# перезаписує усі сейви сейвом з Archolos_edit
 class TMX_REPLACE(TMX_Wrapper):
     def __init__(self, tmx_file):
         super().__init__(tmx_file)

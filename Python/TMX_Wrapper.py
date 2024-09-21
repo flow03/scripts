@@ -7,6 +7,7 @@ from shutil import copy
 from tmx_module.TMX_Merger import TMX_Merger
 # from tmx_module.tu_dict import base_tu
 # from test.replace_quotes import replace_quotes_folder
+from json_module.jsonFile import jsonFile
 
 # ----------------------------------------------------
 class TMX_Wrapper:
@@ -33,17 +34,18 @@ class TMX_Wrapper:
         # self.backup() # TODO потрібно перелопатити усі застосування create
         self.tmx_file.create(filepath, _print_stats=False)
         print(os.path.basename(filepath), "перезаписано")
-    #-----------------------------------------------------------
-    # REMOVE NEWLINES
-    #-----------------------------------------------------------
+    
+        # TODO можливо, варто перенести у батьківський клас TMX_Wrapper
+    
+    # завантажує локалізацію з вибраної теки
     @staticmethod
-    def remove_newlines_txt(txt_lines : list):
-        new_txt = []
-        for line in txt_lines:
-            new_txt.append(line.replace('\n', ""))
-        
-        return new_txt
-    #-----------------------------------------------------------
+    def get_json(path):
+        loc = jsonFile()
+        loc.load_loc(path)
+        loc.remove_newlines()
+        return loc
+
+#-----------------------------------------------------------
 
 def run_replace_newlines():
     archolos_edit = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')

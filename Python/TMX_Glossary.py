@@ -26,7 +26,7 @@ class TMX_Glossary(TMX_Wrapper):
     # перезаписує усі глосарії зі вказаним ім'ям
     @staticmethod
     def write_glossaries(glossary : Glossary, filename : str):
-        pathes = Glossary_sync.get_pathes_test()
+        pathes = Glossary_sync.get_pathes()
 
         for path in pathes:
             filepath = os.path.join(path, filename)
@@ -48,6 +48,6 @@ def run_create_glossary(glossary_name, json_name):
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    run_create_glossary("Items.txt", "Mod_Text.d.json")
-    print()
+    # run_create_glossary("Items.txt", "Mod_Text.d.json")
+    # print()
     run_create_glossary("names.txt", "Mod_NPC_Names.d.json")

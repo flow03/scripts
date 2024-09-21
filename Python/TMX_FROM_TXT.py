@@ -1,6 +1,6 @@
 import os, io, sys
 from TMX_Wrapper import TMX_Wrapper
-from TMX_FROM_JSON import TMX_FROM_JSON
+# from TMX_FROM_JSON import TMX_FROM_JSON
 from tmx_module.tu_dict import base_tu
 from shutil import copy
 
@@ -17,9 +17,18 @@ class TMX_FROM_TXT(TMX_Wrapper):
             with open(filename, 'r', encoding='utf-8') as txt_file:
                 lines = txt_file.readlines()
             
-            lines = TMX_Wrapper.remove_newlines_txt(lines)
+            lines = TMX_FROM_TXT.remove_newlines_txt(lines)
             return lines
+
+    # видаляє усі символи '\n' з переданого списку
+    @staticmethod
+    def remove_newlines_txt(txt_lines : list):
+        new_txt = []
+        for line in txt_lines:
+            new_txt.append(line.replace('\n', ""))
         
+        return new_txt
+      
     # дописує tmx файл на основі двох txt файлів
     def load_txt(self, pl_txt, uk_txt, add_text=None):
         counter = 0
@@ -41,7 +50,7 @@ class TMX_FROM_TXT(TMX_Wrapper):
     # на основі json файлів у теці і підтеках source_folder
     @staticmethod
     def create_pl_source_txt(source_folder, pl_txtname, uk_txtname):
-        pl_source = TMX_FROM_JSON.get_json(source_folder)
+        pl_source = TMX_Wrapper.get_json(source_folder)
 
         pl_source.write_txt(pl_txtname)
         print(f"{pl_txtname} успішно створено ({len(pl_source.data)} елементів)")
@@ -50,6 +59,7 @@ class TMX_FROM_TXT(TMX_Wrapper):
         print(uk_txtname, "успішно скопійовано")
 
 #-----------------------------------------------------------
+
 def create_txt_from_json():
     source_folder = os.path.join("test", "source")
     pl_file = os.path.join("test", "pl_source.txt")

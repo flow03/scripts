@@ -3,6 +3,7 @@ import sys
 import io
 from TMX_Wrapper import TMX_Wrapper
 
+# об'єднує усі сейви і перезаписує сейв у Archolos_edit
 class TMX_MERGE(TMX_Wrapper):
     def __init__(self, tmx_file):
         super().__init__(tmx_file)

@@ -1,34 +1,6 @@
+import os, io, sys
 import json
-import io
-import sys
-import os
 from shutil import move
-
-def import_tmx():
-    tmx_dir = os.path.abspath(os.path.join(__file__, '..', '..', 'tmx'))
-    # tmx_dir = os.path.join(tmx_dir, 'tmx')
-    sys.path.append(tmx_dir)
-    # print(tmx_dir)
-
-def tests_path():
-    # parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    parent_dir = os.path.abspath(os.path.dirname(__file__))
-    # print(parent_dir)
-
-    parent_dir = os.path.dirname(parent_dir)
-    # print(parent_dir)
-    tmx_dir = os.path.join(parent_dir, 'tmx')
-    sys.path.append(tmx_dir)
-    # print(tmx_dir)
-    # test = os.path.abspath(os.path.join(__file__, '..\..'))
-    test = os.path.join(__file__, '..', '..')
-    print(test)
-    test = os.path.abspath(test)
-    print(test)
-    print(os.sep)
-
-# import_tmx()
-# from TMX_Merger import check_ext
 
 class jsonFile():
     def __init__(self, json_file = None):
@@ -66,7 +38,6 @@ class jsonFile():
         if os.path.exists(loc_path):
             for root, dirs, files in os.walk(loc_path):
                 for file in files:
-                    # if check_ext(file, 'json'):
                     if file.endswith(".json"):
                         file_path = os.path.join(root, file)
                         self.add(file_path)
@@ -167,7 +138,8 @@ class jsonFile():
 
     def remove_newlines(self):
         for key, text in self.data.items():
-            self.data[key] = text.replace('\n', "")
+            if '\n' in text:
+                self.data[key] = text.replace('\n', "")
 
 def run_create_range(filename : str, start : int, end : int):
     if os.path.isfile(filename):

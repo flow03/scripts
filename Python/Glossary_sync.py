@@ -5,7 +5,7 @@ class Glossary_sync:
     def __init__(self, filename = "glossary.txt"):
         self.glossaries = {}
 
-        pathes = Glossary_sync.get_pathes_test()
+        pathes = Glossary_sync.get_pathes()
         # for path in pathes:
         #     print(path)
         self.add_glossaries(pathes, filename)
@@ -97,6 +97,6 @@ class Glossary_sync:
         return pathes
 
 if __name__ == '__main__':
-    sync = Glossary_sync("glossary.txt") # "names.txt" "Items.txt"
+    sync = Glossary_sync("glossary.txt") # "glossary.txt" "names.txt" "Items.txt"
     sync.print_diff()
     # sync.sync()

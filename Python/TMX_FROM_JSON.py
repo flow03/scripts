@@ -8,19 +8,11 @@ class TMX_FROM_JSON(TMX_Wrapper):
     def __init__(self, tmx_file):
         super().__init__(tmx_file)
 
-    # TODO можливо, варто перенести у батьківський клас TMX_Wrapper
-    @staticmethod
-    def get_json(path):
-        loc = jsonFile()
-        loc.load_loc(path)
-        loc.remove_newlines()
-        return loc
-
     # завантажує дві json ТЕКИ, щоб передати їх у load_json, і створює tmx файл
     def tmx_from_json(self, pl_path, uk_path):
-        pl_json = TMX_FROM_JSON.get_json(pl_path)
+        pl_json = TMX_Wrapper.get_json(pl_path)
         # replace_quotes_folder(uk_path)
-        uk_json = TMX_FROM_JSON.get_json(uk_path)
+        uk_json = TMX_Wrapper.get_json(uk_path)
 
         self.load_json(pl_json, uk_json, "[DEEPL]")
         # self.create()  # перезаписує існуючий
@@ -53,7 +45,7 @@ class TMX_FROM_JSON(TMX_Wrapper):
     # і створює два однакових файли pl_jsonname і uk_jsonname
     @staticmethod
     def create_pl_source_json(source_folder, pl_jsonname, uk_jsonname):
-        pl_source = TMX_FROM_JSON.get_json(source_folder)
+        pl_source = TMX_Wrapper.get_json(source_folder)
 
         pl_source.write(pl_jsonname)
         print(f"{pl_jsonname} успішно створено ({len(pl_source.data)} елементів)")
