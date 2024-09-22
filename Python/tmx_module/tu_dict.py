@@ -36,13 +36,21 @@ class base_tu:
         return self.get_pl_text()
 
     def get_uk_seg(self):
-        uk_seg = self.tu.find("./tuv[@lang='uk']/seg")
-        return uk_seg
+        seg_uk = self.tu.find("./tuv[@lang='uk']/seg")
+        return seg_uk
 
     def add_uk_text(self, text):
         seg_uk = self.get_uk_seg()
         seg_uk.text = text + seg_uk.text
         # seg_uk.text = etree.CDATA(text + seg_uk.text)
+
+    def change_pl_text(self, text : str):
+        seg_pl = self.tu.find("./tuv[@lang='pl']/seg")
+        seg_pl.text = text
+
+    def add_note(self, text : str):
+        note = etree.SubElement(self.tu, "note")
+        note.text = text
 
     @staticmethod    
     def create_tu(pl_text, uk_text, name = "TMX_Merger"):
@@ -129,13 +137,16 @@ class tu_dict:
         return len(self._tu_dict)
 
     def __contains__(self, tu):
-        return tu in self._tu_dict
+        return tu in self._tu_dict.values()
     
     def contains(self, tu):
         return self.__contains__(tu)
     
     def keys(self):
         return self._tu_dict.keys()
+    
+    def pop(self, key):
+        return self._tu_dict.pop(key, None)
 
     def replace_tu(self, tu : base_tu, force=False):
         key = tu.get_key()

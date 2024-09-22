@@ -101,11 +101,14 @@ class jsonFile():
                         count += 1
             print(count, "json файлів переміщено до", new_folder)
 
+    # створює txt-файл на основі значень data, без ключів
     def write_txt(self, filename):
         with open(filename, 'w', encoding='utf-8') as txt_file:
             for line in self.data.values():
                 txt_file.write(line + '\n')
 
+    # читає рядки з txt файлу, і перезаписує вже наявні значення в порядку ключів
+    # TODO може призвести до помилок, бо в dict невизначений порядок елементів
     def read_txt(self, filename):
         with open(filename, 'r', encoding='utf-8') as txt_file:
             lines = txt_file.readlines()
@@ -136,10 +139,27 @@ class jsonFile():
             result.data = new_data
             return result
 
+    # видаляє усі символи '\n' зі значень data
     def remove_newlines(self):
         for key, text in self.data.items():
             if '\n' in text:
                 self.data[key] = text.replace('\n', "")
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def __setitem__(self, key, tu):
+        self.data[key] = tu
+
+    def __contains__(self, tu):
+        return tu in self.data
+    
+    def __len__(self):
+        return len(self.data)
+
+    def keys(self):
+        return self.data.keys()    
+#-----------------------------------------------------------
 
 def run_create_range(filename : str, start : int, end : int):
     if os.path.isfile(filename):
