@@ -42,7 +42,7 @@ class Glossary_sync:
                 if p != path:
                     others.update(gl)
             
-            # Віднімаємо від поточного значення усіх інших глосаріїв
+            # Віднімаємо від поточного усі інші глосарії
             # diff = glossary - others
             diff = glossary.diff(others)
             if diff:

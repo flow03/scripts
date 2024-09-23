@@ -136,8 +136,9 @@ class tu_dict:
     def __len__(self):
         return len(self._tu_dict)
 
-    def __contains__(self, tu):
-        return tu in self._tu_dict.values()
+    # для оператора in
+    def __contains__(self, key):
+        return key in self._tu_dict # .keys()
     
     def contains(self, tu):
         return self.__contains__(tu)

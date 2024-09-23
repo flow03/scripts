@@ -26,7 +26,7 @@ class TMX_Merger():
         if os.path.isfile(tmx_file):
             # print("------")
             self.parse(tmx_file)
-            print(f"{tmx_file} додано")
+            # print(f"{tmx_file} додано")
             # print(f"{os.path.basename(tmx_file)} додано")
         else:
             print(f"Файл {tmx_file} відсутній")
@@ -165,7 +165,7 @@ class TMX_Merger():
             if alt_q:
                 q_str = "quotes removed: " + str(tu_q + alt_q) + " (" + str(tu_q) + " + " + str(alt_q) + ")"
             if alt_d:
-                d_str = "quotes removed: " + str(tu_d + d_str) + " (" + str(tu_d) + " + " + str(d_str) + ")"
+                d_str = "dots removed: " + str(tu_d + d_str) + " (" + str(tu_d) + " + " + str(d_str) + ")"
 
         print("------")
         print(n_str + " segments")

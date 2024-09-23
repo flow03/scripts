@@ -40,6 +40,7 @@ def run_merge():
     merger = TMX_MERGE(archolos_edit)
     merger.merge(repo_path)
 
+# об'єднує tmx файли у вказаній теці з сейвом Archolos_edit
 def run_merge_dir(directory_path):
     archolos_edit = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
     merger = TMX_MERGE(archolos_edit)
@@ -53,13 +54,13 @@ def run_file(filepath = None):
     merger.tmx_file.remove_newlines()
     merger.tmx_file.print_notes()
     # print("------")
-    # merger.backup()
-    # merger.create()
+    merger.backup()
+    merger.create()
 
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-    # run_merge()
+    run_merge()
     # run_merge_dir('1')
-    run_file() # 'quotes_test.tmx'
+    # run_file() # notes
