@@ -19,6 +19,7 @@ class Finder:
         self.locs_data = {}
         # self.get_data()
 
+    # отримує дані з файлів
     def get_data(self):
         for loc in self.locs:
             if loc not in self.locs_data:
@@ -71,8 +72,8 @@ if __name__ == "__main__":
     sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
     finder = Finder()
     finder.get_data()
-    print("Версія перекладу від 15.12.23")
-    print("------")
+    # print("Версія перекладу від 15.12.23")
+    # print("------")
 
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:

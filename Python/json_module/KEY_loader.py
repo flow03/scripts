@@ -7,6 +7,7 @@ class FinderLoader(Finder):
         self.repo = "D:\\Dropbox\\Archolos\\CoM_localization_repository"    # windows
         super().__init__()
 
+    # отримує дані з репозиторію на відміну від Finder
     def get_data(self):
         for loc in self.locs:
             if loc not in self.locs_data:

@@ -45,9 +45,17 @@ def run_create_glossary(glossary_name, json_name):
         print(glossary_name, len(glossary.content))
         TMX_Glossary.write_glossaries(glossary, glossary_name) # перезаписує усі глосарії!
 
+def rewrite_glossaries(glossary_name : str):
+    path = os.path.join("D:\\Archolos\\Archolos_edit\\DialogeOmegaT\\glossary", glossary_name)
+    path = os.path.normpath(path)
+    glossary = Glossary(path)
+
+    TMX_Glossary.write_glossaries(glossary, glossary_name)
+
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     # run_create_glossary("Items.txt", "Mod_Text.d.json")
     # print()
-    run_create_glossary("names.txt", "Mod_NPC_Names.d.json")
+    # run_create_glossary("names.txt", "Mod_NPC_Names.d.json")
+    rewrite_glossaries("names.txt") #   "glossary.txt" "names.txt" "Items.txt"
