@@ -61,6 +61,6 @@ def run_file(filepath = None):
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-    run_merge()
-    # run_merge_dir('1')
+    # run_merge()
+    run_merge_dir('1')
     # run_file() # notes

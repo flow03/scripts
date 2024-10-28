@@ -82,6 +82,7 @@ push_changes() {
 # Основна частина скрипту
 main() {
     local commit_message="$1"
+	local glossary_message="Оновлені глосарії $(date +'%d.%m.%Y %H:%M:%S')"
     local root_directory="$(get_directory)"
     # local original_directory="$(pwd)"  # зберігаємо поточну теку для commit_and_push
 
@@ -90,11 +91,9 @@ main() {
         normalized_dir=$(realpath "$dir")	# нормалізуємо шлях до директорії
         cd "$normalized_dir" || exit	# перемикаємося до директорії
         echo "Перевірка статусу git репозиторію в $(basename "$normalized_dir")"
-		
 		if is_git "$normalized_dir"; then
 			local project_save=$(realpath "$dir/DialogeOmegaT/omegat/project_save.tmx")
 			local glossary=$(realpath "$dir/DialogeOmegaT/glossary/")	# тека з глосаріями
-			local glossary_message="Оновлені глосарії $(date +'%d.%m.%Y %H:%M:%S')"
 			
 			# коммітимо глосарії
 			commit_changes "$glossary" "$glossary_message"
@@ -110,11 +109,34 @@ main() {
 			fi
 		else
 			echo "  Шлях $normalized_dir не є репозиторієм"
-			# return 1
 		fi
         
         # cd "$original_directory"  # повертаємося до початкової теки
     done
+
+	commit_and_push_edit "$commit_message"
+}
+
+commit_and_push_edit() {
+	local commit_message="$1"
+	dir="/d/Archolos/Archolos_edit"		# можна передавати другим параметром
+	normalized_dir=$(realpath "$dir")
+	cd "$normalized_dir" || exit
+	echo "Перевірка статусу git репозиторію в $(basename "$normalized_dir")"
+
+	if is_git "$normalized_dir"; then
+		local project_save=$(realpath "$dir/DialogeOmegaT/omegat/project_save.tmx")
+		commit_changes "$project_save" "$commit_message"
+		status=$?
+
+		if [ $status -eq 0 ]; then
+			push_changes "$normalized_dir"
+		else
+			echo "  Немає незакомічених змін"
+		fi
+	else
+		echo "  Шлях $normalized_dir не є репозиторієм"
+	fi
 }
 
 # Перевірка наявності аргументів
