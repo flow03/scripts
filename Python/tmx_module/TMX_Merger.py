@@ -12,17 +12,10 @@ class TMX_Merger():
         self._tu_dict = tu_dict()    # Default translations
         self._alt_dict = tu_dict()   # Alternative translations
 
-        # self.repeat = 0
-        # self.diff = 0
-        # self.replace = 0
-        # self.alt_repeat = 0
-        # self.alt_diff = 0
-        # self.alt_replace = 0
-
         if tmx_file:
-            self.add_tmx(tmx_file)
+            self.add_file(tmx_file)
 
-    def add_tmx(self, tmx_file):
+    def add_file(self, tmx_file):
         if os.path.isfile(tmx_file):
             # print("------")
             self.parse(tmx_file)
