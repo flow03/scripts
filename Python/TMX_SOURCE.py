@@ -1,13 +1,14 @@
 import os, io, sys
 from TMX_Wrapper import TMX_Wrapper
+from json_module.jsonFile import jsonFile
 
 # оновлює польські репліки на основі нових і старих сурсів у форматі json
 class TMX_SOURCE(TMX_Wrapper):
     def __init__(self, tmx_file, source_old, source_new):
         super().__init__(tmx_file)
-        self.source_old = TMX_Wrapper.get_json(source_old)
+        self.source_old = jsonFile.get_json(source_old)
         # print("source_old:", len(self.source_old.data), "elements")
-        self.source_new = TMX_Wrapper.get_json(source_new)
+        self.source_new = jsonFile.get_json(source_new)
         # print("source_new:", len(self.source_new.data), "elements")
         # print("tmx_file:", len(self.tmx_file._tu_dict), "elements")
 

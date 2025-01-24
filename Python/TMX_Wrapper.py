@@ -7,7 +7,7 @@ from shutil import copy
 from tmx_module.TMX_Merger import TMX_Merger
 # from tmx_module.tu_dict import base_tu
 # from test.replace_quotes import replace_quotes_folder
-from json_module.jsonFile import jsonFile
+# from json_module.jsonFile import jsonFile
 
 # ----------------------------------------------------
 class TMX_Wrapper:
@@ -38,12 +38,12 @@ class TMX_Wrapper:
         # TODO можливо, варто перенести у батьківський клас TMX_Wrapper
     
     # завантажує локалізацію з вибраної теки
-    @staticmethod
-    def get_json(path):
-        loc = jsonFile()
-        loc.load_loc(path)
-        loc.remove_newlines()
-        return loc
+    # @staticmethod
+    # def get_json(path):
+    #     loc = jsonFile()
+    #     loc.load_loc(path)
+    #     loc.remove_newlines()
+    #     return loc
 
 #-----------------------------------------------------------
 

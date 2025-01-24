@@ -101,6 +101,14 @@ class jsonFile():
                         count += 1
             print(count, "json файлів переміщено до", new_folder)
 
+    # завантажує локалізацію з вибраної теки
+    @staticmethod
+    def get_json(path):
+        loc = jsonFile()
+        loc.load_loc(path)
+        loc.remove_newlines()
+        return loc
+
     # створює txt-файл на основі значень data, без ключів
     def write_txt(self, filename):
         with open(filename, 'w', encoding='utf-8') as txt_file:
