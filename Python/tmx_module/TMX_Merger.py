@@ -19,7 +19,7 @@ class TMX_Merger():
         if os.path.isfile(tmx_file):
             # print("------")
             self.parse(tmx_file)
-            # print(f"{tmx_file} додано")
+            print(f"{tmx_file} додано")
             # print(f"{os.path.basename(tmx_file)} додано")
         else:
             print(f"Файл {tmx_file} відсутній")

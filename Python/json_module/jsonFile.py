@@ -209,5 +209,5 @@ if __name__ == "__main__":
     # run_with_argv()
     # run_test()
     path = os.path.join("test", "LOG_Entries.d.json")
-    run_create_range(path, 1, 10)
+    run_create_range(path, 992, 3459)
     # run_create_range(path, 3450, 3459)

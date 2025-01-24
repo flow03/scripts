@@ -55,7 +55,6 @@ def rewrite_glossaries(glossary_name : str):
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    # run_create_glossary("Items.txt", "Mod_Text.d.json")
+    run_create_glossary("Items.txt", "Mod_Text.d.json")
     # print()
     # run_create_glossary("names.txt", "Mod_NPC_Names.d.json")
-    rewrite_glossaries("names.txt") #   "glossary.txt" "names.txt" "Items.txt"
