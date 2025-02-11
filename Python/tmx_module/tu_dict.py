@@ -32,6 +32,7 @@ class base_tu:
         uk_2_text = other_tu.get_uk_text()
         return uk_1_text == uk_2_text
 
+    # ключем для base_tu є польський текст
     def get_key(self):
         return self.get_pl_text()
 
@@ -102,6 +103,7 @@ class prop_tu(base_tu):
         # if file_text and id_text:
         return (file_text, id_text)
 
+    # ключем для prop_tu є id
     def get_key(self):
         return self.get_prop_id()
 
@@ -145,6 +147,9 @@ class tu_dict:
     
     def keys(self):
         return self._tu_dict.keys()
+    
+    def values(self):
+        return self._tu_dict.values()
     
     def pop(self, key):
         return self._tu_dict.pop(key, None)
