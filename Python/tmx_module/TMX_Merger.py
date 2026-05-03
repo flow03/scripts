@@ -138,6 +138,20 @@ class TMX_Merger():
             xml_string = etree.tostring(self.root, pretty_print=True, xml_declaration=True, encoding='UTF-8').decode()
             file.write(xml_string)
     
+    def remove_endspace(self):
+        count = self._tu_dict.remove_endspace()
+        a_count = self._alt_dict.remove_endspace()
+
+        count_str = "Видалено пробільних символів в кінці рядка: "
+
+        if a_count:
+            count_str += str(count + a_count) + " (" + str(count) + " + " + str(a_count) + ")"
+        else:
+            count_str += str(count)
+
+        print("------")
+        print(count_str)
+
     def remove_newlines(self):
         tu_n = self._tu_dict.remove_newlines()
         n_str = "newlines removed: " + str(tu_n)

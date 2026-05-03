@@ -35,8 +35,6 @@ class TMX_Wrapper:
         self.tmx_file.create(filepath, _print_stats=False)
         print(os.path.basename(filepath), "перезаписано")
     
-        # TODO можливо, варто перенести у батьківський клас TMX_Wrapper
-    
     # завантажує локалізацію з вибраної теки
     # @staticmethod
     # def get_json(path):
@@ -50,12 +48,13 @@ class TMX_Wrapper:
 def run_replace_newlines():
     archolos_edit = os.path.normpath(r'D:\Archolos\Archolos_edit\DialogeOmegaT\omegat\project_save.tmx')
     wrapper = TMX_Wrapper(archolos_edit)
-    wrapper.tmx_file.remove_newlines()
+    # wrapper.tmx_file.remove_newlines()
+    wrapper.tmx_file.remove_endspace()
     wrapper.backup()
     wrapper.create()    # перезаписує існуючий
 
 # Запуск програми
 if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    # run_replace_newlines()
+    run_replace_newlines()
     

@@ -174,6 +174,18 @@ class tu_dict:
         else:
             self.replace_tu(tu, force) # False as default
 
+    def remove_endspace(self):
+        count = 0
+        for key in self._tu_dict:
+            uk_seg = self._tu_dict[key].get_uk_seg()
+            # if uk_seg.text.endwith(" "):
+            new_text = uk_seg.text.rstrip()
+            if uk_seg.text != new_text:
+                uk_seg.text = new_text
+                count += 1
+            
+        return count
+
     def remove_newlines(self):
         return self.replace_symbol('\n')
     
@@ -206,7 +218,8 @@ class tu_dict:
         print("------")
         print(f"{count} quotes")
         print(f"{seg.text}")
-        if count > 1:
+        # TODO ще не тестувалось
+        if (count > 1) and (count % 2 == 0):
             seg.text = seg.text.replace('\"', "\'")
         else:
             seg.text = seg.text.replace('\"', "")

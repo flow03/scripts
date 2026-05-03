@@ -166,7 +166,10 @@ class jsonFile():
         return len(self.data)
 
     def keys(self):
-        return self.data.keys()    
+        return self.data.keys()
+    
+    def values(self):
+        return self.data.values() 
 #-----------------------------------------------------------
 
 def run_create_range(filename : str, start : int, end : int):
